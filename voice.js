@@ -1,6 +1,6 @@
 /* ============================================
    Technovate — Homepage intro
-   Binary AI face + optional Attenborough narration
+   Binary AI face + neural British narration
    ============================================ */
 (function () {
   'use strict';
@@ -12,6 +12,9 @@
   var faceRenderer = null;
   var matrixRenderer = null;
   var introMusic = null;
+  var introNarration = null;
+  var musicEnabled = true;
+  var useSpeechFallback = false;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -37,7 +40,7 @@
   function findBritishVoice() {
     if (!synth) return null;
     var voices = synth.getVoices();
-    var priority = ['Google UK English Male', 'Microsoft George', 'Daniel', 'en-GB'];
+    var priority = ['Microsoft Ryan Online', 'Google UK English Male', 'Microsoft George', 'Daniel', 'en-GB'];
     for (var p = 0; p < priority.length; p++) {
       for (var v = 0; v < voices.length; v++) {
         if (voices[v].name.indexOf(priority[p]) !== -1 || voices[v].lang.indexOf(priority[p]) !== -1) {
@@ -53,15 +56,15 @@
     return voices[0] || null;
   }
 
-  function speak(text, onEnd) {
+  function speakFallback(text, onEnd) {
     if (!synth) {
       if (onEnd) onEnd();
       return;
     }
     var utter = new SpeechSynthesisUtterance(text);
     utter.voice = britishVoice;
-    utter.rate = 0.78;
-    utter.pitch = 0.88;
+    utter.rate = 0.76;
+    utter.pitch = 0.9;
     utter.onend = onEnd;
     utter.onerror = onEnd;
     synth.speak(utter);
@@ -72,9 +75,13 @@
     if (faceRenderer) faceRenderer.setSpeaking(active);
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
+    if (introMusic) {
+      if (active) introMusic.duck();
+      else introMusic.unduck();
+    }
   }
 
-  function speakSequence(lines, index, callback) {
+  function speakSequenceFallback(lines, index, callback) {
     if (index >= lines.length) {
       setSpeaking(false);
       if (callback) callback();
@@ -82,9 +89,9 @@
     }
     var line = lines[index];
     updateSubtitle(line.text);
-    speak(line.text, function () {
+    speakFallback(line.text, function () {
       setTimeout(function () {
-        speakSequence(lines, index + 1, callback);
+        speakSequenceFallback(lines, index + 1, callback);
       }, line.pause);
     });
   }
@@ -96,6 +103,53 @@
     el.classList.remove('intro-subtitle--fade');
     void el.offsetWidth;
     el.classList.add('intro-subtitle--fade');
+  }
+
+  function ensureMusic() {
+    if (!musicEnabled || introMusic) return;
+    if (window.TechnovateIntroMusic) {
+      introMusic = window.TechnovateIntroMusic.create();
+    }
+  }
+
+  function tryStartMusic() {
+    ensureMusic();
+    if (introMusic && musicEnabled) introMusic.tryStart();
+  }
+
+  function toggleMusic() {
+    var btn = document.getElementById('intro-mute');
+    musicEnabled = !musicEnabled;
+    if (!musicEnabled && introMusic) {
+      introMusic.stop();
+      introMusic = null;
+    }
+    if (btn) {
+      btn.textContent = musicEnabled ? 'Music on' : 'Music off';
+      btn.setAttribute('aria-pressed', musicEnabled ? 'false' : 'true');
+    }
+    if (musicEnabled) tryStartMusic();
+  }
+
+  function ensureNarration() {
+    if (introNarration || useSpeechFallback) return;
+    if (!window.TechnovateIntroNarration) {
+      useSpeechFallback = true;
+      return;
+    }
+    introNarration = window.TechnovateIntroNarration.create({
+      onLine: function (text) {
+        updateSubtitle(text);
+      },
+      onBlocked: function () {
+        useSpeechFallback = true;
+        if (introNarration) {
+          introNarration.stop();
+          introNarration = null;
+        }
+        startNarration();
+      }
+    });
   }
 
   function createIntroScreen() {
@@ -127,9 +181,15 @@
     return intro;
   }
 
-  function closeIntro() {
+  function stopNarration() {
     if (synth) synth.cancel();
+    if (introNarration) introNarration.stop();
     setSpeaking(false);
+  }
+
+  function closeIntro() {
+    stopNarration();
+    introNarration = null;
     if (introMusic) {
       introMusic.stop();
       introMusic = null;
@@ -159,26 +219,21 @@
 
   function startNarration() {
     if (narrationPlaying) return;
-    setSpeaking(true);
 
-    if (!synth) {
-      var idx = 0;
-      function nextLine() {
-        if (idx >= INTRO_SCRIPT.length) {
-          setSpeaking(false);
-          return;
-        }
-        updateSubtitle(INTRO_SCRIPT[idx].text);
-        var pause = INTRO_SCRIPT[idx].pause || 800;
-        idx++;
-        setTimeout(nextLine, pause + 1800);
-      }
-      nextLine();
+    tryStartMusic();
+    setSpeaking(true);
+    ensureNarration();
+
+    if (useSpeechFallback || !introNarration) {
+      speakSequenceFallback(INTRO_SCRIPT, 0, function () {
+        updateSubtitle('Do come in.');
+      });
       return;
     }
 
-    speakSequence(INTRO_SCRIPT, 0, function () {
+    introNarration.play(function () {
       updateSubtitle('Do come in.');
+      setSpeaking(false);
     });
   }
 
@@ -224,9 +279,26 @@
       closeIntro();
     }
 
-    document.getElementById('intro-enter').addEventListener('click', onEnter);
-    document.getElementById('intro-enter-bottom').addEventListener('click', onEnter);
-    document.getElementById('intro-narration').addEventListener('click', startNarration);
+    function onInteract() {
+      tryStartMusic();
+    }
+
+    document.getElementById('intro-enter').addEventListener('click', function () {
+      onInteract();
+      onEnter();
+    });
+    document.getElementById('intro-enter-bottom').addEventListener('click', function () {
+      onInteract();
+      onEnter();
+    });
+    document.getElementById('intro-narration').addEventListener('click', function () {
+      onInteract();
+      startNarration();
+    });
+    document.getElementById('intro-mute').addEventListener('click', function () {
+      onInteract();
+      toggleMusic();
+    });
 
     document.addEventListener('keydown', function onKey(e) {
       if (e.key === 'Escape') {
