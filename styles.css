@@ -1932,7 +1932,7 @@ body.intro-active {
 .intro-backdrop {
   position: fixed;
   inset: 0;
-  background: #010204;
+  background: #000000;
   z-index: 0;
   pointer-events: none;
 }
@@ -1941,11 +1941,14 @@ body.intro-active {
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100vw;
   height: 100vh;
   display: block;
   z-index: 1;
   pointer-events: none;
+  opacity: 1;
 }
 
 .intro-content--face {
@@ -2239,32 +2242,31 @@ body.intro-active {
   50% { height: 36px; box-shadow: 0 0 16px rgba(247, 37, 133, 0.8); }
 }
 
-/* Prominent skip — always visible */
+/* Prominent enter — always visible, skips all audio */
 .intro-enter {
   position: fixed;
   top: var(--sp-4);
   right: var(--sp-4);
-  z-index: 110;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.95);
-  color: var(--dark);
+  z-index: 200;
+  padding: 14px 28px;
+  border-radius: 10px;
+  border: 2px solid #00ff41;
+  background: #ffffff;
+  color: #000000;
   font-family: var(--font);
   font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.25s var(--ease);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 28px rgba(0, 255, 65, 0.35);
 }
 
 .intro-enter:hover {
-  background: #00d4ff;
-  border-color: #00d4ff;
-  color: var(--dark);
-  box-shadow: 0 0 32px rgba(0, 212, 255, 0.35);
+  background: #00ff41;
+  color: #000000;
+  box-shadow: 0 0 36px rgba(0, 255, 65, 0.55);
   transform: translateY(-1px);
 }
 
@@ -2279,15 +2281,44 @@ body.intro-active {
 
 .intro-actions {
   position: fixed;
-  bottom: 8%;
+  bottom: 6%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--sp-2);
-  z-index: 110;
-  width: min(92vw, 360px);
+  z-index: 200;
+  width: min(92vw, 400px);
+}
+
+.intro-skip-note {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.04em;
+}
+
+.intro-btn--enter {
+  min-width: 300px;
+  padding: 18px 40px;
+  border-radius: 10px;
+  border: 2px solid #00ff41;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 800;
+  font-size: var(--text-base);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  box-shadow: 0 6px 32px rgba(0, 255, 65, 0.3);
+}
+
+.intro-btn--enter:hover {
+  background: #00ff41;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.5);
+  transform: translateY(-2px);
 }
 
 .intro-btn--primary {
@@ -2327,6 +2358,12 @@ body.intro-active {
 .intro-btn--ghost:hover {
   border-color: rgba(0, 212, 255, 0.4);
   color: #00d4ff;
+}
+
+.intro-btn--ghost:disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
 }
 
 .intro-btn--mute {

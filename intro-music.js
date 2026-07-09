@@ -1,7 +1,6 @@
 /* ============================================
-   Technovate — Intro cinematic ambient
-   Procedural CC0-style score (Web Audio API)
-   Inspired by ambient space/documentary openings
+   Technovate — Intro cinematic score
+   Epic space fanfare (Web Audio API, procedural)
    ============================================ */
 (function () {
   'use strict';
@@ -9,13 +8,10 @@
   function createIntroMusic() {
     var ctx = null;
     var master = null;
-    var padGain = null;
-    var shimmerGain = null;
-    var pulseGain = null;
-    var oscillators = [];
+    var nodes = [];
     var running = false;
     var started = false;
-    var targetVolume = 0.42;
+    var targetVolume = 0.48;
     var ducked = false;
 
     function getContext() {
@@ -27,95 +23,110 @@
       return ctx;
     }
 
+    function track(node) {
+      nodes.push(node);
+      return node;
+    }
+
+    function playFanfareNote(freq, time, duration, gainValue) {
+      var osc = track(ctx.createOscillator());
+      var gain = track(ctx.createGain());
+      var filter = track(ctx.createBiquadFilter());
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, time);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(500, time);
+      filter.frequency.exponentialRampToValueAtTime(2800, time + 0.08);
+      filter.frequency.exponentialRampToValueAtTime(900, time + duration);
+
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(master);
+      osc.start(time);
+      osc.stop(time + duration + 0.05);
+    }
+
+    function playTimpani(time) {
+      var osc = track(ctx.createOscillator());
+      var gain = track(ctx.createGain());
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(92, time);
+      osc.frequency.exponentialRampToValueAtTime(48, time + 0.45);
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.exponentialRampToValueAtTime(0.35, time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.55);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(time);
+      osc.stop(time + 0.6);
+    }
+
     function buildGraph() {
-      master = ctx.createGain();
+      master = track(ctx.createGain());
       master.gain.value = 0;
       master.connect(ctx.destination);
 
-      padGain = ctx.createGain();
-      padGain.gain.value = 0.55;
-      shimmerGain = ctx.createGain();
-      shimmerGain.gain.value = 0.18;
-      pulseGain = ctx.createGain();
-      pulseGain.gain.value = 0.12;
+      var now = ctx.currentTime + 0.05;
+      var bass = track(ctx.createOscillator());
+      var bassGain = track(ctx.createGain());
+      var bassFilter = track(ctx.createBiquadFilter());
+      bass.type = 'sawtooth';
+      bass.frequency.value = 73.42;
+      bassFilter.type = 'lowpass';
+      bassFilter.frequency.value = 180;
+      bassGain.gain.value = 0.16;
+      bass.connect(bassFilter);
+      bassFilter.connect(bassGain);
+      bassGain.connect(master);
+      bass.start();
 
-      var padFilter = ctx.createBiquadFilter();
-      padFilter.type = 'lowpass';
-      padFilter.frequency.value = 900;
-      padFilter.Q.value = 0.6;
+      var fifth = track(ctx.createOscillator());
+      var fifthGain = track(ctx.createGain());
+      fifth.type = 'triangle';
+      fifth.frequency.value = 110;
+      fifthGain.gain.value = 0.08;
+      fifth.connect(fifthGain);
+      fifthGain.connect(master);
+      fifth.start();
 
-      var shimmerFilter = ctx.createBiquadFilter();
-      shimmerFilter.type = 'bandpass';
-      shimmerFilter.frequency.value = 2400;
-      shimmerFilter.Q.value = 1.2;
+      var strings = track(ctx.createOscillator());
+      var strings2 = track(ctx.createOscillator());
+      var stringsGain = track(ctx.createGain());
+      var stringsFilter = track(ctx.createBiquadFilter());
+      strings.type = 'sawtooth';
+      strings2.type = 'sawtooth';
+      strings.frequency.value = 293.66;
+      strings2.frequency.value = 296.2;
+      stringsFilter.type = 'lowpass';
+      stringsFilter.frequency.setValueAtTime(400, now);
+      stringsFilter.frequency.linearRampToValueAtTime(2200, now + 6);
+      stringsGain.gain.value = 0.07;
+      strings.connect(stringsFilter);
+      strings2.connect(stringsFilter);
+      stringsFilter.connect(stringsGain);
+      stringsGain.connect(master);
+      strings.start();
+      strings2.start();
 
-      padGain.connect(padFilter);
-      shimmerGain.connect(shimmerFilter);
-      pulseGain.connect(padFilter);
+      playFanfareNote(146.83, now + 0.4, 0.9, 0.14);
+      playFanfareNote(174.61, now + 0.55, 0.9, 0.13);
+      playFanfareNote(220.0, now + 0.7, 1.0, 0.15);
+      playFanfareNote(293.66, now + 0.9, 1.4, 0.16);
 
-      padFilter.connect(master);
-      shimmerFilter.connect(master);
+      playTimpani(now + 0.35);
+      playTimpani(now + 1.1);
+      playTimpani(now + 2.0);
 
-      var roots = [55, 82.5, 110, 164.81];
-      roots.forEach(function (freq, i) {
-        var osc = ctx.createOscillator();
-        osc.type = i === 0 ? 'sine' : 'triangle';
-        osc.frequency.value = freq;
-        var oscGain = ctx.createGain();
-        oscGain.gain.value = 0.14 - i * 0.02;
-        osc.connect(oscGain);
-        oscGain.connect(padGain);
-        osc.start();
-        oscillators.push(osc);
-      });
-
-      var shimmer = ctx.createOscillator();
-      shimmer.type = 'sine';
-      shimmer.frequency.value = 880;
-      var shimmerLfo = ctx.createOscillator();
-      shimmerLfo.frequency.value = 0.08;
-      var shimmerLfoGain = ctx.createGain();
-      shimmerLfoGain.gain.value = 120;
-      shimmerLfo.connect(shimmerLfoGain);
-      shimmerLfoGain.connect(shimmer.frequency);
-      shimmer.connect(shimmerGain);
-      shimmer.start();
-      shimmerLfo.start();
-      oscillators.push(shimmer, shimmerLfo);
-
-      var pulse = ctx.createOscillator();
-      pulse.type = 'sine';
-      pulse.frequency.value = 41.2;
-      var pulseLfo = ctx.createOscillator();
-      pulseLfo.frequency.value = 0.04;
-      var pulseLfoGain = ctx.createGain();
-      pulseLfoGain.gain.value = 8;
-      pulseLfo.connect(pulseLfoGain);
-      pulseLfoGain.connect(pulse.frequency);
-      pulse.connect(pulseGain);
-      pulse.start();
-      pulseLfo.start();
-      oscillators.push(pulse, pulseLfo);
-
-      var bufferSize = ctx.sampleRate * 2;
-      var noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      var data = noiseBuffer.getChannelData(0);
-      for (var n = 0; n < bufferSize; n++) {
-        data[n] = (Math.random() * 2 - 1) * 0.35;
-      }
-      var noise = ctx.createBufferSource();
-      noise.buffer = noiseBuffer;
-      noise.loop = true;
-      var noiseFilter = ctx.createBiquadFilter();
-      noiseFilter.type = 'highpass';
-      noiseFilter.frequency.value = 4000;
-      var noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.025;
-      noise.connect(noiseFilter);
-      noiseFilter.connect(noiseGain);
-      noiseGain.connect(shimmerGain);
-      noise.start();
-      oscillators.push(noise);
+      playFanfareNote(174.61, now + 2.3, 0.8, 0.11);
+      playFanfareNote(220.0, now + 2.45, 0.8, 0.12);
+      playFanfareNote(261.63, now + 2.6, 1.0, 0.13);
+      playFanfareNote(349.23, now + 2.85, 1.6, 0.14);
     }
 
     function fadeTo(value, duration) {
@@ -141,44 +152,43 @@
       }
 
       running = true;
-      fadeTo(ducked ? targetVolume * 0.35 : targetVolume, 2.8);
+      fadeTo(ducked ? targetVolume * 0.3 : targetVolume, 2.2);
       return true;
-    }
-
-    function tryStart() {
-      return start();
     }
 
     function duck() {
       ducked = true;
-      if (running) fadeTo(targetVolume * 0.28, 1.2);
+      if (running) fadeTo(targetVolume * 0.22, 1);
     }
 
     function unduck() {
       ducked = false;
-      if (running) fadeTo(targetVolume, 1.8);
+      if (running) fadeTo(targetVolume, 1.5);
     }
 
     function stop() {
       if (!master || !ctx) return;
       running = false;
-      fadeTo(0, 0.9);
+      fadeTo(0, 0.8);
       setTimeout(function () {
-        oscillators.forEach(function (osc) {
-          try { osc.stop(); } catch (e) { /* already stopped */ }
+        nodes.forEach(function (node) {
+          try {
+            if (node.stop) node.stop();
+            node.disconnect();
+          } catch (e) { /* noop */ }
         });
-        oscillators = [];
+        nodes = [];
         if (ctx) {
           ctx.close();
           ctx = null;
         }
         started = false;
         master = null;
-      }, 1000);
+      }, 900);
     }
 
     return {
-      tryStart: tryStart,
+      tryStart: start,
       start: start,
       stop: stop,
       duck: duck,

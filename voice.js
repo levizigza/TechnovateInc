@@ -15,6 +15,8 @@
   var introNarration = null;
   var musicEnabled = true;
   var useSpeechFallback = false;
+  var narrationTimer = null;
+  var MUSIC_PRE_ROLL_MS = 3800;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -70,6 +72,11 @@
     synth.speak(utter);
   }
 
+  function setPrelude(active) {
+    var wave = document.getElementById('intro-wave');
+    if (wave) wave.classList.toggle('intro-wave--active', active);
+  }
+
   function setSpeaking(active) {
     narrationPlaying = active;
     if (faceRenderer) faceRenderer.setSpeaking(active);
@@ -79,6 +86,33 @@
       if (active) introMusic.duck();
       else introMusic.unduck();
     }
+  }
+
+  function clearNarrationTimer() {
+    if (narrationTimer) {
+      clearTimeout(narrationTimer);
+      narrationTimer = null;
+    }
+  }
+
+  function beginNarrationVoice() {
+    narrationTimer = null;
+    setSpeaking(true);
+    ensureNarration();
+
+    if (useSpeechFallback || !introNarration) {
+      speakSequenceFallback(INTRO_SCRIPT, 0, function () {
+        updateSubtitle('Do come in.');
+        narrationPlaying = false;
+      });
+      return;
+    }
+
+    introNarration.play(function () {
+      updateSubtitle('Do come in.');
+      setSpeaking(false);
+      narrationPlaying = false;
+    });
   }
 
   function speakSequenceFallback(lines, index, callback) {
@@ -158,7 +192,7 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
-      '<button class="intro-enter" id="intro-enter" type="button" aria-label="Skip intro and enter website">Skip intro</button>' +
+      '<button class="intro-enter" id="intro-enter-top" type="button" aria-label="Enter website and skip intro">Enter website</button>' +
       '<div class="intro-content intro-content--face">' +
         '<div class="intro-face-wrap">' +
           '<canvas class="intro-binary-face" id="intro-binary-face" aria-hidden="true"></canvas>' +
@@ -172,7 +206,8 @@
         '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
       '</div>' +
       '<div class="intro-actions">' +
-        '<button class="intro-btn intro-btn--primary" id="intro-enter-bottom" type="button">Skip intro</button>' +
+        '<button class="intro-btn intro-btn--enter" id="intro-enter-main" type="button">Enter website</button>' +
+        '<p class="intro-skip-note">Skip intro and audio — go straight to the site</p>' +
         '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
         '<button class="intro-btn intro-btn--mute" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>' +
       '</div>';
@@ -182,9 +217,12 @@
   }
 
   function stopNarration() {
+    clearNarrationTimer();
     if (synth) synth.cancel();
     if (introNarration) introNarration.stop();
     setSpeaking(false);
+    setPrelude(false);
+    narrationPlaying = false;
   }
 
   function closeIntro() {
@@ -218,23 +256,20 @@
   }
 
   function startNarration() {
-    if (narrationPlaying) return;
+    if (narrationPlaying || narrationTimer) return;
 
+    narrationPlaying = true;
     tryStartMusic();
-    setSpeaking(true);
-    ensureNarration();
+    updateSubtitle('');
+    setPrelude(true);
 
-    if (useSpeechFallback || !introNarration) {
-      speakSequenceFallback(INTRO_SCRIPT, 0, function () {
-        updateSubtitle('Do come in.');
-      });
-      return;
+    var playBtn = document.getElementById('intro-narration');
+    if (playBtn) {
+      playBtn.disabled = true;
+      playBtn.textContent = 'Playing…';
     }
 
-    introNarration.play(function () {
-      updateSubtitle('Do come in.');
-      setSpeaking(false);
-    });
+    narrationTimer = setTimeout(beginNarrationVoice, MUSIC_PRE_ROLL_MS);
   }
 
   function initIntroRenderers() {
@@ -243,13 +278,13 @@
 
     if (window.TechnovateBinaryFace && matrixCanvas) {
       matrixRenderer = window.TechnovateBinaryFace.createMatrixRain(matrixCanvas, {
-        fontSize: 18,
-        trailLen: 30,
-        fadeAlpha: 0.09,
+        fontSize: 16,
+        trailLen: 32,
+        fadeAlpha: 0.08,
         headAlpha: 1,
-        bodyAlpha: 0.7,
-        speedMin: 2.5,
-        speedMax: 6
+        bodyAlpha: 0.82,
+        speedMin: 3,
+        speedMax: 7
       });
     }
 
@@ -269,41 +304,33 @@
 
   function runIntro() {
     var intro = createIntroScreen();
+    initIntroRenderers();
 
     requestAnimationFrame(function () {
       intro.classList.add('intro--active');
-      initIntroRenderers();
+      if (matrixRenderer && matrixRenderer.refresh) matrixRenderer.refresh();
+      if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
     });
 
-    function onEnter() {
+    function enterSite() {
       closeIntro();
     }
 
-    function onInteract() {
-      tryStartMusic();
-    }
-
-    document.getElementById('intro-enter').addEventListener('click', function () {
-      onInteract();
-      onEnter();
-    });
-    document.getElementById('intro-enter-bottom').addEventListener('click', function () {
-      onInteract();
-      onEnter();
-    });
+    document.getElementById('intro-enter-top').addEventListener('click', enterSite);
+    document.getElementById('intro-enter-main').addEventListener('click', enterSite);
     document.getElementById('intro-narration').addEventListener('click', function () {
-      onInteract();
+      tryStartMusic();
       startNarration();
     });
     document.getElementById('intro-mute').addEventListener('click', function () {
-      onInteract();
+      if (!introMusic) tryStartMusic();
       toggleMusic();
     });
 
     document.addEventListener('keydown', function onKey(e) {
       if (e.key === 'Escape') {
         document.removeEventListener('keydown', onKey);
-        onEnter();
+        enterSite();
       }
     });
   }

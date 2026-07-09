@@ -6,6 +6,12 @@
   'use strict';
 
   function getViewportSize(canvas) {
+    if (canvas.classList && canvas.classList.contains('intro-matrix-bg')) {
+      return {
+        w: window.innerWidth || 1280,
+        h: window.innerHeight || 720
+      };
+    }
     var rect = canvas.getBoundingClientRect();
     var w = Math.floor(rect.width) || window.innerWidth || 1280;
     var h = Math.floor(rect.height) || window.innerHeight || 720;
@@ -94,11 +100,11 @@
           fade = fade * fade;
 
           if (j === 0) {
-            ctx.fillStyle = 'rgba(200, 255, 255, ' + (fade * headAlpha) + ')';
-            ctx.shadowColor = 'rgba(0, 255, 220, 0.8)';
-            ctx.shadowBlur = 8;
+            ctx.fillStyle = 'rgba(220, 255, 220, ' + (fade * headAlpha) + ')';
+            ctx.shadowColor = 'rgba(0, 255, 70, 0.95)';
+            ctx.shadowBlur = 12;
           } else {
-            ctx.fillStyle = 'rgba(0, 255, 170, ' + (fade * bodyAlpha) + ')';
+            ctx.fillStyle = 'rgba(0, 255, 65, ' + (fade * bodyAlpha) + ')';
             ctx.shadowBlur = 0;
           }
 
