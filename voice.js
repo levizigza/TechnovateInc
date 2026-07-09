@@ -76,12 +76,8 @@
       '<div class="intro-astro-head" id="intro-astro-head">' +
         '<div class="intro-astro-dome" id="intro-astro-dome">' +
           '<div class="intro-astro-dome__shine"></div>' +
-          '<div class="intro-astro-eye-slot intro-astro-eye-slot--left">' +
-            '<div class="intro-astro-eye-mechanism intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
-          '</div>' +
-          '<div class="intro-astro-eye-slot intro-astro-eye-slot--right">' +
-            '<div class="intro-astro-eye-mechanism intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
-          '</div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
           '<div class="intro-astro-sensor-socket" aria-hidden="true"></div>' +
           '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
             '<div class="intro-astro-projector" id="intro-astro-projector">' +
