@@ -319,17 +319,10 @@
     };
 
     var page = window.location.pathname.split('/').pop() || 'index.html';
-    var seenIntro = localStorage.getItem(STORAGE_KEY) === 'true';
+    var isHomepage = page === 'index.html' || page === '' || page.indexOf('.html') === -1;
 
-    if (page === 'index.html' || page === '') {
-      if (!seenIntro) {
-        runIntro();
-      } else {
-        introComplete = true;
-        if (voiceEnabled) {
-          createVoiceToggle();
-        }
-      }
+    if (isHomepage) {
+      runIntro();
     } else {
       introComplete = true;
       if (voiceEnabled) {
