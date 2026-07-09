@@ -2276,12 +2276,18 @@ body.intro-active {
   animation-delay: 0.1s;
 }
 
-.intro-astro-head--tilting .intro-astro-flash-face,
+.intro-astro-head--tilting .intro-astro-flash-face {
+  animation: astroFlashFace 1.05s ease-out forwards;
+}
+
 .intro-astro-head--tilting .intro-astro-flash-beam {
   animation: astroFlashShine 1.05s ease-out forwards;
 }
 
-.intro-astro-head--tilting .intro-astro-dome__blue--right .intro-astro-flash-face,
+.intro-astro-head--tilting .intro-astro-dome__blue--right .intro-astro-flash-face {
+  animation-delay: 0.1s;
+}
+
 .intro-astro-head--tilting .intro-astro-dome__blue--right .intro-astro-flash-beam {
   animation-delay: 0.1s;
 }
@@ -2329,6 +2335,21 @@ body.intro-active {
   100% {
     transform: rotateX(-74deg) translateY(-40px) scale(0.32, 0.14);
     opacity: 1;
+  }
+}
+
+@keyframes astroFlashFace {
+  0%, 48% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  72% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
