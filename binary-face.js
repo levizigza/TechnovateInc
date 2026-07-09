@@ -100,9 +100,9 @@
           fade = fade * fade;
 
           if (j === 0) {
-            ctx.fillStyle = 'rgba(220, 255, 220, ' + (fade * headAlpha) + ')';
-            ctx.shadowColor = 'rgba(0, 255, 70, 0.95)';
-            ctx.shadowBlur = 12;
+            ctx.fillStyle = 'rgba(180, 255, 180, ' + (fade * headAlpha) + ')';
+            ctx.shadowColor = 'rgba(0, 255, 65, 1)';
+            ctx.shadowBlur = 16;
           } else {
             ctx.fillStyle = 'rgba(0, 255, 65, ' + (fade * bodyAlpha) + ')';
             ctx.shadowBlur = 0;

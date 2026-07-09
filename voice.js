@@ -16,7 +16,7 @@
   var musicEnabled = true;
   var useSpeechFallback = false;
   var narrationTimer = null;
-  var MUSIC_PRE_ROLL_MS = 3800;
+  var MUSIC_PRE_ROLL_MS = 2800;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -192,7 +192,11 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
-      '<button class="intro-enter" id="intro-enter-top" type="button" aria-label="Enter website and skip intro">Enter website</button>' +
+      '<div class="intro-skip-bar">' +
+        '<button class="intro-skip-bar__btn" id="intro-enter-main" type="button" aria-label="Skip intro and enter website">' +
+          'Skip intro — Enter website →' +
+        '</button>' +
+      '</div>' +
       '<div class="intro-content intro-content--face">' +
         '<div class="intro-face-wrap">' +
           '<canvas class="intro-binary-face" id="intro-binary-face" aria-hidden="true"></canvas>' +
@@ -206,8 +210,6 @@
         '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
       '</div>' +
       '<div class="intro-actions">' +
-        '<button class="intro-btn intro-btn--enter" id="intro-enter-main" type="button">Enter website</button>' +
-        '<p class="intro-skip-note">Skip intro and audio — go straight to the site</p>' +
         '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
         '<button class="intro-btn intro-btn--mute" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>' +
       '</div>';
@@ -278,13 +280,13 @@
 
     if (window.TechnovateBinaryFace && matrixCanvas) {
       matrixRenderer = window.TechnovateBinaryFace.createMatrixRain(matrixCanvas, {
-        fontSize: 16,
-        trailLen: 32,
-        fadeAlpha: 0.08,
+        fontSize: 18,
+        trailLen: 36,
+        fadeAlpha: 0.05,
         headAlpha: 1,
-        bodyAlpha: 0.82,
-        speedMin: 3,
-        speedMax: 7
+        bodyAlpha: 0.92,
+        speedMin: 4,
+        speedMax: 10
       });
     }
 
@@ -297,26 +299,23 @@
       if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
     }
 
+    refreshRenderers();
     requestAnimationFrame(refreshRenderers);
-    setTimeout(refreshRenderers, 100);
-    setTimeout(refreshRenderers, 400);
+    setTimeout(refreshRenderers, 50);
+    setTimeout(refreshRenderers, 200);
+    setTimeout(refreshRenderers, 600);
+    window.addEventListener('resize', refreshRenderers);
   }
 
   function runIntro() {
     var intro = createIntroScreen();
+    intro.classList.add('intro--active');
     initIntroRenderers();
-
-    requestAnimationFrame(function () {
-      intro.classList.add('intro--active');
-      if (matrixRenderer && matrixRenderer.refresh) matrixRenderer.refresh();
-      if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
-    });
 
     function enterSite() {
       closeIntro();
     }
 
-    document.getElementById('intro-enter-top').addEventListener('click', enterSite);
     document.getElementById('intro-enter-main').addEventListener('click', enterSite);
     document.getElementById('intro-narration').addEventListener('click', function () {
       tryStartMusic();
