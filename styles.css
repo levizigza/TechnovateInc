@@ -2255,7 +2255,7 @@ body.intro-active {
   position: relative;
   width: 100%;
   height: 100%;
-  transform-origin: 50% 88%;
+  transform-origin: 50% 12%;
   transform: rotateX(0deg);
   transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease 0.55s;
   transform-style: preserve-3d;
@@ -2263,7 +2263,7 @@ body.intro-active {
 
 .intro-astro-sensor--tilting .intro-astro-projector,
 .intro-astro-sensor--tilted .intro-astro-projector {
-  transform: rotateX(-94deg);
+  transform: rotateX(92deg);
 }
 
 .intro-astro-sensor--tilted .intro-astro-projector {
@@ -2439,10 +2439,11 @@ body.intro-active {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 6vh var(--sp-4) 150px;
+  padding: 6vh 2vw 150px;
   box-sizing: border-box;
   text-align: center;
   pointer-events: none;
+  overflow: visible;
 }
 
 /* Sacred geometry — intro hologram stage */
@@ -2614,9 +2615,12 @@ body.intro-active {
 }
 
 .intro-holo-brand__name {
-  font-size: clamp(1.75rem, 5.5vw, 3rem);
-  margin: 0;
+  font-size: clamp(1.45rem, 4.8vw, 2.5rem);
+  margin: 0 auto;
   line-height: 1.05;
+  max-width: 100%;
+  overflow: visible;
+  padding: 0 0.15em;
 }
 
 .intro-holo-brand__systems {
@@ -2671,9 +2675,11 @@ body.intro-active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 720px;
+  width: min(98vw, 1120px);
+  max-width: 100%;
   pointer-events: auto;
   isolation: isolate;
+  overflow: visible;
 }
 
 .intro-holo-stage__aura {
@@ -2909,31 +2915,33 @@ body.intro-active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-2);
   background: transparent;
   border: none;
   box-shadow: none;
-  width: min(640px, 92vw);
+  width: min(96vw, 1040px);
+  max-width: 100%;
   z-index: 3;
+  overflow: visible;
 }
 
 .intro-holo-panel__aura {
   position: absolute;
-  inset: -20px -32px;
-  border-radius: 24px;
+  inset: -28px -6vw;
+  border-radius: 32px;
   pointer-events: none;
   z-index: 0;
   opacity: 0;
-  border: 1px solid rgba(0, 212, 255, 0.35);
+  border: 1px solid rgba(0, 212, 255, 0.22);
   background: linear-gradient(
     180deg,
-    rgba(0, 80, 140, 0.35) 0%,
-    rgba(0, 120, 200, 0.22) 50%,
-    rgba(0, 60, 120, 0.3) 100%
+    rgba(0, 80, 140, 0.28) 0%,
+    rgba(0, 120, 200, 0.16) 50%,
+    rgba(0, 60, 120, 0.22) 100%
   );
   box-shadow:
-    0 0 40px rgba(0, 212, 255, 0.4),
-    inset 0 0 30px rgba(0, 212, 255, 0.08);
+    0 0 50px rgba(0, 212, 255, 0.35),
+    inset 0 0 40px rgba(0, 212, 255, 0.06);
   transition: opacity 0.85s ease;
 }
 
@@ -3138,6 +3146,7 @@ body.intro-active {
   font-style: italic;
   letter-spacing: 0.06em;
   color: #c8f6ff;
+  max-width: min(92vw, 780px);
   text-shadow:
     0 0 12px rgba(0, 212, 255, 0.95),
     0 0 24px rgba(0, 212, 255, 0.55),
@@ -3173,8 +3182,8 @@ body.intro-active {
   position: absolute;
   bottom: 11%;
   left: 50%;
-  width: min(48vw, 300px);
-  height: 44vh;
+  width: min(78vw, 640px);
+  height: 46vh;
   transform: translateX(-50%);
   background: linear-gradient(
     to top,
@@ -3183,7 +3192,7 @@ body.intro-active {
     rgba(0, 140, 220, 0.06) 75%,
     transparent 100%
   );
-  clip-path: polygon(38% 100%, 62% 100%, 100% 0%, 0% 0%);
+  clip-path: polygon(28% 100%, 72% 100%, 100% 0%, 0% 0%);
   filter: blur(1px);
   opacity: 0;
   animation: projectorConeIn 0.7s ease forwards;
