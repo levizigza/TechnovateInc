@@ -15,7 +15,10 @@
   var musicEnabled = true;
   var useSpeechFallback = false;
   var narrationTimer = null;
+  var loopTimer = null;
+  var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 3800;
+  var LOOP_PAUSE_MS = 2800;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -95,6 +98,38 @@
     }
   }
 
+  function clearLoopTimer() {
+    if (loopTimer) {
+      clearTimeout(loopTimer);
+      loopTimer = null;
+    }
+  }
+
+  function onIntroCycleComplete() {
+    if (introClosed) return;
+    narrationPlaying = false;
+    if (introMusic) introMusic.unduck();
+    setPrelude(true);
+    updateSubtitle('in the digital realm...');
+    clearLoopTimer();
+    loopTimer = setTimeout(function () {
+      if (!introClosed) restartIntroCycle();
+    }, LOOP_PAUSE_MS);
+  }
+
+  function restartIntroCycle() {
+    if (introClosed || narrationPlaying || narrationTimer) return;
+    if (introMusic) {
+      introMusic.stop();
+      introMusic = null;
+    }
+    if (introNarration) {
+      introNarration.stop();
+    }
+    if (synth) synth.cancel();
+    startNarration();
+  }
+
   function beginNarrationVoice() {
     narrationTimer = null;
     setSpeaking(true);
@@ -103,7 +138,7 @@
     if (useSpeechFallback || !introNarration) {
       speakSequenceFallback(INTRO_SCRIPT, 0, function () {
         updateSubtitle('Do come in.');
-        narrationPlaying = false;
+        onIntroCycleComplete();
       });
       return;
     }
@@ -111,7 +146,7 @@
     introNarration.play(function () {
       updateSubtitle('Do come in.');
       setSpeaking(false);
-      narrationPlaying = false;
+      onIntroCycleComplete();
     });
   }
 
@@ -193,25 +228,23 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
-      '<div class="intro-skip-bar">' +
-        '<button class="intro-skip-bar__btn" id="intro-enter-main" type="button" aria-label="Skip intro and enter website">' +
-          'Skip intro — Enter website →' +
-        '</button>' +
-      '</div>' +
       '<div class="intro-content intro-content--holo">' +
-        '<div class="intro-logo intro-logo--visible">' +
-          '<div class="intro-logo-icon">' + GLOBE_SVG + '</div>' +
-          '<h1 class="intro-logo-text">Technovate</h1>' +
-        '</div>' +
-        '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
-        '<div class="intro-wave intro-wave--active" id="intro-wave">' +
-          '<span></span><span></span><span></span><span></span><span></span>' +
+        '<div class="intro-holo-stage">' +
+          '<div class="intro-logo intro-logo--visible">' +
+            '<div class="intro-logo-icon">' + GLOBE_SVG + '</div>' +
+            '<h1 class="intro-logo-text">Technovate</h1>' +
+          '</div>' +
+          '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
+          '<div class="intro-wave intro-wave--active" id="intro-wave">' +
+            '<span></span><span></span><span></span><span></span><span></span>' +
+          '</div>' +
+          '<button class="intro-enter-btn" id="intro-enter-main" type="button" aria-label="Enter website">' +
+            '<span class="intro-enter-btn__label">Enter</span>' +
+            '<span class="intro-enter-btn__key" aria-hidden="true">↵</span>' +
+          '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="intro-actions">' +
-        '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
-        '<button class="intro-btn intro-btn--mute" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>' +
-      '</div>';
+      '<button class="intro-mute-fab" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>';
     document.body.appendChild(intro);
     document.body.classList.add('intro-active');
     return intro;
@@ -219,6 +252,7 @@
 
   function stopNarration() {
     clearNarrationTimer();
+    clearLoopTimer();
     if (synth) synth.cancel();
     if (introNarration) introNarration.stop();
     setSpeaking(false);
@@ -227,6 +261,7 @@
   }
 
   function closeIntro() {
+    introClosed = true;
     stopNarration();
     introNarration = null;
     if (introMusic) {
@@ -253,18 +288,13 @@
   }
 
   function startNarration() {
+    if (introClosed) return;
     if (narrationPlaying || narrationTimer) return;
 
     narrationPlaying = true;
     tryStartMusic();
     updateSubtitle('Here...');
     setPrelude(true);
-
-    var playBtn = document.getElementById('intro-narration');
-    if (playBtn) {
-      playBtn.disabled = true;
-      playBtn.textContent = 'Playing…';
-    }
 
     narrationTimer = setTimeout(beginNarrationVoice, MUSIC_PRE_ROLL_MS);
   }
@@ -295,6 +325,7 @@
   }
 
   function runIntro() {
+    introClosed = false;
     var intro = createIntroScreen();
     intro.classList.add('intro--active');
     initIntroRenderers();
@@ -308,10 +339,6 @@
     }
 
     document.getElementById('intro-enter-main').addEventListener('click', enterSite);
-    document.getElementById('intro-narration').addEventListener('click', function () {
-      tryStartMusic();
-      startNarration();
-    });
     document.getElementById('intro-mute').addEventListener('click', function () {
       if (!introMusic) tryStartMusic();
       toggleMusic();
