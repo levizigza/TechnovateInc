@@ -156,11 +156,21 @@ img { max-width: 100%; height: auto; display: block; }
   margin-right: auto;
 }
 
-.logo-img {
-  height: 56px;
-  width: auto;
-  object-fit: contain;
-  filter: invert(1);
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
 }
 
 .logo-text {
@@ -429,8 +439,9 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* Dark sections for contrast */
 .section--dark {
-  background: var(--dark);
+  background: linear-gradient(180deg, var(--dark) 0%, #0c1629 50%, var(--dark) 100%);
   color: var(--white);
+  position: relative;
 }
 
 .section--dark .section-title { color: var(--white); }
@@ -518,12 +529,13 @@ img { max-width: 100%; height: auto; display: block; }
   background: var(--white);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
   transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
 }
 
 .card:hover {
   border-color: var(--gray-300);
-  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.07);
   transform: translateY(-4px);
 }
 
@@ -1079,7 +1091,7 @@ img { max-width: 100%; height: auto; display: block; }
   .nav { display: none; }
   .burger { display: flex; }
   .form-row { grid-template-columns: 1fr; }
-  .logo-img { height: 44px; }
+  .logo-icon { width: 28px; height: 28px; }
   .sectors-grid { grid-template-columns: 1fr; }
   .cards-row { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
@@ -1371,12 +1383,92 @@ img { max-width: 100%; height: auto; display: block; }
   user-select: none;
 }
 
+/* ============================================
+   VISUAL ELEMENTS — inspired by Stripe & Linear
+   ============================================ */
+
+/* Gradient text for hero titles */
+.hero-overlay .hero-title {
+  background: linear-gradient(135deg, #ffffff 30%, rgba(59,130,246,0.85) 70%, rgba(251,191,36,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated mesh background for hero */
+.hero-immersive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle 600px at 15% 85%, rgba(37,99,235,0.2) 0%, transparent 60%),
+    radial-gradient(circle 500px at 80% 20%, rgba(13,148,136,0.15) 0%, transparent 55%),
+    radial-gradient(circle 350px at 55% 55%, rgba(245,158,11,0.08) 0%, transparent 50%);
+  animation: meshDrift 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes meshDrift {
+  0% { opacity: 0.6; transform: scale(1) translate(0, 0); }
+  100% { opacity: 1; transform: scale(1.08) translate(-2%, 3%); }
+}
+
+/* Glowing divider between sections */
+.section-divider {
+  height: 1px;
+  border: none;
+  margin: 0;
+  background: linear-gradient(90deg, transparent, rgba(37,99,235,0.3), rgba(13,148,136,0.2), transparent);
+}
+
+/* Section cards with subtle glow on hover */
+.card:hover {
+  box-shadow:
+    0 16px 48px rgba(15, 23, 42, 0.07),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+.section--dark .card:hover {
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(37, 99, 235, 0.06);
+}
+
+/* Sector card glow matching sector color */
+.sector-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+.sector-card--health:hover   { box-shadow: 0 12px 40px rgba(52,211,153,0.15), 0 0 20px rgba(52,211,153,0.08); }
+.sector-card--finance:hover  { box-shadow: 0 12px 40px rgba(251,191,36,0.15), 0 0 20px rgba(251,191,36,0.08); }
+.sector-card--education:hover{ box-shadow: 0 12px 40px rgba(167,139,250,0.15), 0 0 20px rgba(167,139,250,0.08); }
+.sector-card--enterprise:hover{ box-shadow: 0 12px 40px rgba(56,189,248,0.15), 0 0 20px rgba(56,189,248,0.08); }
+.sector-card--community:hover{ box-shadow: 0 12px 40px rgba(244,114,182,0.15), 0 0 20px rgba(244,114,182,0.08); }
+
+/* Gradient accent line on cards */
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue-500), var(--teal), var(--accent));
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.card:hover::after {
+  opacity: 1;
+}
+
+
 @media (prefers-reduced-motion: reduce) {
-  .marquee { animation: none; }
   .scroll-hint { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-enter > * { opacity: 1; transform: none; transition: none; }
   .grain { display: none; }
+  .hero-immersive::after { animation: none; }
 }
 
 @media (max-width: 860px) {
