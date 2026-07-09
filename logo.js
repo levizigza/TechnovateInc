@@ -33,7 +33,7 @@
     '</svg>';
 
   var EYE_MARK_SVG =
-    '<svg class="tv-logo-mark" viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Technovate">' +
+    '<svg class="tv-logo-mark" viewBox="0 0 480 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Technovate">' +
       '<defs>' +
         '<linearGradient id="tvMarkText" x1="0%" y1="0%" x2="100%" y2="0%">' +
           '<stop offset="0%" stop-color="#00d4ff"/>' +
@@ -41,33 +41,30 @@
           '<stop offset="100%" stop-color="#00d4ff"/>' +
         '</linearGradient>' +
       '</defs>' +
-      '<g transform="translate(60 60)">' +
-        '<circle r="52" fill="rgba(0,212,255,0.08)"/>' +
-        '<circle r="44" fill="#071018" stroke="#163a55" stroke-width="2"/>' +
-        '<circle r="40" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.4"/>' +
-        '<line x1="0" y1="-44" x2="0" y2="-34" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
-        '<line x1="0" y1="34" x2="0" y2="44" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
-        '<line x1="-44" y1="0" x2="-34" y2="0" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
-        '<line x1="34" y1="0" x2="44" y2="0" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
-        '<circle r="26" fill="none" stroke="#00d4ff" stroke-width="1.2" opacity="0.45" stroke-dasharray="4 6"/>' +
-        '<circle r="17" fill="none" stroke="#00d4ff" stroke-width="1.8" opacity="0.65"/>' +
-        '<circle r="11" fill="#00d4ff" opacity="0.95"/>' +
-        '<circle r="4.5" fill="#ffffff"/>' +
-        '<circle cx="3.5" cy="-3" r="1.6" fill="#ffffff" opacity="0.9"/>' +
+      '<g transform="translate(55 55)">' +
+        '<circle r="48" fill="rgba(0,212,255,0.08)"/>' +
+        '<circle r="40" fill="#071018" stroke="#163a55" stroke-width="2"/>' +
+        '<circle r="36" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.4"/>' +
+        '<line x1="0" y1="-40" x2="0" y2="-30" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
+        '<line x1="0" y1="30" x2="0" y2="40" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
+        '<line x1="-40" y1="0" x2="-30" y2="0" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
+        '<line x1="30" y1="0" x2="40" y2="0" stroke="#00d4ff" stroke-width="1.5" opacity="0.75"/>' +
+        '<circle r="24" fill="none" stroke="#00d4ff" stroke-width="1.2" opacity="0.45" stroke-dasharray="4 6"/>' +
+        '<circle r="15" fill="none" stroke="#00d4ff" stroke-width="1.8" opacity="0.65"/>' +
+        '<circle r="10" fill="#00d4ff" opacity="0.95"/>' +
+        '<circle r="4" fill="#ffffff"/>' +
+        '<circle cx="3" cy="-2.5" r="1.4" fill="#ffffff" opacity="0.9"/>' +
       '</g>' +
-      '<text x="132" y="72" fill="none" stroke="url(#tvMarkText)" stroke-width="1.4" ' +
-        'font-family="Syne, Inter, sans-serif" font-size="34" font-weight="800" letter-spacing="6">' +
+      '<text x="112" y="66" fill="none" stroke="url(#tvMarkText)" stroke-width="1.3" ' +
+        'font-family="Syne, Inter, sans-serif" font-size="26" font-weight="800" letter-spacing="5">' +
         'TECHNOVATE' +
       '</text>' +
-      '<line x1="132" y1="88" x2="308" y2="88" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>' +
-      '<circle cx="220" cy="88" r="2.5" fill="#00d4ff" opacity="0.8"/>' +
+      '<line x1="112" y1="78" x2="468" y2="78" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>' +
+      '<circle cx="290" cy="78" r="2.5" fill="#00d4ff" opacity="0.8"/>' +
     '</svg>';
 
-  var CHARACTER_HTML =
-    '<div class="tv-eye-floater" id="intro-eye-floater" aria-hidden="true">' +
-      '<div class="tv-eye-character" id="intro-eye-unit">' +
+  var EYE_BODY_INNER =
         '<div class="tv-eye-character__aura"></div>' +
-        '<div class="tv-eye-character__beam" aria-hidden="true"></div>' +
         '<div class="tv-eye-character__body">' +
           '<div class="tv-eye-character__frame">' +
             '<span class="tv-eye-character__tick tv-eye-character__tick--n"></span>' +
@@ -78,7 +75,7 @@
             '<div class="tv-eye-character__ring tv-eye-character__ring--mid"></div>' +
             '<div class="tv-eye-character__ring tv-eye-character__ring--inner"></div>' +
             '<div class="tv-eye-character__socket">' +
-              '<div class="tv-eye-character__gaze" id="intro-eye-gaze">' +
+              '<div class="tv-eye-character__gaze">' +
                 '<div class="tv-eye-character__iris">' +
                   '<div class="tv-eye-character__pupil"></div>' +
                   '<div class="tv-eye-character__shine"></div>' +
@@ -88,9 +85,134 @@
             '<div class="tv-eye-character__lid tv-eye-character__lid--top"></div>' +
             '<div class="tv-eye-character__lid tv-eye-character__lid--bottom"></div>' +
           '</div>' +
-        '</div>' +
+        '</div>';
+
+  var CHARACTER_HTML =
+    '<div class="tv-eye-floater" id="intro-eye-floater" aria-hidden="true">' +
+      '<div class="tv-eye-character" id="intro-eye-unit">' +
+        EYE_BODY_INNER +
       '</div>' +
     '</div>';
+
+  function holoMarkHtml() {
+    return (
+      '<div class="intro-holo-mark" aria-label="Technovate Digital Systems">' +
+        '<div class="intro-holo-mark__aura" aria-hidden="true"></div>' +
+        '<div class="intro-holo-mark__visual">' +
+          '<div class="intro-holo-mark__eye">' + EYE_ICON_SVG + '</div>' +
+          '<div class="intro-holo-mark__copy">' +
+            '<span class="intro-holo-mark__name">Technovate</span>' +
+            '<span class="intro-holo-mark__systems">Digital Systems</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function holoEyeHtml() {
+    return (
+      '<div class="intro-holo-eye-rise" id="intro-holo-eye-rise" aria-hidden="true">' +
+        '<div class="tv-eye-character tv-eye-character--holo" id="intro-holo-eye-unit">' +
+          EYE_BODY_INNER +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function createHoloEyeLife(unitEl) {
+    if (!unitEl) return { stop: function () {}, setSpeaking: function () {} };
+
+    var gazeEl = unitEl.querySelector('.tv-eye-character__gaze');
+    var pupilEl = unitEl.querySelector('.tv-eye-character__pupil');
+    var running = true;
+    var speaking = false;
+    var blinkTimer = null;
+    var lookTimer = null;
+    var glowRaf = 0;
+    var gaze = { x: 0, y: 0 };
+    var gazeTarget = { x: 0, y: 0 };
+
+    function pickGaze() {
+      var reach = speaking ? 8 : 13;
+      gazeTarget.x = rand(-reach, reach);
+      gazeTarget.y = rand(-reach, reach);
+    }
+
+    function blink() {
+      if (!running) return;
+      unitEl.classList.remove('tv-eye-character--blink');
+      void unitEl.offsetWidth;
+      unitEl.classList.add('tv-eye-character--blink');
+      setTimeout(function () {
+        unitEl.classList.remove('tv-eye-character--blink');
+      }, 190);
+    }
+
+    function scheduleBlink() {
+      if (!running) return;
+      clearTimeout(blinkTimer);
+      blinkTimer = setTimeout(function () {
+        if (!running) return;
+        if (Math.random() < 0.15) {
+          blink();
+          setTimeout(blink, 220);
+        } else {
+          blink();
+        }
+        scheduleBlink();
+      }, rand(2200, 4800));
+    }
+
+    function scheduleLook() {
+      if (!running) return;
+      clearTimeout(lookTimer);
+      lookTimer = setTimeout(function () {
+        if (!running) return;
+        pickGaze();
+        scheduleLook();
+      }, rand(800, 2000));
+    }
+
+    function glowTick(time) {
+      if (!running) return;
+      var t = time * 0.001;
+      if (gazeEl) {
+        gaze.x += (gazeTarget.x - gaze.x) * 0.1;
+        gaze.y += (gazeTarget.y - gaze.y) * 0.1;
+        gazeEl.style.transform = 'translate(' + gaze.x + 'px,' + gaze.y + 'px)';
+      }
+      if (pupilEl) {
+        var pulse = speaking ? 1.06 + Math.sin(t * 4.5) * 0.04 : 1 + Math.sin(t * 1.8) * 0.02;
+        pupilEl.style.transform = 'scale(' + pulse + ')';
+      }
+      unitEl.style.filter = 'brightness(' + (1 + Math.sin(t * 2.2) * 0.08) + ')';
+      glowRaf = requestAnimationFrame(glowTick);
+    }
+
+    pickGaze();
+    scheduleBlink();
+    scheduleLook();
+    glowRaf = requestAnimationFrame(glowTick);
+
+    return {
+      stop: function () {
+        running = false;
+        cancelAnimationFrame(glowRaf);
+        clearTimeout(blinkTimer);
+        clearTimeout(lookTimer);
+      },
+      setSpeaking: function (on) {
+        speaking = !!on;
+        unitEl.classList.toggle('tv-eye-character--speaking', speaking);
+        if (speaking) {
+          gazeTarget.x = 0;
+          gazeTarget.y = -2;
+        } else {
+          pickGaze();
+        }
+      }
+    };
+  }
 
   function mountHeaders() {
     var icons = document.querySelectorAll('.logo-icon');
@@ -349,6 +471,9 @@
     eyeIconSvg: function () { return EYE_ICON_SVG; },
     eyeMarkSvg: function () { return EYE_MARK_SVG; },
     characterHtml: function () { return CHARACTER_HTML; },
+    holoEyeHtml: holoEyeHtml,
+    holoMarkHtml: holoMarkHtml,
+    createHoloEyeLife: createHoloEyeLife,
     mount: mount,
     createEyeAnimator: createEyeAnimator
   };

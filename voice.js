@@ -12,8 +12,10 @@
   var matrixRenderer = null;
   var vcrClockTimer = null;
   var hatchRevealTimer = null;
+  var eyeSettleTimer = null;
+  var holoPanelTimer = null;
   var hatchAudioTimer = null;
-  var vcrClockTimer = null;
+  var holoEyeLife = null;
   var introMusic = null;
   var introNarration = null;
   var musicEnabled = true;
@@ -24,7 +26,9 @@
   var MUSIC_PRE_ROLL_MS = 3800;
   var LOOP_PAUSE_MS = 2800;
   var HATCH_OPEN_MS = 700;
-  var HOLO_REVEAL_MS = 900;
+  var EYE_RISE_MS = 1200;
+  var EYE_ALIVE_MS = 2600;
+  var HOLO_PANEL_MS = 700;
   var introActivated = false;
 
   var INTRO_SCRIPT = [
@@ -44,11 +48,35 @@
   ];
 
 
-  function eyeMarkHtml() {
-    if (window.TechnovateLogo && window.TechnovateLogo.eyeMarkSvg) {
-      return window.TechnovateLogo.eyeMarkSvg();
+  function holoMarkHtml() {
+    if (window.TechnovateLogo && window.TechnovateLogo.holoMarkHtml) {
+      return window.TechnovateLogo.holoMarkHtml();
+    }
+    return '<div class="intro-holo-mark" aria-label="Technovate Digital Systems">' +
+      '<span class="intro-holo-mark__name">Technovate</span>' +
+      '<span class="intro-holo-mark__systems">Digital Systems</span></div>';
+  }
+
+  function holoEyeHtml() {
+    if (window.TechnovateLogo && window.TechnovateLogo.holoEyeHtml) {
+      return window.TechnovateLogo.holoEyeHtml();
     }
     return '';
+  }
+
+  function startHoloEyeLife() {
+    if (!window.TechnovateLogo) return;
+    var unit = document.getElementById('intro-holo-eye-unit');
+    if (!unit) return;
+    if (holoEyeLife) holoEyeLife.stop();
+    holoEyeLife = window.TechnovateLogo.createHoloEyeLife(unit);
+  }
+
+  function stopHoloEyeLife() {
+    if (holoEyeLife) {
+      holoEyeLife.stop();
+      holoEyeLife = null;
+    }
   }
 
   var ASTRO_HEAD_HTML =
@@ -129,6 +157,7 @@
     if (wave) wave.classList.toggle('intro-wave--active', active);
     var astroHead = document.getElementById('intro-astro-head');
     if (astroHead) astroHead.classList.toggle('intro-astro-head--speaking', active);
+    if (holoEyeLife && holoEyeLife.setSpeaking) holoEyeLife.setSpeaking(active);
     if (introMusic) {
       if (active) introMusic.duck();
       else introMusic.unduck();
@@ -171,21 +200,37 @@
       introNarration.stop();
     }
     if (synth) synth.cancel();
+    revealHoloPanel();
     ensureAudioPhase();
     startNarration();
   }
 
   function ensureAudioPhase() {
+    var intro = document.getElementById('cinematic-intro');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
-    var mark = document.getElementById('intro-logo-mark');
     var enterBtn = document.getElementById('intro-enter-main');
+    if (intro) intro.classList.add('intro--holo-focus');
     if (stage) {
-      stage.classList.remove('intro-holo-stage--waiting', 'intro-holo-stage--projecting', 'intro-holo-stage--static');
-      stage.classList.add('intro-holo-stage--audio');
+      stage.classList.remove('intro-holo-stage--waiting', 'intro-holo-stage--eye-rising', 'intro-holo-stage--eye-alive');
+      stage.classList.add('intro-holo-stage--holo-revealed', 'intro-holo-stage--audio');
     }
     if (projection) projection.classList.add('intro-projection--audio');
-    if (mark) mark.classList.remove('intro-logo-mark--static');
+    if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
+  }
+
+  function revealHoloPanel() {
+    if (introClosed) return;
+    var intro = document.getElementById('cinematic-intro');
+    var stage = document.getElementById('intro-holo-stage');
+    var sacred = document.getElementById('intro-sacred-geo');
+    var enterBtn = document.getElementById('intro-enter-main');
+    if (intro) intro.classList.add('intro--holo-focus');
+    if (stage) {
+      stage.classList.remove('intro-holo-stage--eye-alive');
+      stage.classList.add('intro-holo-stage--holo-revealed');
+    }
+    if (sacred) sacred.classList.add('intro-sacred-geo--active');
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
   }
 
@@ -199,7 +244,7 @@
     var beam = document.getElementById('intro-astro-holo-beam');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
-    var enterBtn = document.getElementById('intro-enter-main');
+    var eyeRise = document.getElementById('intro-holo-eye-rise');
 
     tryStartMusic();
 
@@ -212,20 +257,37 @@
     }
 
     clearTimeout(hatchRevealTimer);
+    clearTimeout(eyeSettleTimer);
+    clearTimeout(holoPanelTimer);
     clearTimeout(hatchAudioTimer);
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
-      if (projection) projection.classList.add('intro-projection--active', 'intro-projection--revealed');
+      if (projection) projection.classList.add('intro-projection--active');
       if (stage) {
         stage.classList.remove('intro-holo-stage--waiting');
-        stage.classList.add('intro-holo-stage--projecting', 'intro-holo-stage--static');
+        stage.classList.add('intro-holo-stage--eye-rising');
       }
+      if (eyeRise) eyeRise.classList.add('intro-holo-eye-rise--active');
+      startHoloEyeLife();
     }, HATCH_OPEN_MS);
+
+    eyeSettleTimer = setTimeout(function () {
+      if (introClosed) return;
+      if (stage) {
+        stage.classList.remove('intro-holo-stage--eye-rising');
+        stage.classList.add('intro-holo-stage--eye-alive');
+      }
+      if (eyeRise) eyeRise.classList.add('intro-holo-eye-rise--settled');
+    }, HATCH_OPEN_MS + EYE_RISE_MS);
+
+    holoPanelTimer = setTimeout(function () {
+      revealHoloPanel();
+    }, HATCH_OPEN_MS + EYE_RISE_MS + EYE_ALIVE_MS);
 
     hatchAudioTimer = setTimeout(function () {
       if (!introClosed) transitionToAudioPhase();
-    }, HATCH_OPEN_MS + HOLO_REVEAL_MS);
+    }, HATCH_OPEN_MS + EYE_RISE_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
   }
 
   function transitionToAudioPhase() {
@@ -347,15 +409,23 @@
         '<div class="intro-projection__cone"></div>' +
         '<div class="intro-projection__beam"></div>' +
       '</div>' +
+      '<div class="intro-sacred-geo" id="intro-sacred-geo" aria-hidden="true">' +
+        '<div class="intro-sacred-geo__ring intro-sacred-geo__ring--outer"></div>' +
+        '<div class="intro-sacred-geo__ring intro-sacred-geo__ring--mid"></div>' +
+        '<div class="intro-sacred-geo__ring intro-sacred-geo__ring--inner"></div>' +
+        '<div class="intro-sacred-geo__flower"></div>' +
+      '</div>' +
       '<div class="intro-content intro-content--holo">' +
         '<div class="intro-holo-stage intro-holo-stage--waiting" id="intro-holo-stage">' +
-          '<div class="intro-holo-panel" id="intro-holo-panel">' +
-            '<div class="intro-holo-panel__frame" aria-hidden="true"></div>' +
-            '<div class="intro-holo-panel__scanlines" aria-hidden="true"></div>' +
-            '<div class="intro-holo-static" id="intro-holo-static">' +
-              '<div class="intro-logo-mark intro-logo-mark--static" id="intro-logo-mark">' + eyeMarkHtml() + '</div>' +
-              '<p class="intro-holo-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
-            '</div>' +
+          '<div class="intro-holo-stage__aura" aria-hidden="true"></div>' +
+          holoEyeHtml() +
+          '<div class="intro-holo-panel intro-holo-panel--dormant" id="intro-holo-panel">' +
+            '<div class="intro-holo-panel__aura" aria-hidden="true"></div>' +
+            holoMarkHtml() +
+            '<button class="intro-enter-btn intro-enter-btn--hidden" id="intro-enter-main" type="button" aria-label="Enter website">' +
+              '<span class="intro-enter-btn__label">Enter</span>' +
+              '<span class="intro-enter-btn__key" aria-hidden="true">↵</span>' +
+            '</button>' +
             '<div class="intro-holo-audio" id="intro-holo-audio">' +
               '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
               '<div class="intro-wave" id="intro-wave">' +
@@ -363,10 +433,6 @@
               '</div>' +
             '</div>' +
           '</div>' +
-          '<button class="intro-enter-btn" id="intro-enter-main" type="button" aria-label="Enter website">' +
-            '<span class="intro-enter-btn__label">Enter</span>' +
-            '<span class="intro-enter-btn__key" aria-hidden="true">↵</span>' +
-          '</button>' +
         '</div>' +
       '</div>' +
       '<button class="intro-mute-fab" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>';
@@ -389,9 +455,14 @@
     introClosed = true;
     introActivated = false;
     clearTimeout(hatchRevealTimer);
+    clearTimeout(eyeSettleTimer);
+    clearTimeout(holoPanelTimer);
     clearTimeout(hatchAudioTimer);
     hatchRevealTimer = null;
+    eyeSettleTimer = null;
+    holoPanelTimer = null;
     hatchAudioTimer = null;
+    stopHoloEyeLife();
     stopNarration();
     introNarration = null;
     if (introMusic) {
@@ -487,7 +558,10 @@
       closeIntro();
     }
 
-    document.getElementById('intro-enter-main').addEventListener('click', enterSite);
+    document.getElementById('intro-enter-main').addEventListener('click', function (e) {
+      e.stopPropagation();
+      enterSite();
+    });
     document.getElementById('intro-astro-button').addEventListener('click', openHatchAndProject);
     document.getElementById('intro-astro-dock').addEventListener('click', function (e) {
       if (e.target.closest('#intro-enter-main')) return;
