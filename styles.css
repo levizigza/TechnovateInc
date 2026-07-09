@@ -356,7 +356,11 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: flex-end;
   overflow: hidden;
-  background: var(--dark);
+  background:
+    radial-gradient(ellipse 80% 65% at 25% 80%, rgba(37, 99, 235, 0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 75% 20%, rgba(13, 148, 136, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 45% 40% at 55% 55%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+    linear-gradient(160deg, #060b18 0%, #0c1629 40%, #0e1a33 70%, #060b18 100%);
 }
 
 .page-header-immersive::before {
@@ -364,9 +368,20 @@ img { max-width: 100%; height: auto; display: block; }
   position: absolute;
   inset: 0;
   z-index: 1;
+  background: linear-gradient(to top, rgba(6,11,24,0.9) 0%, rgba(6,11,24,0.3) 60%, transparent 100%);
+  pointer-events: none;
+}
+
+.page-header-immersive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background:
-    radial-gradient(ellipse 70% 50% at 75% 30%, rgba(37, 99, 235, 0.15) 0%, transparent 55%),
-    linear-gradient(to top, rgba(6,11,24,0.95) 0%, rgba(6,11,24,0.35) 100%);
+    radial-gradient(circle 450px at 20% 75%, rgba(37,99,235,0.18) 0%, transparent 60%),
+    radial-gradient(circle 380px at 75% 25%, rgba(13,148,136,0.12) 0%, transparent 55%),
+    radial-gradient(circle 300px at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 50%);
+  animation: meshDrift 14s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
@@ -1729,7 +1744,7 @@ img { max-width: 100%; height: auto; display: block; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-enter > * { opacity: 1; transform: none; transition: none; }
   .grain { display: none; }
-  .hero-immersive::after { animation: none; }
+  .hero-immersive::after, .page-header-immersive::after { animation: none; }
   .orb { display: none; }
   .sector-overlay__panel { transition: none; }
 }

@@ -140,7 +140,7 @@
     var orbs = document.querySelectorAll('.orb');
     if (!orbs.length) return;
 
-    var hero = document.querySelector('.hero-immersive');
+    var hero = document.querySelector('.hero-immersive, .page-header-immersive');
     if (!hero) return;
 
     var mx = 0.5, my = 0.5;
