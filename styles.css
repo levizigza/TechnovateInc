@@ -2168,16 +2168,6 @@ body.intro-active {
   flex-direction: column;
   align-items: center;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.65));
-  perspective: 640px;
-  transform-style: preserve-3d;
-}
-
-.intro-astro-head--tilting .intro-astro-dome {
-  animation: astroLookUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.intro-astro-head--tilted .intro-astro-dome {
-  transform: rotateX(-78deg) translateY(-18px);
 }
 
 .intro-astro-sensor-beam,
@@ -2200,30 +2190,6 @@ body.intro-active {
     inset 0 -8px 16px rgba(0, 40, 80, 0.2);
   overflow: visible;
   z-index: 3;
-  perspective: 520px;
-  transform-origin: 50% 100%;
-  transform: rotateX(0deg) translateY(0);
-  transition: none;
-  transform-style: preserve-3d;
-}
-
-@keyframes astroLookUp {
-  0% {
-    transform: rotateX(0deg) translateY(0);
-  }
-  55% {
-    transform: rotateX(-42deg) translateY(-6px);
-  }
-  100% {
-    transform: rotateX(-78deg) translateY(-18px);
-  }
-}
-
-.intro-astro-head--tilting .intro-astro-dome__blue,
-.intro-astro-head--tilted .intro-astro-dome__blue {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0 18px rgba(0, 220, 255, 0.75);
 }
 
 .intro-astro-dome__shine {
@@ -2239,20 +2205,78 @@ body.intro-active {
   z-index: 1;
 }
 
-.intro-astro-dome__blue {
+/* Mechanical eye slots — dome stays flat, eyes roll up */
+.intro-astro-eye-slot {
   position: absolute;
+  width: 28px;
+  height: 44px;
+  overflow: hidden;
+  z-index: 4;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #6a7a8a 0%, #3a4550 100%);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
+  perspective: 140px;
+}
+
+.intro-astro-eye-slot--left { top: 33px; left: 11px; }
+.intro-astro-eye-slot--right { top: 33px; right: 11px; }
+
+.intro-astro-eye-mechanism {
+  position: relative;
   width: 26px;
   height: 38px;
+  margin: 3px auto 0;
   border-radius: 4px;
   background: linear-gradient(180deg, #4a9fe8 0%, #1e5a9e 55%, #123d6e 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 12px rgba(0, 180, 255, 0.4);
-  z-index: 1;
+  transform-origin: 50% 100%;
+  transform: rotateX(0deg);
 }
 
-.intro-astro-dome__blue--left { top: 34px; left: 12px; }
-.intro-astro-dome__blue--right { top: 34px; right: 12px; }
+.intro-astro-dome__blue--left,
+.intro-astro-dome__blue--right {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
+.intro-astro-head--tilting .intro-astro-eye-mechanism {
+  animation: astroEyeRollUp 1s cubic-bezier(0.42, 0, 0.58, 1) forwards;
+}
+
+.intro-astro-head--tilting .intro-astro-eye-slot--right .intro-astro-eye-mechanism {
+  animation-delay: 0.08s;
+}
+
+.intro-astro-head--tilted .intro-astro-eye-mechanism {
+  transform: rotateX(-90deg);
+  opacity: 0;
+}
+
+@keyframes astroEyeRollUp {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  45% {
+    transform: rotateX(-48deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+}
+
+.intro-astro-head--tilting .intro-astro-dome__blue,
+.intro-astro-head--tilted .intro-astro-dome__blue {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 18px rgba(0, 220, 255, 0.75);
+}
 
 .intro-astro-sensor-socket {
   position: absolute;
@@ -2282,20 +2306,40 @@ body.intro-active {
   height: 58px;
   transform: translateX(-50%);
   z-index: 8;
-  transform-style: preserve-3d;
+  perspective: 160px;
 }
 
 .intro-astro-projector {
   position: relative;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  transition: opacity 0.35s ease 0.55s;
+  transform-origin: 50% 88%;
+  transform: rotateX(0deg);
+}
+
+.intro-astro-head--tilting .intro-astro-projector {
+  animation: astroNoseRollUp 1s cubic-bezier(0.42, 0, 0.58, 1) 0.12s forwards;
 }
 
 .intro-astro-head--tilted .intro-astro-projector {
+  transform: rotateX(-90deg);
   opacity: 0;
   pointer-events: none;
+}
+
+@keyframes astroNoseRollUp {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: rotateX(-42deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
 }
 
 .intro-astro-sensor__glow {
@@ -4024,6 +4068,8 @@ body.intro-active {
   .tv-eye-character__aura,
   .tv-eye-character__beam,
   .intro-astro-head--tilting .intro-astro-dome,
+  .intro-astro-head--tilting .intro-astro-eye-mechanism,
+  .intro-astro-head--tilting .intro-astro-projector,
   .intro-astro-head--idle .intro-astro-dome,
   .intro-astro-head--excited .intro-astro-dome,
   .intro-astro-head--projecting .intro-astro-dome,
