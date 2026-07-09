@@ -11,6 +11,7 @@
   var narrationPlaying = false;
   var matrixRenderer = null;
   var halFloater = null;
+  var vcrClockTimer = null;
   var introMusic = null;
   var introNarration = null;
   var musicEnabled = true;
@@ -42,6 +43,7 @@
   var HAL_EYE_HTML =
     '<div class="intro-hal-floater" id="intro-hal-floater" aria-hidden="true">' +
       '<div class="intro-hal-eye" id="intro-hal-eye">' +
+        '<div class="intro-hal-eye__glow"></div>' +
         '<div class="intro-hal-eye__housing"></div>' +
         '<div class="intro-hal-eye__rim"></div>' +
         '<div class="intro-hal-eye__lens">' +
@@ -239,11 +241,21 @@
   function createIntroScreen() {
     var intro = document.createElement('div');
     intro.id = 'cinematic-intro';
-    intro.className = 'holo-scanlines';
+    intro.className = 'holo-scanlines intro-vcr';
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
       HAL_EYE_HTML +
+      '<div class="intro-vcr-overlay" aria-hidden="true">' +
+        '<div class="intro-vcr-vignette"></div>' +
+        '<div class="intro-vcr-scanlines"></div>' +
+        '<div class="intro-vcr-tracking"></div>' +
+        '<div class="intro-vcr-noise"></div>' +
+        '<div class="intro-vcr-hud">' +
+          '<span class="intro-vcr-rec"><span class="intro-vcr-rec__dot"></span> REC</span>' +
+          '<span class="intro-vcr-time" id="intro-vcr-time">--:--:--</span>' +
+        '</div>' +
+      '</div>' +
       '<div class="intro-content intro-content--holo">' +
         '<div class="intro-holo-stage">' +
           '<h1 class="intro-logo-text intro-logo-text--visible">Technovate</h1>' +
@@ -288,6 +300,10 @@
     if (halFloater) {
       halFloater.stop();
       halFloater = null;
+    }
+    if (vcrClockTimer) {
+      clearInterval(vcrClockTimer);
+      vcrClockTimer = null;
     }
 
     var intro = document.getElementById('cinematic-intro');
@@ -341,12 +357,29 @@
     window.addEventListener('resize', refreshRenderers);
   }
 
+  function initVcrClock() {
+    var el = document.getElementById('intro-vcr-time');
+    if (!el) return;
+
+    function pad(n) {
+      return n < 10 ? '0' + n : String(n);
+    }
+
+    function tick() {
+      var d = new Date();
+      el.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+
+    tick();
+    vcrClockTimer = setInterval(tick, 1000);
+  }
+
   function initHalFloater() {
     var el = document.getElementById('intro-hal-floater');
     if (!el) return null;
 
-    var eyeSize = 96;
-    var margin = 64;
+    var eyeSize = 104;
+    var margin = 72;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       el.style.transform = 'translate(calc(50vw - ' + (eyeSize * 0.5) + 'px), calc(32vh - ' + (eyeSize * 0.5) + 'px))';
@@ -355,10 +388,12 @@
 
     var pos = {
       x: window.innerWidth * 0.5,
-      y: window.innerHeight * 0.32
+      y: window.innerHeight * 0.35
     };
+    var vel = { x: 0, y: 0 };
     var target = { x: pos.x, y: pos.y };
     var tilt = 0;
+    var floatPhase = Math.random() * Math.PI * 2;
     var running = true;
     var rafId = 0;
 
@@ -373,14 +408,25 @@
 
     function pickTarget() {
       var b = bounds();
-      target.x = b.minX + Math.random() * (b.maxX - b.minX);
-      target.y = b.minY + Math.random() * (b.maxY - b.minY);
+      var attempts = 0;
+      var minDist = Math.min(window.innerWidth, window.innerHeight) * 0.28;
+
+      do {
+        target.x = b.minX + Math.random() * (b.maxX - b.minX);
+        target.y = b.minY + Math.random() * (b.maxY - b.minY);
+        attempts += 1;
+      } while (
+        attempts < 12 &&
+        Math.hypot(target.x - pos.x, target.y - pos.y) < minDist
+      );
     }
 
     function clampPos() {
       var b = bounds();
-      pos.x = Math.max(b.minX, Math.min(b.maxX, pos.x));
-      pos.y = Math.max(b.minY, Math.min(b.maxY, pos.y));
+      if (pos.x < b.minX) { pos.x = b.minX; vel.x *= -0.35; }
+      if (pos.x > b.maxX) { pos.x = b.maxX; vel.x *= -0.35; }
+      if (pos.y < b.minY) { pos.y = b.minY; vel.y *= -0.35; }
+      if (pos.y > b.maxY) { pos.y = b.maxY; vel.y *= -0.35; }
     }
 
     pickTarget();
@@ -391,21 +437,39 @@
       var t = time * 0.001;
       var dx = target.x - pos.x;
       var dy = target.y - pos.y;
-      var dist = Math.sqrt(dx * dx + dy * dy);
+      var dist = Math.hypot(dx, dy);
 
-      pos.x += dx * 0.011;
-      pos.y += dy * 0.011;
-      pos.x += Math.sin(t * 0.65) * 0.45;
-      pos.y += Math.cos(t * 0.52) * 0.38;
+      if (dist > 1) {
+        var thrust = 0.022 + Math.min(dist, 200) * 0.00008;
+        vel.x += (dx / dist) * thrust;
+        vel.y += (dy / dist) * thrust;
+      }
+
+      vel.x += Math.sin(t * 0.75 + floatPhase) * 0.012;
+      vel.y += Math.cos(t * 0.58 + floatPhase * 1.3) * 0.014;
+      vel.y -= 0.0035;
+
+      vel.x *= 0.988;
+      vel.y *= 0.988;
+
+      pos.x += vel.x;
+      pos.y += vel.y;
       clampPos();
 
-      if (dist < 36) pickTarget();
+      var speed = Math.hypot(vel.x, vel.y);
+      if (dist < 55 || speed < 0.12) pickTarget();
 
-      tilt += (Math.atan2(dy, dx) * 0.12 - tilt) * 0.04;
+      var depth = 0.86 + (pos.y / Math.max(window.innerHeight, 1)) * 0.22;
+      var bob = Math.sin(t * 2.4 + floatPhase) * 0.04;
+      var scale = depth + bob;
+      var bank = Math.atan2(vel.y, vel.x + 0.001) * 0.28;
+      tilt += (bank - tilt) * 0.055;
+
+      var lift = Math.sin(t * 1.6) * 3;
 
       el.style.transform =
-        'translate3d(' + (pos.x - eyeSize * 0.5) + 'px,' + (pos.y - eyeSize * 0.5) + 'px,0) ' +
-        'rotate(' + tilt + 'rad)';
+        'translate3d(' + (pos.x - eyeSize * 0.5) + 'px,' + (pos.y - eyeSize * 0.5 + lift) + 'px,0) ' +
+        'rotate(' + tilt + 'rad) scale(' + scale + ')';
 
       rafId = requestAnimationFrame(tick);
     }
@@ -426,6 +490,7 @@
     intro.classList.add('intro--active');
     initIntroRenderers();
     halFloater = initHalFloater();
+    initVcrClock();
 
     function enterSite() {
       closeIntro();
