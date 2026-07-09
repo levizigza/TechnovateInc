@@ -10,7 +10,7 @@
   var britishVoice = null;
   var narrationPlaying = false;
   var matrixRenderer = null;
-  var halFloater = null;
+  var r2Floater = null;
   var vcrClockTimer = null;
   var introMusic = null;
   var introNarration = null;
@@ -40,31 +40,27 @@
 
   var GLOBE_SVG = '';
 
-  var HAL_EYE_HTML =
-    '<div class="intro-hal-floater" id="intro-hal-floater" aria-hidden="true">' +
-      '<div class="intro-hal-unit" id="intro-hal-eye">' +
-        '<div class="intro-hal-unit__chassis">' +
-          '<div class="intro-hal-unit__screw intro-hal-unit__screw--tl"></div>' +
-          '<div class="intro-hal-unit__screw intro-hal-unit__screw--tr"></div>' +
-          '<div class="intro-hal-unit__screw intro-hal-unit__screw--bl"></div>' +
-          '<div class="intro-hal-unit__screw intro-hal-unit__screw--br"></div>' +
-          '<div class="intro-hal-unit__header">' +
-            '<span class="intro-hal-unit__label">AI MODULE</span>' +
-            '<span class="intro-hal-unit__leds"><span></span><span></span></span>' +
+  var R2_UNIT_HTML =
+    '<div class="intro-r2-floater" id="intro-r2-floater" aria-hidden="true">' +
+      '<div class="intro-r2-unit" id="intro-r2-unit">' +
+        '<div class="intro-r2-dome">' +
+          '<div class="intro-r2-dome__shine"></div>' +
+          '<div class="intro-r2-dome__blue intro-r2-dome__blue--left"></div>' +
+          '<div class="intro-r2-dome__blue intro-r2-dome__blue--right"></div>' +
+          '<div class="intro-r2-sensor">' +
+            '<div class="intro-r2-sensor__glow"></div>' +
+            '<div class="intro-r2-sensor__housing"></div>' +
+            '<div class="intro-r2-sensor__ring"></div>' +
+            '<div class="intro-r2-sensor__lens"></div>' +
+            '<div class="intro-r2-sensor__glint"></div>' +
           '</div>' +
-          '<div class="intro-hal-unit__vents" aria-hidden="true"></div>' +
-          '<div class="intro-hal-unit__well">' +
-            '<div class="intro-hal-eye">' +
-              '<div class="intro-hal-eye__glow"></div>' +
-              '<div class="intro-hal-eye__housing"></div>' +
-              '<div class="intro-hal-eye__rim"></div>' +
-              '<div class="intro-hal-eye__lens">' +
-                '<div class="intro-hal-eye__pupil"></div>' +
-                '<div class="intro-hal-eye__glint"></div>' +
-              '</div>' +
-            '</div>' +
+        '</div>' +
+        '<div class="intro-r2-body">' +
+          '<div class="intro-r2-body__panel">' +
+            '<div class="intro-r2-body__stripe"></div>' +
+            '<div class="intro-r2-body__ports"><span></span><span></span><span></span></div>' +
           '</div>' +
-          '<div class="intro-hal-unit__footer">TECHNOVATE SYS</div>' +
+          '<div class="intro-r2-body__badge">ASTRO · MECH</div>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -116,8 +112,8 @@
     narrationPlaying = active;
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
-    var halEye = document.getElementById('intro-hal-eye');
-    if (halEye) halEye.classList.toggle('intro-hal-unit--speaking', active);
+    var r2Unit = document.getElementById('intro-r2-unit');
+    if (r2Unit) r2Unit.classList.toggle('intro-r2-unit--speaking', active);
     if (introMusic) {
       if (active) introMusic.duck();
       else introMusic.unduck();
@@ -261,7 +257,7 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
-      HAL_EYE_HTML +
+      R2_UNIT_HTML +
       '<div class="intro-vcr-overlay" aria-hidden="true">' +
         '<div class="intro-vcr-vignette"></div>' +
         '<div class="intro-vcr-scanlines"></div>' +
@@ -313,9 +309,9 @@
       matrixRenderer.stop();
       matrixRenderer = null;
     }
-    if (halFloater) {
-      halFloater.stop();
-      halFloater = null;
+    if (r2Floater) {
+      r2Floater.stop();
+      r2Floater = null;
     }
     if (vcrClockTimer) {
       clearInterval(vcrClockTimer);
@@ -390,13 +386,13 @@
     vcrClockTimer = setInterval(tick, 1000);
   }
 
-  function initHalFloater() {
-    var el = document.getElementById('intro-hal-floater');
+  function initR2Floater() {
+    var el = document.getElementById('intro-r2-floater');
     if (!el) return null;
 
-    var unitW = 210;
-    var unitH = 156;
-    var margin = 88;
+    var unitW = 124;
+    var unitH = 172;
+    var margin = 80;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       el.style.transform = 'translate(calc(50vw - ' + (unitW * 0.5) + 'px), calc(32vh - ' + (unitH * 0.5) + 'px))';
@@ -506,7 +502,7 @@
     var intro = createIntroScreen();
     intro.classList.add('intro--active');
     initIntroRenderers();
-    halFloater = initHalFloater();
+    r2Floater = initR2Floater();
     initVcrClock();
 
     function enterSite() {

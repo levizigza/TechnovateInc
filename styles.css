@@ -2101,283 +2101,215 @@ body.intro-active {
   z-index: 2;
 }
 
-/* HAL 9000 — floating computer module */
-.intro-hal-floater {
+/* R2-style astromech — floating homage unit */
+.intro-r2-floater {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 4;
-  width: 210px;
-  height: 156px;
+  width: 124px;
+  height: 172px;
   pointer-events: none;
   will-change: transform;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.65)) drop-shadow(0 0 40px rgba(255, 0, 0, 0.35));
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 28px rgba(60, 140, 220, 0.35));
 }
 
-.intro-hal-unit {
+.intro-r2-unit {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.intro-hal-unit__chassis {
+.intro-r2-dome {
   position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  border: 2px solid #4a4a4a;
+  width: 108px;
+  height: 88px;
+  border-radius: 54px 54px 18px 18px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 18%),
-    linear-gradient(180deg, #484848 0%, #2a2a2a 38%, #161616 100%);
+    radial-gradient(ellipse 80% 55% at 50% 18%, rgba(255, 255, 255, 0.55) 0%, transparent 55%),
+    linear-gradient(180deg, #d8e2ea 0%, #a8b8c8 42%, #7a8fa3 100%);
+  border: 2px solid #8fa3b5;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -6px 16px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(0, 0, 0, 0.8),
-    0 0 20px rgba(255, 0, 0, 0.12);
-  padding: 10px 14px 12px;
+    inset 0 4px 12px rgba(255, 255, 255, 0.45),
+    inset 0 -8px 16px rgba(0, 40, 80, 0.2),
+    0 0 18px rgba(80, 160, 255, 0.15);
+  overflow: hidden;
+}
+
+.intro-r2-dome__shine {
+  position: absolute;
+  top: 8px;
+  left: 18px;
+  width: 36px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(4px);
+  transform: rotate(-18deg);
+}
+
+.intro-r2-dome__blue {
+  position: absolute;
+  width: 22px;
+  height: 34px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #4a9fe8 0%, #1e5a9e 55%, #123d6e 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.intro-r2-dome__blue--left { top: 28px; left: 8px; }
+.intro-r2-dome__blue--right { top: 28px; right: 8px; }
+
+.intro-r2-sensor {
+  position: absolute;
+  left: 50%;
+  top: 34px;
+  width: 46px;
+  height: 46px;
+  transform: translateX(-50%);
+}
+
+.intro-r2-sensor__glow {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80, 180, 255, 0.45) 0%, transparent 70%);
+  animation: r2SensorGlow 2.8s ease-in-out infinite;
+}
+
+.intro-r2-sensor__housing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #3a4550 0%, #1a2028 70%, #0a0c10 100%);
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.8),
+    0 0 0 3px #6a7a88;
+}
+
+.intro-r2-sensor__ring {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 2px solid rgba(100, 190, 255, 0.75);
+  box-shadow: 0 0 12px rgba(60, 160, 255, 0.65);
+}
+
+.intro-r2-sensor__lens {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, #1a2838 0%, #05080c 65%, #000 100%);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.95);
+  transition: box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
+.intro-r2-sensor__glint {
+  position: absolute;
+  top: 28%;
+  left: 30%;
+  width: 14%;
+  height: 10%;
+  border-radius: 50%;
+  background: rgba(180, 220, 255, 0.85);
+  filter: blur(0.5px);
+}
+
+.intro-r2-body {
+  width: 96px;
+  margin-top: -6px;
+  padding: 8px 10px 10px;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(180deg, #eef2f6 0%, #d4dce6 55%, #b8c4d0 100%);
+  border: 2px solid #9aabb8;
+  border-top: none;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -6px 12px rgba(0, 40, 80, 0.12);
+}
+
+.intro-r2-body__panel {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  transition: box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
 }
 
-.intro-hal-unit__screw {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #888 0%, #333 70%, #111 100%);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
-}
-
-.intro-hal-unit__screw--tl { top: 7px; left: 8px; }
-.intro-hal-unit__screw--tr { top: 7px; right: 8px; }
-.intro-hal-unit__screw--bl { bottom: 7px; left: 8px; }
-.intro-hal-unit__screw--br { bottom: 7px; right: 8px; }
-
-.intro-hal-unit__header {
+.intro-r2-body__stripe {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #1a4a7a 0%, #3d8fd4 35%, #1a4a7a 70%, #3d8fd4 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.intro-hal-unit__label {
+.intro-r2-body__ports {
+  display: flex;
+  gap: 6px;
+}
+
+.intro-r2-body__ports span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #555 0%, #222 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.intro-r2-body__ports span:first-child {
+  background: radial-gradient(circle at 35% 30%, #5ec8ff 0%, #1a6aa8 100%);
+  box-shadow: 0 0 6px rgba(60, 180, 255, 0.7);
+  animation: r2PortPulse 2s ease-in-out infinite;
+}
+
+.intro-r2-body__badge {
+  margin-top: 6px;
   font-family: "Courier New", Courier, monospace;
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
-  color: rgba(200, 200, 200, 0.75);
-  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgba(30, 70, 110, 0.75);
+  text-align: center;
 }
 
-.intro-hal-unit__leds {
-  display: flex;
-  gap: 5px;
-}
-
-.intro-hal-unit__leds span {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #2a2a2a;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.intro-hal-unit__leds span:first-child {
-  background: #ff2020;
-  box-shadow: 0 0 6px rgba(255, 30, 30, 0.8);
-  animation: halLedPulse 2s ease-in-out infinite;
-}
-
-.intro-hal-unit__vents {
-  width: 72%;
-  height: 5px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    #0a0a0a 0px,
-    #0a0a0a 3px,
-    #2e2e2e 3px,
-    #2e2e2e 5px
-  );
-  opacity: 0.85;
-}
-
-.intro-hal-unit__well {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  border-radius: 8px;
-  background:
-    radial-gradient(ellipse at center, rgba(255, 0, 0, 0.08) 0%, transparent 70%),
-    linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+.intro-r2-unit--speaking .intro-r2-dome {
   box-shadow:
-    inset 0 0 18px rgba(0, 0, 0, 0.9),
-    inset 0 0 12px rgba(255, 0, 0, 0.08);
-  border: 1px solid rgba(60, 60, 60, 0.9);
+    inset 0 4px 12px rgba(255, 255, 255, 0.45),
+    inset 0 -8px 16px rgba(0, 40, 80, 0.2),
+    0 0 28px rgba(80, 180, 255, 0.45);
 }
 
-.intro-hal-unit__footer {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.52rem;
-  letter-spacing: 0.22em;
-  color: rgba(160, 160, 160, 0.55);
-  text-transform: uppercase;
+.intro-r2-unit--speaking .intro-r2-sensor__glow {
+  animation: r2SensorGlowActive 0.7s ease-in-out infinite;
 }
 
-.intro-hal-eye {
-  position: relative;
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.intro-r2-unit--speaking .intro-r2-sensor__ring {
+  border-color: rgba(140, 220, 255, 1);
+  box-shadow: 0 0 18px rgba(80, 200, 255, 0.9);
 }
 
-.intro-hal-eye__glow {
-  position: absolute;
-  inset: -28%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 30, 30, 0.55) 0%, rgba(200, 0, 0, 0.22) 42%, transparent 72%);
-  animation: halGlowPulse 2.8s ease-in-out infinite;
-}
-
-.intro-hal-eye__housing {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 120, 120, 0.12) 0%, transparent 28%),
-    radial-gradient(circle at 50% 50%, #140000 0%, #050000 72%, #000 100%);
+.intro-r2-unit--speaking .intro-r2-sensor__lens {
   box-shadow:
-    inset 0 0 20px rgba(80, 0, 0, 0.6),
-    0 0 0 3px rgba(50, 10, 10, 0.95),
-    0 0 0 6px rgba(20, 0, 0, 0.9);
+    inset 0 0 12px rgba(0, 0, 0, 0.95),
+    0 0 14px rgba(60, 180, 255, 0.55);
+  transform: scale(0.94);
 }
 
-.intro-hal-eye__rim {
-  position: absolute;
-  inset: 7px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 45%, #ff4444 0%, #e00000 38%, #9a0000 72%, #4a0000 100%);
-  box-shadow:
-    0 0 30px rgba(255, 20, 20, 1),
-    0 0 60px rgba(220, 0, 0, 0.75),
-    0 0 100px rgba(180, 0, 0, 0.4),
-    inset 0 0 22px rgba(255, 100, 100, 0.5);
-  animation: halPulse 2.6s ease-in-out infinite;
+@keyframes r2SensorGlow {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
 }
 
-.intro-hal-eye__lens {
-  position: absolute;
-  inset: 19px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 42% 38%, #ff8888 0%, #cc2222 28%, #880000 58%, #2a0000 88%, #000 100%);
-  box-shadow:
-    inset 0 0 14px rgba(255, 80, 80, 0.65),
-    inset 0 -6px 16px rgba(0, 0, 0, 0.55),
-    0 0 20px rgba(255, 0, 0, 0.35);
+@keyframes r2SensorGlowActive {
+  0%, 100% { opacity: 0.85; transform: scale(1.02); }
+  50% { opacity: 1; transform: scale(1.15); }
 }
 
-.intro-hal-eye__pupil {
-  position: absolute;
-  inset: 30%;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 40% 35%, #550000 0%, #1a0000 50%, #000000 100%);
-  box-shadow:
-    inset 0 0 16px rgba(255, 0, 0, 0.55),
-    0 0 16px rgba(255, 0, 0, 0.45);
-  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
-}
-
-.intro-hal-eye__glint {
-  position: absolute;
-  top: 22%;
-  left: 26%;
-  width: 16%;
-  height: 12%;
-  border-radius: 50%;
-  background: rgba(255, 200, 200, 0.85);
-  filter: blur(0.5px);
-  transform: rotate(-24deg);
-}
-
-.intro-hal-unit--speaking .intro-hal-unit__chassis {
-  border-color: rgba(255, 60, 60, 0.55);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -6px 16px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(0, 0, 0, 0.8),
-    0 0 28px rgba(255, 0, 0, 0.45),
-    0 0 56px rgba(200, 0, 0, 0.25);
-}
-
-.intro-hal-unit--speaking .intro-hal-unit__well {
-  box-shadow:
-    inset 0 0 22px rgba(0, 0, 0, 0.9),
-    inset 0 0 20px rgba(255, 0, 0, 0.2);
-}
-
-.intro-hal-unit--speaking .intro-hal-eye__glow {
-  animation: halGlowActive 0.75s ease-in-out infinite;
-}
-
-.intro-hal-unit--speaking .intro-hal-eye__rim {
-  animation: halPulseActive 0.75s ease-in-out infinite;
-  box-shadow:
-    0 0 40px rgba(255, 40, 40, 1),
-    0 0 80px rgba(255, 0, 0, 0.85),
-    0 0 120px rgba(200, 0, 0, 0.55),
-    inset 0 0 26px rgba(255, 140, 140, 0.65);
-}
-
-.intro-hal-unit--speaking .intro-hal-eye__pupil {
-  transform: scale(0.86);
-  box-shadow:
-    inset 0 0 22px rgba(255, 40, 40, 0.75),
-    0 0 22px rgba(255, 0, 0, 0.55);
-}
-
-@keyframes halLedPulse {
+@keyframes r2PortPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
-}
-
-@keyframes halGlowPulse {
-  0%, 100% { opacity: 0.75; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.06); }
-}
-
-@keyframes halGlowActive {
-  0%, 100% { opacity: 0.9; transform: scale(1.02); }
-  50% { opacity: 1; transform: scale(1.12); }
-}
-
-@keyframes halPulse {
-  0%, 100% {
-    box-shadow:
-      0 0 30px rgba(255, 20, 20, 1),
-      0 0 60px rgba(220, 0, 0, 0.75),
-      0 0 100px rgba(180, 0, 0, 0.4),
-      inset 0 0 22px rgba(255, 100, 100, 0.5);
-  }
-  50% {
-    box-shadow:
-      0 0 42px rgba(255, 50, 50, 1),
-      0 0 80px rgba(255, 0, 0, 0.85),
-      0 0 120px rgba(200, 0, 0, 0.5),
-      inset 0 0 28px rgba(255, 140, 140, 0.65);
-  }
-}
-
-@keyframes halPulseActive {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.18); }
+  50% { opacity: 0.5; }
 }
 
 .intro-logo-text--visible {
@@ -2878,9 +2810,8 @@ body.intro-active {
   .intro-wave span { animation: none; height: 16px; }
   #cinematic-intro { transition: none; }
   .intro-logo { transition: none; }
-  .intro-hal-eye__rim { animation: none; }
-  .intro-hal-eye__glow { animation: none; }
-  .intro-hal-unit__leds span:first-child { animation: none; }
+  .intro-r2-sensor__glow { animation: none; }
+  .intro-r2-body__ports span:first-child { animation: none; }
   .intro-vcr-scanlines,
   .intro-vcr-tracking,
   .intro-vcr-noise,
