@@ -10,6 +10,7 @@
   var britishVoice = null;
   var narrationPlaying = false;
   var matrixRenderer = null;
+  var halFloater = null;
   var introMusic = null;
   var introNarration = null;
   var musicEnabled = true;
@@ -36,7 +37,19 @@
     { text: 'Do come in.', pause: 0 }
   ];
 
-  var GLOBE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
+  var GLOBE_SVG = '';
+
+  var HAL_EYE_HTML =
+    '<div class="intro-hal-floater" id="intro-hal-floater" aria-hidden="true">' +
+      '<div class="intro-hal-eye" id="intro-hal-eye">' +
+        '<div class="intro-hal-eye__housing"></div>' +
+        '<div class="intro-hal-eye__rim"></div>' +
+        '<div class="intro-hal-eye__lens">' +
+          '<div class="intro-hal-eye__pupil"></div>' +
+          '<div class="intro-hal-eye__glint"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
 
   function isHomepage() {
     var page = window.location.pathname.split('/').pop() || 'index.html';
@@ -85,6 +98,8 @@
     narrationPlaying = active;
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
+    var halEye = document.getElementById('intro-hal-eye');
+    if (halEye) halEye.classList.toggle('intro-hal-eye--speaking', active);
     if (introMusic) {
       if (active) introMusic.duck();
       else introMusic.unduck();
@@ -228,12 +243,10 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
+      HAL_EYE_HTML +
       '<div class="intro-content intro-content--holo">' +
         '<div class="intro-holo-stage">' +
-          '<div class="intro-logo intro-logo--visible">' +
-            '<div class="intro-logo-icon">' + GLOBE_SVG + '</div>' +
-            '<h1 class="intro-logo-text">Technovate</h1>' +
-          '</div>' +
+          '<h1 class="intro-logo-text intro-logo-text--visible">Technovate</h1>' +
           '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
           '<div class="intro-wave intro-wave--active" id="intro-wave">' +
             '<span></span><span></span><span></span><span></span><span></span>' +
@@ -271,6 +284,10 @@
     if (matrixRenderer) {
       matrixRenderer.stop();
       matrixRenderer = null;
+    }
+    if (halFloater) {
+      halFloater.stop();
+      halFloater = null;
     }
 
     var intro = document.getElementById('cinematic-intro');
@@ -324,11 +341,91 @@
     window.addEventListener('resize', refreshRenderers);
   }
 
+  function initHalFloater() {
+    var el = document.getElementById('intro-hal-floater');
+    if (!el) return null;
+
+    var eyeSize = 96;
+    var margin = 64;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.style.transform = 'translate(calc(50vw - ' + (eyeSize * 0.5) + 'px), calc(32vh - ' + (eyeSize * 0.5) + 'px))';
+      return { stop: function () {} };
+    }
+
+    var pos = {
+      x: window.innerWidth * 0.5,
+      y: window.innerHeight * 0.32
+    };
+    var target = { x: pos.x, y: pos.y };
+    var tilt = 0;
+    var running = true;
+    var rafId = 0;
+
+    function bounds() {
+      return {
+        minX: margin + eyeSize * 0.5,
+        maxX: window.innerWidth - margin - eyeSize * 0.5,
+        minY: margin + eyeSize * 0.5,
+        maxY: window.innerHeight - margin - eyeSize * 0.5
+      };
+    }
+
+    function pickTarget() {
+      var b = bounds();
+      target.x = b.minX + Math.random() * (b.maxX - b.minX);
+      target.y = b.minY + Math.random() * (b.maxY - b.minY);
+    }
+
+    function clampPos() {
+      var b = bounds();
+      pos.x = Math.max(b.minX, Math.min(b.maxX, pos.x));
+      pos.y = Math.max(b.minY, Math.min(b.maxY, pos.y));
+    }
+
+    pickTarget();
+
+    function tick(time) {
+      if (!running || introClosed) return;
+
+      var t = time * 0.001;
+      var dx = target.x - pos.x;
+      var dy = target.y - pos.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+
+      pos.x += dx * 0.011;
+      pos.y += dy * 0.011;
+      pos.x += Math.sin(t * 0.65) * 0.45;
+      pos.y += Math.cos(t * 0.52) * 0.38;
+      clampPos();
+
+      if (dist < 36) pickTarget();
+
+      tilt += (Math.atan2(dy, dx) * 0.12 - tilt) * 0.04;
+
+      el.style.transform =
+        'translate3d(' + (pos.x - eyeSize * 0.5) + 'px,' + (pos.y - eyeSize * 0.5) + 'px,0) ' +
+        'rotate(' + tilt + 'rad)';
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    rafId = requestAnimationFrame(tick);
+
+    return {
+      stop: function () {
+        running = false;
+        cancelAnimationFrame(rafId);
+      }
+    };
+  }
+
   function runIntro() {
     introClosed = false;
     var intro = createIntroScreen();
     intro.classList.add('intro--active');
     initIntroRenderers();
+    halFloater = initHalFloater();
 
     function enterSite() {
       closeIntro();
