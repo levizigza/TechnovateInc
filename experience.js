@@ -162,42 +162,6 @@
     });
   }
 
-  /* ---- Animated counters ---- */
-  function initCounters() {
-    var counters = document.querySelectorAll('[data-count]');
-    if (!counters.length) return;
-
-    function animate(el) {
-      var target = parseInt(el.getAttribute('data-count'), 10);
-      var suffix = el.getAttribute('data-suffix') || '';
-      var duration = reduced ? 0 : 1400;
-      var start = performance.now();
-
-      function step(now) {
-        var t = duration ? Math.min((now - start) / duration, 1) : 1;
-        var eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(target * eased) + suffix;
-        if (t < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    if (!('IntersectionObserver' in window) || reduced) {
-      counters.forEach(animate);
-      return;
-    }
-
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          animate(e.target);
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    counters.forEach(function (c) { io.observe(c); });
-  }
 
   /* ---- Smooth scroll (Lenis) ---- */
   function initSmoothScroll() {
@@ -275,7 +239,6 @@
   initHeader();
   initReveals();
   initHeroEntrance();
-  initCounters();
   initMobileNav();
   initYear();
   initContactForm();

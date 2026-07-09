@@ -154,9 +154,11 @@
         var ch = chars[Math.floor(Math.random() * chars.length)];
         var brightness = Math.random();
         if (brightness > 0.95) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.fillStyle = 'rgba(0, 212, 255, 0.95)';
+        } else if (brightness > 0.8) {
+          ctx.fillStyle = 'rgba(247, 37, 133, ' + (0.4 + brightness * 0.4) + ')';
         } else {
-          ctx.fillStyle = 'rgba(59, 130, 246, ' + (0.3 + brightness * 0.5) + ')';
+          ctx.fillStyle = 'rgba(0, 212, 255, ' + (0.2 + brightness * 0.4) + ')';
         }
         ctx.fillText(ch, i * fontSize, col.y);
         col.y += col.speed * 2;
@@ -243,9 +245,11 @@
   }
 
   /* ---- Run intro sequence ---- */
+  var stopMatrixFn = null;
+
   function runIntro() {
     var intro = createIntroScreen();
-    var stopMatrix = initIntroMatrix(intro.querySelector('.intro-matrix'));
+    stopMatrixFn = initIntroMatrix(intro.querySelector('.intro-matrix'));
 
     setTimeout(function () {
       intro.classList.add('intro--active');
@@ -263,15 +267,18 @@
     }, 1500);
 
     document.getElementById('btn-with-voice').addEventListener('click', function () {
+      if (stopMatrixFn) stopMatrixFn();
       closeIntro(true);
     });
 
     document.getElementById('btn-silent').addEventListener('click', function () {
+      if (stopMatrixFn) stopMatrixFn();
       closeIntro(false);
     });
 
     document.getElementById('intro-skip').addEventListener('click', function () {
       if (synth) synth.cancel();
+      if (stopMatrixFn) stopMatrixFn();
       closeIntro(false);
     });
   }
