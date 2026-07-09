@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Technovate</title>
+  <meta name="description" content="Explore Technovate's software projects across health, finance, education, enterprise, and community development." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-spacer"></div>
+      <a href="index.html" class="logo">
+        <img src="assets/technovate_logo.png" alt="Technovate" class="logo-img" />
+        <span class="logo-text">Technovate</span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="technology.html">Technology</a>
+        <a href="solutions.html">Solutions</a>
+        <a href="projects.html" class="active">Projects</a>
+        <a href="impact.html">Impact</a>
+        <a href="grants.html">Grants</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </nav>
+      <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header-immersive">
+      <div class="hero-viewport viewport" id="scene-projects"></div>
+      <div class="page-header-overlay">
+        <div class="container">
+          <p class="hero-eyebrow">Our Work</p>
+          <h1 class="page-title">Projects built for real-world impact</h1>
+          <p class="page-lead">From unified platform foundations to sector-specific modules — here's the software we've designed, developed, and deployed so far.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATFORM FOUNDATION -->
+    <section class="section">
+      <div class="container">
+        <div class="projects-intro">
+          <h2 class="section-title">What we've built</h2>
+          <p class="section-lead">Every project shares a common technology foundation — explainable AI, ethical data practices, and institutional-grade architecture. Sector modules extend that core to address specific needs.</p>
+        </div>
+
+        <article class="project-card project-card--featured">
+          <div class="project-card__header">
+            <span class="card-label">Platform</span>
+            <span class="project-status project-status--complete">Delivered</span>
+          </div>
+          <h3>Unified Platform Core</h3>
+          <p class="project-card__desc">The shared infrastructure powering all Technovate solutions — authentication, data governance, AI orchestration, reporting APIs, and multi-tenant architecture designed for institutional scale.</p>
+          <ul class="project-highlights">
+            <li>Cloud-native microservices architecture</li>
+            <li>Role-based access control and audit logging</li>
+            <li>Explainable AI pipeline with human oversight</li>
+            <li>Funder-ready reporting and milestone tracking</li>
+          </ul>
+          <div class="project-tags">
+            <span class="project-tag">Infrastructure</span>
+            <span class="project-tag">AI / ML</span>
+            <span class="project-tag">API</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SECTOR PROJECTS -->
+    <section class="section section--dark">
+      <div class="container">
+        <h2 class="section-title" style="text-align:center;margin:0 auto var(--sp-2);">Sector projects</h2>
+        <p class="section-lead" style="text-align:center;margin:0 auto var(--sp-5);max-width:560px;">Purpose-built modules extending the platform core into five sectors.</p>
+
+        <div class="projects-grid">
+          <article class="project-card project-card--health">
+            <div class="project-card__header">
+              <span class="card-label">Health & Wellness</span>
+              <span class="project-status project-status--active">Active</span>
+            </div>
+            <h3>Health Engagement Platform</h3>
+            <p class="project-card__desc">AI-assisted wellness tracking and community health investment dashboards. Helps individuals set goals and helps organizations direct resources toward better outcomes.</p>
+            <ul class="project-highlights">
+              <li>Wellness goal tracking and incentive systems</li>
+              <li>Community health investment dashboards</li>
+              <li>Healthcare IT integration readiness</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Health</span>
+              <span class="project-tag">Dashboards</span>
+            </div>
+          </article>
+
+          <article class="project-card project-card--finance">
+            <div class="project-card__header">
+              <span class="card-label">Finance & Wealth</span>
+              <span class="project-status project-status--active">Active</span>
+            </div>
+            <h3>Wealth Visibility Dashboard</h3>
+            <p class="project-card__desc">Financial transparency tools that make value flows visible — helping individuals, organizations, and communities understand where wealth is created and how it moves.</p>
+            <ul class="project-highlights">
+              <li>Distributed value tracking and reporting</li>
+              <li>Financial transparency dashboards</li>
+              <li>Compliance-ready data architecture</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Finance</span>
+              <span class="project-tag">Analytics</span>
+            </div>
+          </article>
+
+          <article class="project-card project-card--education">
+            <div class="project-card__header">
+              <span class="card-label">Education & Learning</span>
+              <span class="project-status project-status--pilot">Pilot-ready</span>
+            </div>
+            <h3>Adaptive Learning System</h3>
+            <p class="project-card__desc">Personalized learning pathways powered by AI, with institutional analytics for education providers to deliver tailored instruction at scale.</p>
+            <ul class="project-highlights">
+              <li>AI-driven adaptive learning pathways</li>
+              <li>Skill gap identification and tracking</li>
+              <li>Institutional outcome reporting</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Education</span>
+              <span class="project-tag">AI</span>
+            </div>
+          </article>
+
+          <article class="project-card project-card--enterprise">
+            <div class="project-card__header">
+              <span class="card-label">Enterprise & Productivity</span>
+              <span class="project-status project-status--active">Active</span>
+            </div>
+            <h3>Operations & Workflow Suite</h3>
+            <p class="project-card__desc">Workflow automation and AI-assisted decision support for businesses and organizations — connecting individual productivity to collective outcomes.</p>
+            <ul class="project-highlights">
+              <li>Process automation and optimization</li>
+              <li>AI-assisted operational decision support</li>
+              <li>Team productivity analytics</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Enterprise</span>
+              <span class="project-tag">Automation</span>
+            </div>
+          </article>
+
+          <article class="project-card project-card--community">
+            <div class="project-card__header">
+              <span class="card-label">Community & Relationships</span>
+              <span class="project-status project-status--pilot">Pilot-ready</span>
+            </div>
+            <h3>Local Value Network</h3>
+            <p class="project-card__desc">Systems that help communities recognize and invest in local value — care work, civic participation, mentorship, and shared resources made visible and trackable.</p>
+            <ul class="project-highlights">
+              <li>Local value recognition and tracking</li>
+              <li>Community coordination tools</li>
+              <li>Civic participation incentive frameworks</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Community</span>
+              <span class="project-tag">Civic Tech</span>
+            </div>
+          </article>
+
+          <article class="project-card project-card--platform">
+            <div class="project-card__header">
+              <span class="card-label">Cross-sector</span>
+              <span class="project-status project-status--active">Active</span>
+            </div>
+            <h3>Impact Reporting Framework</h3>
+            <p class="project-card__desc">Standardized metrics, milestone tracking, and outcome reporting designed for grant programs, accelerators, and institutional partners who need transparent accountability.</p>
+            <ul class="project-highlights">
+              <li>Baseline and progress metric definitions</li>
+              <li>Automated funder report generation</li>
+              <li>Milestone and deliverable tracking</li>
+            </ul>
+            <div class="project-tags">
+              <span class="project-tag">Reporting</span>
+              <span class="project-tag">Grants</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPROACH -->
+    <section class="section">
+      <div class="container content-block">
+        <h2 class="section-title">How we deliver projects</h2>
+        <div class="values-grid">
+          <div class="value-item">
+            <h3>Structured roadmaps</h3>
+            <p>Every project starts with defined phases, milestones, and success criteria — aligned with partner and funder requirements from day one.</p>
+          </div>
+          <div class="value-item">
+            <h3>Pilot-first deployment</h3>
+            <p>We validate with real users in controlled pilots before scaling — reducing risk and generating evidence for broader adoption.</p>
+          </div>
+          <div class="value-item">
+            <h3>Transparent reporting</h3>
+            <p>Progress updates, outcome metrics, and deliverable tracking are built into every project — not bolted on after the fact.</p>
+          </div>
+          <div class="value-item">
+            <h3>Built to scale</h3>
+            <p>Architecture designed to grow from pilot to province-wide to national — without rebuilding from scratch.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt">
+      <div class="container cta-banner">
+        <h2>Interested in collaborating on a project?</h2>
+        <p>We're actively seeking institutional partners for pilot deployments and grant-funded programs.</p>
+        <div class="hero-ctas">
+          <a href="contact.html" class="btn btn--fill">Start a conversation</a>
+          <a href="grants.html" class="btn btn--outline">Grant partnerships</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a href="index.html" class="footer-logo"><img src="assets/technovate_logo.png" alt="Technovate" /></a>
+      <p><strong>Technovate</strong> — Technology and AI for health, wealth, and growth.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a><a href="technology.html">Technology</a><a href="solutions.html">Solutions</a>
+        <a href="projects.html">Projects</a><a href="impact.html">Impact</a><a href="grants.html">Grants</a><a href="contact.html">Contact</a>
+      </div>
+      <small>&copy; <span id="year"></span> Technovate. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <script>(function(){var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();})()</script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="three-scenes.js"></script>
+</body>
+</html>

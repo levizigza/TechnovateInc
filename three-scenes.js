@@ -9,6 +9,7 @@
      5  Impact     — 3D bar chart that grows on click
      6  Grants     — Two platforms with draggable resource spheres
      7  Contact    — Interactive globe you can spin + click cities
+     8  Projects   — Draggable portfolio tiles in a showcase wall
    
    TRUE INTERACTIVITY:
    - Raycaster-based drag: click any highlighted object, move it
@@ -915,7 +916,7 @@
     }
 
     var cities=[
-      {lat:43.65,lon:-79.38,hq:true},
+      {lat:51.05,lon:-114.07,hq:true},
       {lat:51.51,lon:-0.13},
       {lat:35.68,lon:139.69},
       {lat:-33.87,lon:151.21},
@@ -933,7 +934,7 @@
       globe.add(d);
     });
 
-    /* Arcs from Toronto */
+    /* Arcs from Calgary HQ */
     for(var ci=1;ci<cities.length;ci++){
       var v1=ll2v(cities[0].lat,cities[0].lon,R);
       var v2=ll2v(cities[ci].lat,cities[ci].lon,R);
@@ -994,6 +995,60 @@
   }
 
   /* ========================================================
+     SCENE 8 — PROJECTS: Draggable portfolio tiles
+     A wall of project cards you can rearrange.
+     ======================================================== */
+  function initProjects(s){
+    s.camera.position.set(0, 0, 14);
+
+    var tiles = [
+      {color:C.accent, x:-4.5, y:2.2, w:2.2, h:1.6},
+      {color:C.health, x:-1.5, y:2.2, w:2.2, h:1.6},
+      {color:C.finance, x:1.5, y:2.2, w:2.2, h:1.6},
+      {color:C.education, x:4.5, y:2.2, w:2.2, h:1.6},
+      {color:C.enterprise, x:-3, y:-0.5, w:2.4, h:1.7},
+      {color:C.community, x:0, y:-0.5, w:2.4, h:1.7},
+      {color:C.blue, x:3, y:-0.5, w:2.4, h:1.7}
+    ];
+
+    var draggables = [];
+    tiles.forEach(function(td){
+      var card = makeCard(td.w, td.h, td.color, td.color);
+      for(var i=0;i<3;i++){
+        var line = new THREE.Mesh(
+          new THREE.BoxGeometry(td.w*0.55+Math.random()*0.3, 0.05, 0.01),
+          new THREE.MeshBasicMaterial({color:td.color, transparent:true, opacity:0.35})
+        );
+        line.position.set(-td.w*0.15, 0.2-i*0.28, 0.04);
+        card.add(line);
+      }
+      card.position.set(td.x, td.y, Math.random()*1.5);
+      card.userData.homeX = td.x;
+      card.userData.homeY = td.y;
+      card.userData.homeZ = card.position.z;
+      s.scene.add(card);
+      draggables.push(card);
+    });
+
+    var drag = makeDragSystem(s.container, s.camera, draggables);
+
+    return function(st){
+      var t = st.clock.getElapsedTime();
+      drag.updateHover();
+
+      draggables.forEach(function(card){
+        if(card !== drag.dragged){
+          card.position.y = lerp(card.position.y,
+            card.userData.homeY + Math.sin(t*0.7+card.userData.homeX)*0.15, 0.02);
+          card.rotation.z = lerp(card.rotation.z, Math.sin(t*0.4+card.userData.homeX)*0.04, 0.03);
+        }
+        var isH = card===drag.hovered||card===drag.dragged;
+        card.scale.setScalar(lerp(card.scale.x, isH?1.1:1, 0.06));
+      });
+    };
+  }
+
+  /* ========================================================
      INIT
      ======================================================== */
   window.addEventListener('DOMContentLoaded', function(){
@@ -1004,6 +1059,7 @@
     register('scene-impact', initImpact);
     register('scene-grants', initGrants);
     register('scene-contact', initContact);
+    register('scene-projects', initProjects);
     setupObserver();
     animate();
   });
