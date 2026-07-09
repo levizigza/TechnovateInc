@@ -76,11 +76,17 @@
       '<div class="intro-astro-head" id="intro-astro-head">' +
         '<div class="intro-astro-dome" id="intro-astro-dome">' +
           '<div class="intro-astro-dome__shine"></div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
-          '<div class="intro-astro-sensor-socket" aria-hidden="true"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left">' +
+            '<span class="intro-astro-flash-face" aria-hidden="true"></span>' +
+            '<span class="intro-astro-flash-beam" aria-hidden="true"></span>' +
+          '</div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right">' +
+            '<span class="intro-astro-flash-face" aria-hidden="true"></span>' +
+            '<span class="intro-astro-flash-beam" aria-hidden="true"></span>' +
+          '</div>' +
           '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
             '<div class="intro-astro-projector" id="intro-astro-projector">' +
+              '<span class="intro-astro-flash-beam intro-astro-flash-beam--nose" aria-hidden="true"></span>' +
               '<div class="intro-astro-sensor__glow"></div>' +
               '<div class="intro-astro-sensor__housing"></div>' +
               '<div class="intro-astro-sensor__ring"></div>' +
