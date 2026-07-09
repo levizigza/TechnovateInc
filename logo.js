@@ -97,6 +97,7 @@
   function holoPortalHtml() {
     return (
       '<div class="intro-holo-portal" id="intro-holo-portal" aria-hidden="true">' +
+        '<div class="intro-holo-source" aria-hidden="true"></div>' +
         '<div class="intro-holo-portal__ring"></div>' +
         '<div class="intro-holo-portal__ring intro-holo-portal__ring--inner"></div>' +
         '<div class="tv-eye-character tv-eye-character--holo" id="intro-holo-eye-unit">' +

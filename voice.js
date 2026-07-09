@@ -77,16 +77,14 @@
         '<div class="intro-astro-dome" id="intro-astro-dome">' +
           '<div class="intro-astro-dome__shine"></div>' +
           '<div class="intro-astro-dome__blue intro-astro-dome__blue--left">' +
-            '<span class="intro-astro-flash-face" aria-hidden="true"></span>' +
-            '<span class="intro-astro-flash-beam" aria-hidden="true"></span>' +
+            '<span class="intro-astro-emitter-core" aria-hidden="true"></span>' +
           '</div>' +
           '<div class="intro-astro-dome__blue intro-astro-dome__blue--right">' +
-            '<span class="intro-astro-flash-face" aria-hidden="true"></span>' +
-            '<span class="intro-astro-flash-beam" aria-hidden="true"></span>' +
+            '<span class="intro-astro-emitter-core" aria-hidden="true"></span>' +
           '</div>' +
           '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
-            '<div class="intro-astro-projector" id="intro-astro-projector">' +
-              '<span class="intro-astro-flash-beam intro-astro-flash-beam--nose" aria-hidden="true"></span>' +
+            '<div class="intro-astro-projector intro-astro-projector--nose" id="intro-astro-projector">' +
+              '<span class="intro-astro-emitter-core intro-astro-emitter-core--nose" aria-hidden="true"></span>' +
               '<div class="intro-astro-sensor__glow"></div>' +
               '<div class="intro-astro-sensor__housing"></div>' +
               '<div class="intro-astro-sensor__ring"></div>' +
@@ -229,6 +227,60 @@
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
   }
 
+  function setupEmitterMorph() {
+    var stage = document.getElementById('intro-holo-stage');
+    var portal = document.getElementById('intro-holo-portal');
+    var emitters = [
+      document.querySelector('.intro-astro-dome__blue--left'),
+      document.querySelector('.intro-astro-dome__blue--right'),
+      document.getElementById('intro-astro-projector')
+    ];
+
+    if (stage) stage.classList.add('intro-holo-stage--measuring');
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!portal) {
+          if (stage) stage.classList.remove('intro-holo-stage--measuring');
+          return;
+        }
+
+        var portalRect = portal.getBoundingClientRect();
+        var portalCx = portalRect.left + portalRect.width / 2;
+        var portalCy = portalRect.top + portalRect.height / 2;
+        var portalSize = Math.max(portalRect.width, portalRect.height, 148);
+
+        emitters.forEach(function (el, index) {
+          if (!el) return;
+          var rect = el.getBoundingClientRect();
+          var cx = rect.left + rect.width / 2;
+          var cy = rect.top + rect.height / 2;
+          var scale = portalSize / Math.max(rect.width, rect.height, 1);
+
+          el.style.setProperty('--pin-left', (cx - rect.width / 2) + 'px');
+          el.style.setProperty('--pin-top', (cy - rect.height / 2) + 'px');
+          el.style.setProperty('--pin-width', rect.width + 'px');
+          el.style.setProperty('--pin-height', rect.height + 'px');
+          el.style.setProperty('--morph-dx', (portalCx - cx) + 'px');
+          el.style.setProperty('--morph-dy', (portalCy - cy) + 'px');
+          el.style.setProperty('--morph-s', String(scale));
+          el.style.setProperty('--morph-delay', (index * 0.07) + 's');
+          el.classList.add('intro-astro-emitter--morphing');
+        });
+
+        if (stage) stage.classList.remove('intro-holo-stage--measuring');
+      });
+    });
+  }
+
+  function finishEmitterMorph() {
+    var emitters = document.querySelectorAll('.intro-astro-emitter--morphing');
+    emitters.forEach(function (el) {
+      el.classList.remove('intro-astro-emitter--morphing');
+      el.classList.add('intro-astro-emitter--done');
+    });
+  }
+
   function openHatchAndProject() {
     if (introClosed || introActivated) return;
     introActivated = true;
@@ -248,6 +300,7 @@
     }
     if (sensor) sensor.classList.add('intro-astro-sensor--tilting');
     if (head) head.classList.add('intro-astro-head--tilting');
+    setupEmitterMorph();
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -259,6 +312,7 @@
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
+      finishEmitterMorph();
       if (sensor) {
         sensor.classList.remove('intro-astro-sensor--tilting');
         sensor.classList.add('intro-astro-sensor--tilted', 'intro-astro-sensor--projecting');
