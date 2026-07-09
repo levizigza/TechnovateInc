@@ -237,7 +237,7 @@
     window.location.pathname.split('/').pop() === 'index.html' ||
     window.location.pathname.split('/').pop().indexOf('.html') === -1;
 
-  if (!isHomepage || sessionStorage.getItem('technovate_intro_done') === '1') {
+  if (!isHomepage || localStorage.getItem('technovate_intro_done') === '1') {
     initLoader();
   } else {
     document.body.classList.add('is-loaded');

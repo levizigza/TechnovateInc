@@ -1,21 +1,29 @@
 /* ============================================
-   Technovate — Homepage intro (visual only)
-   Optional narration on intro screen only
+   Technovate — Homepage intro
+   Binary AI face + optional Attenborough narration
    ============================================ */
 (function () {
   'use strict';
 
-  var SESSION_KEY = 'technovate_intro_done';
+  var INTRO_KEY = 'technovate_intro_done';
   var synth = window.speechSynthesis;
   var britishVoice = null;
   var narrationPlaying = false;
-  var stopMatrixFn = null;
+  var faceRenderer = null;
 
   var INTRO_SCRIPT = [
-    { text: 'Here, in the digital realm, something rather remarkable is taking shape.', pause: 1200 },
-    { text: 'Technovate.', pause: 1400 },
-    { text: 'A place where artificial intelligence is crafted with purpose.', pause: 1200 },
-    { text: 'For health. For learning. For the bonds that hold communities together.', pause: 1400 },
+    { text: 'Here...', pause: 900 },
+    { text: 'in the digital realm...', pause: 1100 },
+    { text: 'something rather remarkable is taking shape.', pause: 1300 },
+    { text: 'Technovate.', pause: 1500 },
+    { text: 'A place where artificial intelligence...', pause: 800 },
+    { text: 'is being crafted with purpose.', pause: 1100 },
+    { text: 'Not merely for commerce or convenience.', pause: 900 },
+    { text: 'But for health.', pause: 500 },
+    { text: 'For learning.', pause: 500 },
+    { text: 'For the bonds that hold communities together.', pause: 1200 },
+    { text: 'Each line of code...', pause: 700 },
+    { text: 'a small act of service to the human story.', pause: 1400 },
     { text: 'Do come in.', pause: 0 }
   ];
 
@@ -57,9 +65,16 @@
     synth.speak(utter);
   }
 
+  function setSpeaking(active) {
+    narrationPlaying = active;
+    if (faceRenderer) faceRenderer.setSpeaking(active);
+    var wave = document.getElementById('intro-wave');
+    if (wave) wave.classList.toggle('intro-wave--active', active);
+  }
+
   function speakSequence(lines, index, callback) {
     if (index >= lines.length) {
-      narrationPlaying = false;
+      setSpeaking(false);
       if (callback) callback();
       return;
     }
@@ -86,20 +101,18 @@
     intro.id = 'cinematic-intro';
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
-      '<canvas class="intro-matrix" aria-hidden="true"></canvas>' +
       '<button class="intro-enter" id="intro-enter" type="button">Enter website</button>' +
-      '<div class="intro-content">' +
-        '<div class="intro-logo">' +
-          '<div class="intro-logo-icon">' +
-            '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>' +
-          '</div>' +
-          '<span class="intro-logo-text">Technovate</span>' +
+      '<div class="intro-content intro-content--face">' +
+        '<div class="intro-face-wrap">' +
+          '<canvas class="intro-binary-face" id="intro-binary-face" aria-hidden="true"></canvas>' +
+          '<div class="intro-face-glow" aria-hidden="true"></div>' +
         '</div>' +
-        '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
         '<p class="intro-subtitle" id="intro-subtitle"></p>' +
-        '<div class="intro-wave" id="intro-wave" hidden>' +
+        '<div class="intro-wave" id="intro-wave">' +
           '<span></span><span></span><span></span><span></span><span></span>' +
         '</div>' +
+        '<p class="intro-brand">Technovate</p>' +
+        '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
       '</div>' +
       '<div class="intro-actions">' +
         '<button class="intro-btn intro-btn--primary" id="intro-enter-bottom" type="button">Enter website</button>' +
@@ -110,55 +123,13 @@
     return intro;
   }
 
-  function initIntroMatrix(canvas) {
-    var ctx = canvas.getContext('2d');
-    var W, H, cols = [];
-    var fontSize = 16;
-    var chars = '01';
-
-    function resize() {
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-      var colCount = Math.floor(W / fontSize);
-      cols = [];
-      for (var i = 0; i < colCount; i++) {
-        cols.push({ y: Math.random() * H, speed: 0.4 + Math.random() * 0.6 });
-      }
-    }
-
-    function draw() {
-      ctx.fillStyle = 'rgba(6, 11, 24, 0.1)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.font = fontSize + 'px monospace';
-      for (var i = 0; i < cols.length; i++) {
-        var col = cols[i];
-        var ch = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillStyle = Math.random() > 0.92
-          ? 'rgba(0, 212, 255, 0.7)'
-          : 'rgba(0, 212, 255, ' + (0.15 + Math.random() * 0.25) + ')';
-        ctx.fillText(ch, i * fontSize, col.y);
-        col.y += col.speed * 2;
-        if (col.y > H && Math.random() > 0.98) col.y = 0;
-      }
-    }
-
-    resize();
-    window.addEventListener('resize', resize);
-    var animId;
-    function loop() {
-      draw();
-      animId = requestAnimationFrame(loop);
-    }
-    loop();
-    return function stop() {
-      cancelAnimationFrame(animId);
-    };
-  }
-
   function closeIntro() {
     if (synth) synth.cancel();
-    narrationPlaying = false;
-    if (stopMatrixFn) stopMatrixFn();
+    setSpeaking(false);
+    if (faceRenderer) {
+      faceRenderer.stop();
+      faceRenderer = null;
+    }
 
     var intro = document.getElementById('cinematic-intro');
     if (intro) {
@@ -171,31 +142,44 @@
       document.body.classList.remove('intro-active');
     }
 
-    sessionStorage.setItem(SESSION_KEY, '1');
+    localStorage.setItem(INTRO_KEY, '1');
   }
 
   function startNarration() {
-    if (!synth || narrationPlaying) return;
-    narrationPlaying = true;
-    var wave = document.getElementById('intro-wave');
-    if (wave) {
-      wave.hidden = false;
-      wave.classList.add('intro-wave--active');
+    if (narrationPlaying) return;
+    setSpeaking(true);
+
+    if (!synth) {
+      var idx = 0;
+      function nextLine() {
+        if (idx >= INTRO_SCRIPT.length) {
+          setSpeaking(false);
+          return;
+        }
+        updateSubtitle(INTRO_SCRIPT[idx].text);
+        var pause = INTRO_SCRIPT[idx].pause || 800;
+        idx++;
+        setTimeout(nextLine, pause + 1800);
+      }
+      nextLine();
+      return;
     }
+
     speakSequence(INTRO_SCRIPT, 0, function () {
-      if (wave) wave.classList.remove('intro-wave--active');
+      updateSubtitle('Do come in.');
     });
   }
 
   function runIntro() {
     var intro = createIntroScreen();
-    stopMatrixFn = initIntroMatrix(intro.querySelector('.intro-matrix'));
+    var canvas = document.getElementById('intro-binary-face');
+
+    if (window.TechnovateBinaryFace && canvas) {
+      faceRenderer = window.TechnovateBinaryFace.create(canvas);
+    }
 
     requestAnimationFrame(function () {
       intro.classList.add('intro--active');
-      setTimeout(function () {
-        intro.querySelector('.intro-logo').classList.add('intro-logo--visible');
-      }, 200);
     });
 
     function onEnter() {
@@ -212,11 +196,13 @@
         onEnter();
       }
     });
+
+    setTimeout(startNarration, 1200);
   }
 
   function init() {
     if (!isHomepage()) return;
-    if (sessionStorage.getItem(SESSION_KEY) === '1') return;
+    if (localStorage.getItem(INTRO_KEY) === '1') return;
 
     if (synth) {
       if (synth.getVoices().length) britishVoice = findBritishVoice();
@@ -236,7 +222,7 @@
 
   window.TechnovateVoice = {
     resetIntro: function () {
-      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(INTRO_KEY);
     }
   };
 })();
