@@ -1,6 +1,6 @@
 /* ============================================
    Technovate — Homepage intro
-   Binary AI face + neural British narration
+   Holographic logo + neural British narration
    ============================================ */
 (function () {
   'use strict';
@@ -9,14 +9,13 @@
   var synth = window.speechSynthesis;
   var britishVoice = null;
   var narrationPlaying = false;
-  var faceRenderer = null;
   var matrixRenderer = null;
   var introMusic = null;
   var introNarration = null;
   var musicEnabled = true;
   var useSpeechFallback = false;
   var narrationTimer = null;
-  var MUSIC_PRE_ROLL_MS = 2800;
+  var MUSIC_PRE_ROLL_MS = 3800;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -33,6 +32,8 @@
     { text: 'a small act of service to the human story.', pause: 1400 },
     { text: 'Do come in.', pause: 0 }
   ];
+
+  var GLOBE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.22.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
 
   function isHomepage() {
     var page = window.location.pathname.split('/').pop() || 'index.html';
@@ -79,7 +80,6 @@
 
   function setSpeaking(active) {
     narrationPlaying = active;
-    if (faceRenderer) faceRenderer.setSpeaking(active);
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
     if (introMusic) {
@@ -189,6 +189,7 @@
   function createIntroScreen() {
     var intro = document.createElement('div');
     intro.id = 'cinematic-intro';
+    intro.className = 'holo-scanlines';
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
@@ -197,17 +198,15 @@
           'Skip intro — Enter website →' +
         '</button>' +
       '</div>' +
-      '<div class="intro-content intro-content--face">' +
-        '<div class="intro-face-wrap">' +
-          '<canvas class="intro-binary-face" id="intro-binary-face" aria-hidden="true"></canvas>' +
-          '<div class="intro-face-glow" aria-hidden="true"></div>' +
+      '<div class="intro-content intro-content--holo">' +
+        '<div class="intro-logo intro-logo--visible">' +
+          '<div class="intro-logo-icon">' + GLOBE_SVG + '</div>' +
+          '<h1 class="intro-logo-text">Technovate</h1>' +
         '</div>' +
-        '<p class="intro-subtitle" id="intro-subtitle">An optional welcome from Technovate</p>' +
-        '<div class="intro-wave" id="intro-wave">' +
+        '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
+        '<div class="intro-wave intro-wave--active" id="intro-wave">' +
           '<span></span><span></span><span></span><span></span><span></span>' +
         '</div>' +
-        '<p class="intro-brand">Technovate</p>' +
-        '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
       '</div>' +
       '<div class="intro-actions">' +
         '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
@@ -234,10 +233,6 @@
       introMusic.stop();
       introMusic = null;
     }
-    if (faceRenderer) {
-      faceRenderer.stop();
-      faceRenderer = null;
-    }
     if (matrixRenderer) {
       matrixRenderer.stop();
       matrixRenderer = null;
@@ -262,7 +257,7 @@
 
     narrationPlaying = true;
     tryStartMusic();
-    updateSubtitle('');
+    updateSubtitle('Here...');
     setPrelude(true);
 
     var playBtn = document.getElementById('intro-narration');
@@ -275,28 +270,20 @@
   }
 
   function initIntroRenderers() {
-    var canvas = document.getElementById('intro-binary-face');
     var matrixCanvas = document.getElementById('intro-matrix-bg');
 
     if (window.TechnovateBinaryFace && matrixCanvas) {
       matrixRenderer = window.TechnovateBinaryFace.createMatrixRain(matrixCanvas, {
-        fontSize: 18,
-        trailLen: 36,
-        fadeAlpha: 0.05,
-        headAlpha: 1,
-        bodyAlpha: 0.92,
-        speedMin: 4,
-        speedMax: 10
+        fontSize: 14,
+        trailLen: 30,
+        fadeAlpha: 0.04,
+        speedMin: 1.2,
+        speedMax: 3.8
       });
-    }
-
-    if (window.TechnovateBinaryFace && canvas) {
-      faceRenderer = window.TechnovateBinaryFace.create(canvas);
     }
 
     function refreshRenderers() {
       if (matrixRenderer && matrixRenderer.refresh) matrixRenderer.refresh();
-      if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
     }
 
     refreshRenderers();
@@ -316,6 +303,10 @@
       closeIntro();
     }
 
+    function unlockAudio() {
+      tryStartMusic();
+    }
+
     document.getElementById('intro-enter-main').addEventListener('click', enterSite);
     document.getElementById('intro-narration').addEventListener('click', function () {
       tryStartMusic();
@@ -325,6 +316,14 @@
       if (!introMusic) tryStartMusic();
       toggleMusic();
     });
+
+    intro.addEventListener('click', unlockAudio, { once: true });
+    intro.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+
+    setTimeout(function () {
+      tryStartMusic();
+      startNarration();
+    }, 400);
 
     document.addEventListener('keydown', function onKey(e) {
       if (e.key === 'Escape') {

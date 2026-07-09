@@ -1903,7 +1903,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 
 /* ============================================
-   CINEMATIC INTRO — Binary AI face
+   CINEMATIC INTRO — Holographic Technovate
    ============================================ */
 
 body.intro-active {
@@ -1951,57 +1951,30 @@ body.intro-active {
   opacity: 1;
 }
 
-.intro-content--face {
+.intro-content--holo {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 720px;
+  max-width: 800px;
   margin: 0 auto;
-  padding-top: clamp(88px, 14vh, 120px);
-  padding-bottom: 120px;
+  padding: clamp(100px, 16vh, 140px) var(--sp-4) 100px;
   min-height: 100vh;
   box-sizing: border-box;
-  justify-content: center;
+  text-align: center;
 }
 
-.intro-face-wrap {
-  position: relative;
-  width: min(92vw, 520px);
-  height: min(44vh, 360px);
-  margin-bottom: var(--sp-1);
-  background: transparent;
+.intro-content--face {
+  display: none;
 }
 
-.intro-binary-face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: transparent;
-}
-
+.intro-face-wrap,
+.intro-binary-face,
 .intro-face-glow {
-  position: absolute;
-  inset: 10% 5%;
-  background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.12) 0%, transparent 65%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.intro-brand {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(0, 212, 255, 0.7);
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-  margin-top: var(--sp-3);
-  margin-bottom: var(--sp-1);
+  display: none !important;
 }
 
 .intro-matrix {
@@ -2009,26 +1982,15 @@ body.intro-active {
 }
 
 .intro-logo {
-  display: none;
-}
-
-.intro-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: var(--sp-4);
-}
-
-/* Logo reveal — Blade Runner holographic style */
-.intro-logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   opacity: 0;
-  transform: scale(0.8) translateY(20px);
+  transform: scale(0.85) translateY(24px);
   transition: all 1.2s var(--ease-out-expo);
   position: relative;
+  margin-bottom: var(--sp-2);
 }
 
 .intro-logo--visible {
@@ -2180,8 +2142,8 @@ body.intro-active {
   font-weight: 500;
   letter-spacing: 0.05em;
   color: #00d4ff;
-  margin-top: 0;
-  min-height: 3em;
+  margin-top: var(--sp-1);
+  min-height: 2.5em;
   max-width: 560px;
   line-height: 1.6;
   text-shadow:
@@ -2212,9 +2174,9 @@ body.intro-active {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: var(--sp-2);
-  height: 28px;
-  opacity: 0;
+  margin-top: var(--sp-3);
+  height: 40px;
+  opacity: 0.85;
   transition: opacity 0.3s;
 }
 

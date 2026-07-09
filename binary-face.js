@@ -31,13 +31,11 @@
 
   function createMatrixRain(canvas, opts) {
     opts = opts || {};
-    var fontSize = opts.fontSize || 16;
-    var trailLen = opts.trailLen || 24;
-    var fadeAlpha = opts.fadeAlpha || 0.12;
-    var headAlpha = opts.headAlpha || 1;
-    var bodyAlpha = opts.bodyAlpha || 0.65;
-    var speedMin = opts.speedMin || 2;
-    var speedMax = opts.speedMax || 5;
+    var fontSize = opts.fontSize || 14;
+    var trailLen = opts.trailLen || 28;
+    var fadeAlpha = opts.fadeAlpha || 0.04;
+    var speedMin = opts.speedMin || 1.2;
+    var speedMax = opts.speedMax || 3.8;
     var W = 0;
     var H = 0;
     var ctx = null;
@@ -45,6 +43,20 @@
     var running = true;
     var animId = 0;
     var started = false;
+
+    function greenForTrail(j, trail, fade) {
+      var t = j / trail;
+      var alpha;
+      if (j === 0) alpha = 1;
+      else if (t < 0.25) alpha = 0.9;
+      else if (t < 0.6) alpha = 0.6;
+      else alpha = 0.35;
+      alpha *= fade;
+      if (j === 0) return 'rgba(200, 255, 200, ' + alpha + ')';
+      if (t < 0.25) return 'rgba(0, 255, 65, ' + alpha + ')';
+      if (t < 0.6) return 'rgba(0, 190, 48, ' + alpha + ')';
+      return 'rgba(0, 90, 24, ' + alpha + ')';
+    }
 
     function resize() {
       var size = getViewportSize(canvas);
@@ -62,13 +74,15 @@
         }
         cols.push({
           x: i * fontSize + fontSize * 0.5,
-          y: Math.random() * H,
+          y: Math.random() * H * 1.2 - H * 0.2,
           speed: speedMin + Math.random() * (speedMax - speedMin),
-          chars: chars
+          drift: (Math.random() - 0.5) * 0.15,
+          chars: chars,
+          nextFlip: Math.random() * 40
         });
       }
 
-      ctx.fillStyle = '#010204';
+      ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, W, H);
       started = W > 0 && H > 0;
     }
@@ -81,16 +95,27 @@
         return;
       }
 
-      ctx.fillStyle = 'rgba(1, 2, 4, ' + fadeAlpha + ')';
+      ctx.fillStyle = 'rgba(0, 0, 0, ' + fadeAlpha + ')';
       ctx.fillRect(0, 0, W, H);
 
-      ctx.font = 'bold ' + fontSize + 'px "Courier New", Consolas, monospace';
+      ctx.font = fontSize + 'px "Courier New", Courier, Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
 
       for (var i = 0; i < cols.length; i++) {
         var col = cols[i];
         col.y += col.speed;
+        col.x += col.drift;
+
+        if (col.x < fontSize * 0.5) col.drift = Math.abs(col.drift);
+        if (col.x > W - fontSize * 0.5) col.drift = -Math.abs(col.drift);
+
+        col.nextFlip -= 1;
+        if (col.nextFlip <= 0) {
+          var flipIdx = Math.floor(Math.random() * trailLen);
+          col.chars[flipIdx] = col.chars[flipIdx] === '1' ? '0' : '1';
+          col.nextFlip = 12 + Math.random() * 30;
+        }
 
         for (var j = 0; j < trailLen; j++) {
           var y = col.y - j * fontSize;
@@ -100,17 +125,13 @@
           fade = fade * fade;
 
           if (j === 0) {
-            ctx.fillStyle = 'rgba(180, 255, 180, ' + (fade * headAlpha) + ')';
-            ctx.shadowColor = 'rgba(0, 255, 65, 1)';
-            ctx.shadowBlur = 16;
+            ctx.shadowColor = 'rgba(0, 255, 65, 0.9)';
+            ctx.shadowBlur = 8;
           } else {
-            ctx.fillStyle = 'rgba(0, 255, 65, ' + (fade * bodyAlpha) + ')';
             ctx.shadowBlur = 0;
           }
 
-          if (Math.random() > 0.98) {
-            col.chars[j] = col.chars[j] === '1' ? '0' : '1';
-          }
+          ctx.fillStyle = greenForTrail(j, trailLen, fade);
 
           ctx.fillText(col.chars[j], col.x, y);
         }
@@ -118,8 +139,9 @@
         ctx.shadowBlur = 0;
 
         if (col.y > H + trailLen * fontSize) {
-          col.y = -trailLen * fontSize * Math.random();
+          col.y = -trailLen * fontSize * (0.3 + Math.random() * 0.7);
           col.speed = speedMin + Math.random() * (speedMax - speedMin);
+          col.drift = (Math.random() - 0.5) * 0.15;
         }
       }
 

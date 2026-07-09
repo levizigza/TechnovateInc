@@ -1,6 +1,6 @@
 /* ============================================
    Technovate — Intro cinematic score
-   Electronic robot ambience (Web Audio API)
+   Epic cinematic fanfare (Web Audio API)
    ============================================ */
 (function () {
   'use strict';
@@ -11,7 +11,7 @@
     var nodes = [];
     var running = false;
     var started = false;
-    var targetVolume = 0.44;
+    var targetVolume = 0.48;
     var ducked = false;
 
     function getContext() {
@@ -28,54 +28,43 @@
       return node;
     }
 
-    function playRobotBlip(freq, time, duration, gainValue) {
-      var osc = track(ctx.createOscillator());
-      var gain = track(ctx.createGain());
-      var filter = track(ctx.createBiquadFilter());
-
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(freq * 1.08, time);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.72, time + duration);
-
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(freq * 2.2, time);
-      filter.Q.value = 8;
-
-      gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.008);
-      gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(master);
-      osc.start(time);
-      osc.stop(time + duration + 0.02);
-    }
-
-    function playRobotChirp(freq, time, duration, gainValue) {
+    function playFanfareNote(freq, time, duration, gainValue) {
       var osc = track(ctx.createOscillator());
       var gain = track(ctx.createGain());
       var filter = track(ctx.createBiquadFilter());
 
       osc.type = 'sawtooth';
       osc.frequency.setValueAtTime(freq, time);
-      osc.frequency.linearRampToValueAtTime(freq * 1.6, time + duration * 0.4);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, time + duration);
 
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(900, time);
-      filter.frequency.exponentialRampToValueAtTime(3200, time + duration * 0.25);
-      filter.frequency.exponentialRampToValueAtTime(400, time + duration);
+      filter.frequency.setValueAtTime(500, time);
+      filter.frequency.exponentialRampToValueAtTime(2800, time + 0.08);
+      filter.frequency.exponentialRampToValueAtTime(900, time + duration);
 
       gain.gain.setValueAtTime(0.0001, time);
-      gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.01);
+      gain.gain.exponentialRampToValueAtTime(gainValue, time + 0.05);
       gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(master);
       osc.start(time);
-      osc.stop(time + duration + 0.02);
+      osc.stop(time + duration + 0.05);
+    }
+
+    function playTimpani(time) {
+      var osc = track(ctx.createOscillator());
+      var gain = track(ctx.createGain());
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(92, time);
+      osc.frequency.exponentialRampToValueAtTime(48, time + 0.45);
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.exponentialRampToValueAtTime(0.35, time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.55);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(time);
+      osc.stop(time + 0.6);
     }
 
     function buildGraph() {
@@ -85,77 +74,60 @@
 
       var now = ctx.currentTime + 0.05;
 
-      var hum = track(ctx.createOscillator());
-      var humGain = track(ctx.createGain());
-      var humFilter = track(ctx.createBiquadFilter());
-      hum.type = 'square';
-      hum.frequency.value = 55;
-      humFilter.type = 'lowpass';
-      humFilter.frequency.value = 140;
-      humGain.gain.value = 0.1;
-      hum.connect(humFilter);
-      humFilter.connect(humGain);
-      humGain.connect(master);
-      hum.start();
+      var bass = track(ctx.createOscillator());
+      var bassGain = track(ctx.createGain());
+      var bassFilter = track(ctx.createBiquadFilter());
+      bass.type = 'sawtooth';
+      bass.frequency.value = 73.42;
+      bassFilter.type = 'lowpass';
+      bassFilter.frequency.value = 180;
+      bassGain.gain.value = 0.16;
+      bass.connect(bassFilter);
+      bassFilter.connect(bassGain);
+      bassGain.connect(master);
+      bass.start();
 
-      var sub = track(ctx.createOscillator());
-      var subGain = track(ctx.createGain());
-      sub.type = 'triangle';
-      sub.frequency.value = 110;
-      subGain.gain.value = 0.05;
-      sub.connect(subGain);
-      subGain.connect(master);
-      sub.start();
+      var fifth = track(ctx.createOscillator());
+      var fifthGain = track(ctx.createGain());
+      fifth.type = 'triangle';
+      fifth.frequency.value = 110;
+      fifthGain.gain.value = 0.08;
+      fifth.connect(fifthGain);
+      fifthGain.connect(master);
+      fifth.start();
 
-      var lfo = track(ctx.createOscillator());
-      var lfoGain = track(ctx.createGain());
-      lfo.type = 'sine';
-      lfo.frequency.value = 4.5;
-      lfoGain.gain.value = 28;
-      lfo.connect(lfoGain);
-      lfoGain.connect(humFilter.frequency);
-      lfo.start();
+      var strings = track(ctx.createOscillator());
+      var strings2 = track(ctx.createOscillator());
+      var stringsGain = track(ctx.createGain());
+      var stringsFilter = track(ctx.createBiquadFilter());
+      strings.type = 'sawtooth';
+      strings2.type = 'sawtooth';
+      strings.frequency.value = 293.66;
+      strings2.frequency.value = 296.2;
+      stringsFilter.type = 'lowpass';
+      stringsFilter.frequency.setValueAtTime(400, now);
+      stringsFilter.frequency.linearRampToValueAtTime(2200, now + 6);
+      stringsGain.gain.value = 0.07;
+      strings.connect(stringsFilter);
+      strings2.connect(stringsFilter);
+      stringsFilter.connect(stringsGain);
+      stringsGain.connect(master);
+      strings.start();
+      strings2.start();
 
-      var arpNotes = [196, 233, 294, 349, 392, 440, 523, 587];
-      for (var i = 0; i < 32; i++) {
-        playRobotBlip(arpNotes[i % arpNotes.length], now + 0.15 + i * 0.16, 0.07, 0.09 + (i % 4) * 0.01);
-      }
+      playFanfareNote(146.83, now + 0.4, 0.9, 0.14);
+      playFanfareNote(174.61, now + 0.55, 0.9, 0.13);
+      playFanfareNote(220.0, now + 0.7, 1.0, 0.15);
+      playFanfareNote(293.66, now + 0.9, 1.4, 0.16);
 
-      playRobotChirp(880, now + 0.5, 0.35, 0.06);
-      playRobotChirp(660, now + 1.2, 0.4, 0.07);
-      playRobotChirp(1046, now + 2.0, 0.5, 0.08);
-      playRobotChirp(523, now + 2.8, 0.45, 0.07);
+      playTimpani(now + 0.35);
+      playTimpani(now + 1.1);
+      playTimpani(now + 2.0);
 
-      var bufferSize = ctx.sampleRate * 2;
-      var noiseBuffer = track(ctx.createBuffer(1, bufferSize, ctx.sampleRate));
-      var data = noiseBuffer.getChannelData(0);
-      for (var n = 0; n < bufferSize; n++) {
-        data[n] = (Math.random() * 2 - 1) * 0.4;
-      }
-
-      var noise = track(ctx.createBufferSource());
-      noise.buffer = noiseBuffer;
-      noise.loop = true;
-      var noiseFilter = track(ctx.createBiquadFilter());
-      noiseFilter.type = 'bandpass';
-      noiseFilter.frequency.value = 2200;
-      noiseFilter.Q.value = 2.5;
-      var noiseGain = track(ctx.createGain());
-      noiseGain.gain.value = 0.018;
-      noise.connect(noiseFilter);
-      noiseFilter.connect(noiseGain);
-      noiseGain.connect(master);
-      noise.start();
-
-      var pulse = track(ctx.createOscillator());
-      var pulseGain = track(ctx.createGain());
-      pulse.type = 'square';
-      pulse.frequency.value = 2.2;
-      var pulseMod = track(ctx.createGain());
-      pulseMod.gain.value = 0.012;
-      pulse.connect(pulseMod);
-      pulseMod.connect(noiseGain.gain);
-      pulse.start();
+      playFanfareNote(174.61, now + 2.3, 0.8, 0.11);
+      playFanfareNote(220.0, now + 2.45, 0.8, 0.12);
+      playFanfareNote(261.63, now + 2.6, 1.0, 0.13);
+      playFanfareNote(349.23, now + 2.85, 1.6, 0.14);
     }
 
     function fadeTo(value, duration) {
@@ -181,24 +153,24 @@
       }
 
       running = true;
-      fadeTo(ducked ? targetVolume * 0.28 : targetVolume, 1.8);
+      fadeTo(ducked ? targetVolume * 0.3 : targetVolume, 2.2);
       return true;
     }
 
     function duck() {
       ducked = true;
-      if (running) fadeTo(targetVolume * 0.18, 0.8);
+      if (running) fadeTo(targetVolume * 0.22, 1);
     }
 
     function unduck() {
       ducked = false;
-      if (running) fadeTo(targetVolume, 1.2);
+      if (running) fadeTo(targetVolume, 1.5);
     }
 
     function stop() {
       if (!master || !ctx) return;
       running = false;
-      fadeTo(0, 0.7);
+      fadeTo(0, 0.8);
       setTimeout(function () {
         nodes.forEach(function (node) {
           try {
@@ -213,7 +185,7 @@
         }
         started = false;
         master = null;
-      }, 800);
+      }, 900);
     }
 
     return {
