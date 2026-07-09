@@ -230,6 +230,7 @@
     var prompt = document.getElementById('intro-astro-prompt');
     var btn = document.getElementById('intro-astro-button');
     var sensor = document.getElementById('intro-astro-sensor');
+    var head = document.getElementById('intro-astro-head');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
     var holoPortal = document.getElementById('intro-holo-portal');
@@ -240,6 +241,7 @@
       btn.classList.add('intro-astro-button--used');
     }
     if (sensor) sensor.classList.add('intro-astro-sensor--tilting');
+    if (head) head.classList.add('intro-astro-head--tilting');
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -254,6 +256,10 @@
       if (sensor) {
         sensor.classList.remove('intro-astro-sensor--tilting');
         sensor.classList.add('intro-astro-sensor--tilted', 'intro-astro-sensor--projecting');
+      }
+      if (head) {
+        head.classList.remove('intro-astro-head--tilting');
+        head.classList.add('intro-astro-head--tilted');
       }
       if (projection) projection.classList.add('intro-projection--active');
       if (stage) {
