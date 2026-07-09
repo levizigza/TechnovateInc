@@ -25,9 +25,10 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 3800;
   var LOOP_PAUSE_MS = 2800;
-  var HATCH_OPEN_MS = 700;
-  var EYE_RISE_MS = 1200;
-  var EYE_ALIVE_MS = 2600;
+  var HEAD_RISE_MS = 900;
+  var HATCH_OPEN_MS = 550;
+  var HOLO_PORTAL_MS = 1000;
+  var EYE_ALIVE_MS = 2400;
   var HOLO_PANEL_MS = 700;
   var introActivated = false;
 
@@ -48,18 +49,9 @@
   ];
 
 
-  function holoMarkHtml() {
-    if (window.TechnovateLogo && window.TechnovateLogo.holoMarkHtml) {
-      return window.TechnovateLogo.holoMarkHtml();
-    }
-    return '<div class="intro-holo-mark" aria-label="Technovate Digital Systems">' +
-      '<span class="intro-holo-mark__name">Technovate</span>' +
-      '<span class="intro-holo-mark__systems">Digital Systems</span></div>';
-  }
-
-  function holoEyeHtml() {
-    if (window.TechnovateLogo && window.TechnovateLogo.holoEyeHtml) {
-      return window.TechnovateLogo.holoEyeHtml();
+  function holoPortalHtml() {
+    if (window.TechnovateLogo && window.TechnovateLogo.holoPortalHtml) {
+      return window.TechnovateLogo.holoPortalHtml();
     }
     return '';
   }
@@ -83,14 +75,14 @@
     '<div class="intro-astro-dock" id="intro-astro-dock">' +
       '<p class="intro-astro-prompt" id="intro-astro-prompt">Press the red button to begin</p>' +
       '<div class="intro-astro-head" id="intro-astro-head">' +
-        '<div class="intro-astro-holo-beam" id="intro-astro-holo-beam" aria-hidden="true"></div>' +
         '<div class="intro-astro-dome">' +
           '<div class="intro-astro-hatch intro-astro-hatch--left" aria-hidden="true"></div>' +
           '<div class="intro-astro-hatch intro-astro-hatch--right" aria-hidden="true"></div>' +
           '<div class="intro-astro-dome__shine"></div>' +
           '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
           '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
-          '<div class="intro-astro-sensor">' +
+          '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
+            '<div class="intro-astro-sensor-beam" id="intro-astro-sensor-beam" aria-hidden="true"></div>' +
             '<div class="intro-astro-sensor__glow"></div>' +
             '<div class="intro-astro-sensor__housing"></div>' +
             '<div class="intro-astro-sensor__ring"></div>' +
@@ -98,12 +90,10 @@
           '</div>' +
         '</div>' +
         '<div class="intro-astro-body">' +
-          '<div class="intro-astro-body__stripe"></div>' +
           '<button class="intro-astro-button" id="intro-astro-button" type="button" aria-label="Activate hologram">' +
             '<span class="intro-astro-button__pulse" aria-hidden="true"></span>' +
             '<span class="intro-astro-button__core"></span>' +
           '</button>' +
-          '<div class="intro-astro-body__badge">ASTRO · MECH</div>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -212,7 +202,7 @@
     var enterBtn = document.getElementById('intro-enter-main');
     if (intro) intro.classList.add('intro--holo-focus');
     if (stage) {
-      stage.classList.remove('intro-holo-stage--waiting', 'intro-holo-stage--eye-rising', 'intro-holo-stage--eye-alive');
+      stage.classList.remove('intro-holo-stage--waiting', 'intro-holo-stage--portal-opening', 'intro-holo-stage--eye-alive');
       stage.classList.add('intro-holo-stage--holo-revealed', 'intro-holo-stage--audio');
     }
     if (projection) projection.classList.add('intro-projection--audio');
@@ -238,23 +228,24 @@
     if (introClosed || introActivated) return;
     introActivated = true;
 
+    var dock = document.getElementById('intro-astro-dock');
     var head = document.getElementById('intro-astro-head');
     var prompt = document.getElementById('intro-astro-prompt');
     var btn = document.getElementById('intro-astro-button');
-    var beam = document.getElementById('intro-astro-holo-beam');
+    var beam = document.getElementById('intro-astro-sensor-beam');
+    var sensor = document.getElementById('intro-astro-sensor');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
-    var eyeRise = document.getElementById('intro-holo-eye-rise');
+    var holoPortal = document.getElementById('intro-holo-portal');
 
     tryStartMusic();
 
-    if (head) head.classList.add('intro-astro-head--open');
-    if (beam) beam.classList.add('intro-astro-holo-beam--active');
     if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
     if (btn) {
       btn.disabled = true;
       btn.classList.add('intro-astro-button--used');
     }
+    if (dock) dock.classList.add('intro-astro-dock--ascend');
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -263,31 +254,34 @@
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
+      if (head) head.classList.add('intro-astro-head--open');
+      if (sensor) sensor.classList.add('intro-astro-sensor--projecting');
+      if (beam) beam.classList.add('intro-astro-sensor-beam--active');
       if (projection) projection.classList.add('intro-projection--active');
       if (stage) {
         stage.classList.remove('intro-holo-stage--waiting');
-        stage.classList.add('intro-holo-stage--eye-rising');
+        stage.classList.add('intro-holo-stage--portal-opening');
       }
-      if (eyeRise) eyeRise.classList.add('intro-holo-eye-rise--active');
-      startHoloEyeLife();
-    }, HATCH_OPEN_MS);
+      if (holoPortal) holoPortal.classList.add('intro-holo-portal--active');
+    }, HEAD_RISE_MS);
 
     eyeSettleTimer = setTimeout(function () {
       if (introClosed) return;
       if (stage) {
-        stage.classList.remove('intro-holo-stage--eye-rising');
+        stage.classList.remove('intro-holo-stage--portal-opening');
         stage.classList.add('intro-holo-stage--eye-alive');
       }
-      if (eyeRise) eyeRise.classList.add('intro-holo-eye-rise--settled');
-    }, HATCH_OPEN_MS + EYE_RISE_MS);
+      if (holoPortal) holoPortal.classList.add('intro-holo-portal--settled');
+      startHoloEyeLife();
+    }, HEAD_RISE_MS + HOLO_PORTAL_MS);
 
     holoPanelTimer = setTimeout(function () {
       revealHoloPanel();
-    }, HATCH_OPEN_MS + EYE_RISE_MS + EYE_ALIVE_MS);
+    }, HEAD_RISE_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS);
 
     hatchAudioTimer = setTimeout(function () {
       if (!introClosed) transitionToAudioPhase();
-    }, HATCH_OPEN_MS + EYE_RISE_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
+    }, HEAD_RISE_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
   }
 
   function transitionToAudioPhase() {
@@ -418,10 +412,10 @@
       '<div class="intro-content intro-content--holo">' +
         '<div class="intro-holo-stage intro-holo-stage--waiting" id="intro-holo-stage">' +
           '<div class="intro-holo-stage__aura" aria-hidden="true"></div>' +
-          holoEyeHtml() +
           '<div class="intro-holo-panel intro-holo-panel--dormant" id="intro-holo-panel">' +
             '<div class="intro-holo-panel__aura" aria-hidden="true"></div>' +
-            holoMarkHtml() +
+            holoPortalHtml() +
+            '<p class="intro-holo-title">Technovate Digital Systems</p>' +
             '<button class="intro-enter-btn intro-enter-btn--hidden" id="intro-enter-main" type="button" aria-label="Enter website">' +
               '<span class="intro-enter-btn__label">Enter</span>' +
               '<span class="intro-enter-btn__key" aria-hidden="true">↵</span>' +

@@ -94,29 +94,20 @@
       '</div>' +
     '</div>';
 
-  function holoMarkHtml() {
+  function holoPortalHtml() {
     return (
-      '<div class="intro-holo-mark" aria-label="Technovate Digital Systems">' +
-        '<div class="intro-holo-mark__aura" aria-hidden="true"></div>' +
-        '<div class="intro-holo-mark__visual">' +
-          '<div class="intro-holo-mark__eye">' + EYE_ICON_SVG + '</div>' +
-          '<div class="intro-holo-mark__copy">' +
-            '<span class="intro-holo-mark__name">Technovate</span>' +
-            '<span class="intro-holo-mark__systems">Digital Systems</span>' +
-          '</div>' +
+      '<div class="intro-holo-portal" id="intro-holo-portal" aria-hidden="true">' +
+        '<div class="intro-holo-portal__ring"></div>' +
+        '<div class="intro-holo-portal__ring intro-holo-portal__ring--inner"></div>' +
+        '<div class="tv-eye-character tv-eye-character--holo" id="intro-holo-eye-unit">' +
+          EYE_BODY_INNER +
         '</div>' +
       '</div>'
     );
   }
 
   function holoEyeHtml() {
-    return (
-      '<div class="intro-holo-eye-rise" id="intro-holo-eye-rise" aria-hidden="true">' +
-        '<div class="tv-eye-character tv-eye-character--holo" id="intro-holo-eye-unit">' +
-          EYE_BODY_INNER +
-        '</div>' +
-      '</div>'
-    );
+    return holoPortalHtml();
   }
 
   function createHoloEyeLife(unitEl) {
@@ -472,7 +463,8 @@
     eyeMarkSvg: function () { return EYE_MARK_SVG; },
     characterHtml: function () { return CHARACTER_HTML; },
     holoEyeHtml: holoEyeHtml,
-    holoMarkHtml: holoMarkHtml,
+    holoPortalHtml: holoPortalHtml,
+    holoMarkHtml: holoPortalHtml,
     createHoloEyeLife: createHoloEyeLife,
     mount: mount,
     createEyeAnimator: createEyeAnimator
