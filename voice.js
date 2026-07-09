@@ -42,13 +42,29 @@
 
   var HAL_EYE_HTML =
     '<div class="intro-hal-floater" id="intro-hal-floater" aria-hidden="true">' +
-      '<div class="intro-hal-eye" id="intro-hal-eye">' +
-        '<div class="intro-hal-eye__glow"></div>' +
-        '<div class="intro-hal-eye__housing"></div>' +
-        '<div class="intro-hal-eye__rim"></div>' +
-        '<div class="intro-hal-eye__lens">' +
-          '<div class="intro-hal-eye__pupil"></div>' +
-          '<div class="intro-hal-eye__glint"></div>' +
+      '<div class="intro-hal-unit" id="intro-hal-eye">' +
+        '<div class="intro-hal-unit__chassis">' +
+          '<div class="intro-hal-unit__screw intro-hal-unit__screw--tl"></div>' +
+          '<div class="intro-hal-unit__screw intro-hal-unit__screw--tr"></div>' +
+          '<div class="intro-hal-unit__screw intro-hal-unit__screw--bl"></div>' +
+          '<div class="intro-hal-unit__screw intro-hal-unit__screw--br"></div>' +
+          '<div class="intro-hal-unit__header">' +
+            '<span class="intro-hal-unit__label">AI MODULE</span>' +
+            '<span class="intro-hal-unit__leds"><span></span><span></span></span>' +
+          '</div>' +
+          '<div class="intro-hal-unit__vents" aria-hidden="true"></div>' +
+          '<div class="intro-hal-unit__well">' +
+            '<div class="intro-hal-eye">' +
+              '<div class="intro-hal-eye__glow"></div>' +
+              '<div class="intro-hal-eye__housing"></div>' +
+              '<div class="intro-hal-eye__rim"></div>' +
+              '<div class="intro-hal-eye__lens">' +
+                '<div class="intro-hal-eye__pupil"></div>' +
+                '<div class="intro-hal-eye__glint"></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="intro-hal-unit__footer">TECHNOVATE SYS</div>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -101,7 +117,7 @@
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
     var halEye = document.getElementById('intro-hal-eye');
-    if (halEye) halEye.classList.toggle('intro-hal-eye--speaking', active);
+    if (halEye) halEye.classList.toggle('intro-hal-unit--speaking', active);
     if (introMusic) {
       if (active) introMusic.duck();
       else introMusic.unduck();
@@ -378,11 +394,12 @@
     var el = document.getElementById('intro-hal-floater');
     if (!el) return null;
 
-    var eyeSize = 104;
-    var margin = 72;
+    var unitW = 210;
+    var unitH = 156;
+    var margin = 88;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.style.transform = 'translate(calc(50vw - ' + (eyeSize * 0.5) + 'px), calc(32vh - ' + (eyeSize * 0.5) + 'px))';
+      el.style.transform = 'translate(calc(50vw - ' + (unitW * 0.5) + 'px), calc(32vh - ' + (unitH * 0.5) + 'px))';
       return { stop: function () {} };
     }
 
@@ -399,10 +416,10 @@
 
     function bounds() {
       return {
-        minX: margin + eyeSize * 0.5,
-        maxX: window.innerWidth - margin - eyeSize * 0.5,
-        minY: margin + eyeSize * 0.5,
-        maxY: window.innerHeight - margin - eyeSize * 0.5
+        minX: margin + unitW * 0.5,
+        maxX: window.innerWidth - margin - unitW * 0.5,
+        minY: margin + unitH * 0.5,
+        maxY: window.innerHeight - margin - unitH * 0.5
       };
     }
 
@@ -468,7 +485,7 @@
       var lift = Math.sin(t * 1.6) * 3;
 
       el.style.transform =
-        'translate3d(' + (pos.x - eyeSize * 0.5) + 'px,' + (pos.y - eyeSize * 0.5 + lift) + 'px,0) ' +
+        'translate3d(' + (pos.x - unitW * 0.5) + 'px,' + (pos.y - unitH * 0.5 + lift) + 'px,0) ' +
         'rotate(' + tilt + 'rad) scale(' + scale + ')';
 
       rafId = requestAnimationFrame(tick);
