@@ -1463,19 +1463,285 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 
+/* ============================================
+   SECTOR OVERLAY — holographic detail view
+   ============================================ */
+
+.sector-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s var(--ease-out-expo), visibility 0.4s;
+}
+
+.sector-overlay--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sector-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 11, 24, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sector-overlay__panel {
+  position: relative;
+  width: 640px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 11, 24, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(var(--sector-color, 59, 130, 246), 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.sector-overlay--open .sector-overlay__panel {
+  transform: translateY(0) scale(1);
+}
+
+.sector-overlay__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.sector-overlay__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.sector-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.sector-overlay__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sector-overlay__icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.sector-overlay__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: white;
+  line-height: 1.2;
+}
+
+.sector-overlay__subtitle {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+}
+
+.sector-overlay__desc {
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.7;
+  margin-bottom: var(--sp-3);
+}
+
+.sector-overlay__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.sector-overlay__stat {
+  text-align: center;
+  padding: var(--sp-2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sector-overlay__stat-val {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.sector-overlay__stat-label {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 4px;
+}
+
+.sector-overlay__features h3 {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-1);
+}
+
+.sector-overlay__list {
+  list-style: none;
+  margin-bottom: var(--sp-3);
+}
+
+.sector-overlay__list li {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 0 8px var(--sp-3);
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.sector-overlay__list li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--accent, #3b82f6);
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.sector-overlay__list li:last-child {
+  border-bottom: none;
+}
+
+.sector-overlay__btn {
+  width: 100%;
+  text-align: center;
+  color: white !important;
+  border: none;
+}
+
+/* Sector card CTA hint */
+.sector-cta {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.sector-card:hover .sector-cta {
+  opacity: 0.5;
+  transform: translateY(0);
+}
+
+/* ============================================
+   HERO ORBS — mouse-reactive floating lights
+   ============================================ */
+
+.hero-orbs {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.orb--1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.35) 0%, transparent 70%);
+  left: 10%;
+  top: 60%;
+}
+
+.orb--2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.25) 0%, transparent 70%);
+  right: 10%;
+  top: 15%;
+}
+
+.orb--3 {
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, transparent 70%);
+  left: 40%;
+  top: 40%;
+}
+
+/* Card tilt — transition for smooth return */
+.card, .sector-card, .project-card, .stat-item {
+  transition: transform 0.2s ease-out, border-color 0.35s, box-shadow 0.35s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-hint { animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-enter > * { opacity: 1; transform: none; transition: none; }
   .grain { display: none; }
   .hero-immersive::after { animation: none; }
+  .orb { display: none; }
+  .sector-overlay__panel { transition: none; }
 }
 
 @media (max-width: 860px) {
   .stats-row { grid-template-columns: 1fr 1fr; }
   .scroll-hint { display: none; }
+  .sector-overlay__stats { grid-template-columns: 1fr; }
+  .orb { opacity: 0.3; }
 }
 
 @media (max-width: 480px) {
   .stats-row { grid-template-columns: 1fr; }
+  .sector-overlay__panel { padding: var(--sp-3); }
 }

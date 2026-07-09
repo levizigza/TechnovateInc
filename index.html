@@ -39,6 +39,11 @@
     <!-- HERO -->
     <section class="hero-immersive">
       <div class="hero-viewport viewport" id="scene-hero"></div>
+      <div class="hero-orbs" aria-hidden="true">
+        <div class="orb orb--1"></div>
+        <div class="orb orb--2"></div>
+        <div class="orb orb--3"></div>
+      </div>
       <div class="hero-overlay">
         <div class="container">
           <p class="hero-eyebrow">Software Development Hub</p>
@@ -91,30 +96,68 @@
         <h2 class="section-title">Five sectors, one platform</h2>
         <p class="section-lead">Each sector gets purpose-built software. All sectors share a unified technology foundation.</p>
         <div class="sectors-grid" style="margin-top:var(--sp-4);">
-          <div class="sector-card sector-card--health">
+          <div class="sector-card sector-card--health" data-sector="health"
+               data-detail="Our health platform combines AI-driven engagement tools with community wellness tracking. We build systems that help organizations monitor health outcomes, coordinate care delivery, and invest in preventive strategies — all backed by explainable AI."
+               data-features="AI health risk assessment|Community wellness dashboards|Outcome tracking and reporting|HIPAA-aligned data governance|Predictive engagement models"
+               data-stat-1="3" data-stat-1-label="Active modules" data-stat-2="100%" data-stat-2-label="Explainable AI" data-stat-3="Phase 2" data-stat-3-label="Development stage">
             <div class="sector-icon">●</div>
             <h3>Health & Wellness</h3>
             <p>AI-assisted health engagement, tracking, and community investment in better outcomes.</p>
+            <span class="sector-cta">Click to explore</span>
           </div>
-          <div class="sector-card sector-card--finance">
+          <div class="sector-card sector-card--finance" data-sector="finance"
+               data-detail="Financial visibility and wealth tracking tools designed for institutional transparency. We build platforms that give organizations and their stakeholders clear views into financial health, distributed value, and investment impact."
+               data-features="Financial visibility dashboards|Distributed wealth tracking|Transparent value reporting|Grant expenditure monitoring|Real-time portfolio analytics"
+               data-stat-1="5" data-stat-1-label="Core tools" data-stat-2="Real-time" data-stat-2-label="Data sync" data-stat-3="Phase 2" data-stat-3-label="Development stage">
             <div class="sector-icon">●</div>
             <h3>Finance & Wealth</h3>
             <p>Financial visibility tools, distributed wealth tracking, and transparent value reporting.</p>
+            <span class="sector-cta">Click to explore</span>
           </div>
-          <div class="sector-card sector-card--education">
+          <div class="sector-card sector-card--education" data-sector="education"
+               data-detail="Adaptive learning platforms that meet learners where they are. Our education tools use AI to personalize learning paths, track skill development, and provide institutions with actionable analytics on educational outcomes."
+               data-features="Adaptive learning pathways|AI-powered skill assessment|Institutional learning analytics|Progress tracking dashboards|Curriculum optimization engine"
+               data-stat-1="AI-driven" data-stat-1-label="Personalization" data-stat-2="4" data-stat-2-label="Module types" data-stat-3="Phase 1" data-stat-3-label="Development stage">
             <div class="sector-icon">●</div>
             <h3>Education & Learning</h3>
             <p>Adaptive learning platforms, skill tracking, and institutional learning analytics.</p>
+            <span class="sector-cta">Click to explore</span>
           </div>
-          <div class="sector-card sector-card--enterprise">
+          <div class="sector-card sector-card--enterprise" data-sector="enterprise"
+               data-detail="Workflow automation and productivity frameworks built for organizations that need to scale. Our enterprise tools leverage AI to streamline operations, reduce manual processes, and surface actionable insights from operational data."
+               data-features="Intelligent workflow automation|AI-powered operational tools|Productivity analytics|Process optimization engine|Cross-team coordination"
+               data-stat-1="60%" data-stat-1-label="Time savings" data-stat-2="API-first" data-stat-2-label="Architecture" data-stat-3="Phase 2" data-stat-3-label="Development stage">
             <div class="sector-icon">●</div>
             <h3>Enterprise & Productivity</h3>
             <p>Workflow automation, productivity frameworks, and AI-powered operational tools.</p>
+            <span class="sector-cta">Click to explore</span>
           </div>
-          <div class="sector-card sector-card--community">
+          <div class="sector-card sector-card--community" data-sector="community"
+               data-detail="Technology that strengthens local connections and civic participation. We build tools that help communities recognize value, coordinate activities, and create meaningful engagement between residents, organizations, and local government."
+               data-features="Community coordination tools|Civic participation platform|Local value recognition|Neighborhood engagement|Event and resource management"
+               data-stat-1="Local" data-stat-1-label="Focus" data-stat-2="Civic" data-stat-2-label="Integration" data-stat-3="Phase 1" data-stat-3-label="Development stage">
             <div class="sector-icon">●</div>
             <h3>Community & Relationships</h3>
             <p>Local value recognition systems, community coordination, and civic participation tools.</p>
+            <span class="sector-cta">Click to explore</span>
+          </div>
+        </div>
+        <div class="stats-row" style="margin-top:var(--sp-5);">
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="5">0</div>
+            <div class="stat-item__label">Active sectors</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="6" data-suffix="+">0</div>
+            <div class="stat-item__label">Projects delivered</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="100" data-suffix="%">0</div>
+            <div class="stat-item__label">Explainable AI</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="3">0</div>
+            <div class="stat-item__label">Development phases</div>
           </div>
         </div>
       </div>
@@ -190,6 +233,7 @@
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
   <script src="experience.js"></script>
   <script src="chatbot.js"></script>
+  <script src="interactive.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="three-scenes.js"></script>
 </body>
