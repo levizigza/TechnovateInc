@@ -108,17 +108,11 @@
   function init() {
     var hero = document.querySelector('.hero-immersive');
     if (hero) {
-      createRain(hero, { opacity: 0.06, density: 0.5, color: '59, 130, 246' });
+      createRain(hero, { opacity: 0.04, density: 0.35, color: '59, 130, 246' });
     }
 
-    var pageHeaders = document.querySelectorAll('.page-header-immersive');
-    pageHeaders.forEach(function (ph) {
-      createRain(ph, { opacity: 0.05, density: 0.4, color: '59, 130, 246' });
-    });
-
-    var darkSections = document.querySelectorAll('.section--dark');
-    darkSections.forEach(function (sec) {
-      createRain(sec, { opacity: 0.03, density: 0.25, color: '13, 148, 136' });
+    document.querySelectorAll('.page-header-immersive').forEach(function (ph) {
+      createRain(ph, { opacity: 0.035, density: 0.3, color: '59, 130, 246' });
     });
   }
 

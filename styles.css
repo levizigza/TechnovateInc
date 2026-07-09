@@ -1759,28 +1759,7 @@ img { max-width: 100%; height: auto; display: block; }
   mix-blend-mode: screen;
 }
 
-/* Holographic shimmer on headings in dark sections */
-.section--dark .section-title,
-.page-header-overlay .page-title {
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    rgba(59, 130, 246, 0.9) 25%,
-    #ffffff 50%,
-    rgba(13, 148, 136, 0.9) 75%,
-    #ffffff 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: holoShimmer 8s ease-in-out infinite;
-}
-
-@keyframes holoShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
+/* Holographic shimmer — intro only, not content sections */
 
 /* Holographic border glow on sector overlay panel */
 .sector-overlay__panel {
@@ -1821,47 +1800,11 @@ img { max-width: 100%; height: auto; display: block; }
    SACRED GEOMETRY — SVG pattern backgrounds
    ============================================ */
 
-/* Flower of Life — hexagonal circles, sacred proportions */
-.sacred-geo-bg {
-  position: relative;
-}
-
-.sacred-geo-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cg fill='none' stroke='%233b82f6' stroke-width='0.5'%3E%3Ccircle cx='60' cy='52' r='30'/%3E%3Ccircle cx='30' cy='52' r='30'/%3E%3Ccircle cx='90' cy='52' r='30'/%3E%3Ccircle cx='45' cy='26' r='30'/%3E%3Ccircle cx='75' cy='26' r='30'/%3E%3Ccircle cx='45' cy='78' r='30'/%3E%3Ccircle cx='75' cy='78' r='30'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 120px 104px;
-}
-
-/* Metatron's Cube variant — for dark sections */
-.sacred-geo-dark::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='174' viewBox='0 0 200 174'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.4'%3E%3Ccircle cx='100' cy='87' r='50'/%3E%3Ccircle cx='100' cy='87' r='25'/%3E%3Ccircle cx='75' cy='43.7' r='25'/%3E%3Ccircle cx='125' cy='43.7' r='25'/%3E%3Ccircle cx='75' cy='130.3' r='25'/%3E%3Ccircle cx='125' cy='130.3' r='25'/%3E%3Ccircle cx='50' cy='87' r='25'/%3E%3Ccircle cx='150' cy='87' r='25'/%3E%3Cline x1='100' y1='37' x2='100' y2='137'/%3E%3Cline x1='56.7' y1='62' x2='143.3' y2='112'/%3E%3Cline x1='56.7' y1='112' x2='143.3' y2='62'/%3E%3Cline x1='75' y1='43.7' x2='125' y2='130.3'/%3E%3Cline x1='125' y1='43.7' x2='75' y2='130.3'/%3E%3Cline x1='50' y1='87' x2='150' y2='87'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 200px 174px;
-}
-
-/* Hexagonal grid — for alt sections */
+/* Sacred geometry — disabled for cleaner content sections */
+.sacred-geo-bg::before,
+.sacred-geo-dark::before,
 .sacred-geo-hex::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.02;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cg fill='none' stroke='%230d9488' stroke-width='0.5'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z'/%3E%3Cpath d='M28 100L0 84L0 50L28 34L56 50L56 84L28 100Z' transform='translate(0,34)'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 56px 100px;
+  display: none !important;
 }
 
 /* Golden spiral accent on CTA banners */
@@ -1871,16 +1814,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .cta-banner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cg fill='none' stroke='%233b82f6' stroke-width='0.5'%3E%3Cpath d='M150 150 Q150 0 300 0'/%3E%3Cpath d='M150 150 Q300 150 300 300'/%3E%3Cpath d='M150 150 Q150 300 0 300'/%3E%3Cpath d='M150 150 Q0 150 0 0'/%3E%3Ccircle cx='150' cy='150' r='50'/%3E%3Ccircle cx='150' cy='150' r='80.9'/%3E%3Ccircle cx='150' cy='150' r='130.9'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
+  display: none;
 }
 
 .cta-banner > * {
@@ -1924,9 +1858,17 @@ img { max-width: 100%; height: auto; display: block; }
   .sector-overlay__panel { padding: var(--sp-3); }
 }
 
+.holo-scanlines:not(#cinematic-intro)::before {
+  display: none;
+}
+
 /* ============================================
    CINEMATIC INTRO — Epic welcome experience
    ============================================ */
+
+body.intro-active {
+  overflow: hidden;
+}
 
 #cinematic-intro {
   position: fixed;
@@ -2052,7 +1994,7 @@ img { max-width: 100%; height: auto; display: block; }
     0 0 20px rgba(0, 212, 255, 0.8),
     0 0 40px rgba(0, 212, 255, 0.4),
     0 0 60px rgba(247, 37, 133, 0.3);
-  animation: holoText 3s ease-in-out infinite, glitchText 8s steps(1) infinite;
+  animation: holoText 3s ease-in-out infinite;
 }
 
 /* Chromatic aberration layers */
@@ -2103,7 +2045,8 @@ img { max-width: 100%; height: auto; display: block; }
   95% { transform: none; filter: none; }
 }
 
-/* Scanline overlay on intro */
+/* Scanline overlay — intro only */
+#cinematic-intro.holo-scanlines::before,
 #cinematic-intro::before {
   content: "";
   position: absolute;
@@ -2194,115 +2137,98 @@ img { max-width: 100%; height: auto; display: block; }
   50% { height: 36px; box-shadow: 0 0 16px rgba(247, 37, 133, 0.8); }
 }
 
-/* Choice buttons */
-.intro-choices {
+/* Prominent skip — always visible */
+.intro-enter {
   position: absolute;
-  bottom: 15%;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  z-index: 110;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 212, 255, 0.5);
+  background: rgba(0, 212, 255, 0.12);
+  color: #fff;
+  font-family: var(--font);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.2);
+}
+
+.intro-enter:hover {
+  background: rgba(0, 212, 255, 0.25);
+  border-color: rgba(0, 212, 255, 0.8);
+  box-shadow: 0 0 32px rgba(0, 212, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.intro-tagline {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: var(--sp-2);
+  max-width: 480px;
+}
+
+.intro-actions {
+  position: absolute;
+  bottom: 12%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--sp-2);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.6s var(--ease-out-expo);
+  z-index: 110;
 }
 
-.intro-choices--visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.intro-prompt {
-  font-size: var(--text-xs);
-  color: rgba(0, 212, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  margin-bottom: var(--sp-2);
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
-}
-
-.intro-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 16px 32px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  background: rgba(0, 212, 255, 0.05);
-  color: #00d4ff;
-  font-family: var(--font);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  min-width: 280px;
-  justify-content: center;
-  transition: all 0.3s var(--ease);
-  position: relative;
-  overflow: hidden;
-}
-
-.intro-btn::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.intro-btn:hover::before {
-  left: 100%;
-}
-
-.intro-btn:hover {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: rgba(0, 212, 255, 0.6);
-  box-shadow: 
-    0 0 20px rgba(0, 212, 255, 0.3),
-    inset 0 0 20px rgba(0, 212, 255, 0.1);
-  transform: translateY(-2px);
-  text-shadow: 0 0 8px rgba(0, 212, 255, 0.8);
-}
-
-.intro-btn--voice {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(247, 37, 133, 0.1) 100%);
-  border-color: rgba(0, 212, 255, 0.4);
-}
-
-.intro-btn--voice:hover {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(247, 37, 133, 0.2) 100%);
-  border-color: rgba(0, 212, 255, 0.7);
-  box-shadow: 
-    0 0 30px rgba(0, 212, 255, 0.4),
-    0 0 60px rgba(247, 37, 133, 0.2);
-}
-
-.intro-btn-icon {
-  font-size: 1.2em;
-}
-
-/* Skip button */
-.intro-skip {
-  position: absolute;
-  bottom: var(--sp-4);
-  right: var(--sp-4);
-  background: none;
+.intro-btn--primary {
+  min-width: 260px;
+  padding: 16px 36px;
+  border-radius: 8px;
   border: none;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: var(--text-sm);
+  background: #fff;
+  color: var(--dark);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
-  padding: var(--sp-1) var(--sp-2);
-  transition: color 0.2s;
+  transition: all 0.25s var(--ease);
 }
 
-.intro-skip:hover {
+.intro-btn--primary:hover {
+  background: #00d4ff;
+  color: var(--dark);
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.intro-btn--ghost {
+  min-width: 260px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
   color: rgba(255, 255, 255, 0.6);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+
+.intro-btn--ghost:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  color: #00d4ff;
+}
+
+/* Legacy choice block — removed */
+.intro-choices,
+.intro-skip {
+  display: none;
 }
 
 /* ============================================
