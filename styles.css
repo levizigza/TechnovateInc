@@ -2135,7 +2135,17 @@ body.intro-active {
 }
 
 .intro-astro-dock--ascend {
-  transform: translateX(-50%) translateY(-72px);
+  transform: translateX(-50%) translateY(-96px);
+}
+
+.intro-astro-dock--ascend .intro-astro-head {
+  animation: astroDockWobble 0.65s ease-in-out infinite;
+}
+
+@keyframes astroDockWobble {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px) rotate(-0.6deg); }
+  75% { transform: translateX(5px) rotate(0.6deg); }
 }
 
 .intro-astro-prompt {
@@ -2168,28 +2178,65 @@ body.intro-active {
   flex-direction: column;
   align-items: center;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.65));
+  transform-origin: 50% 100%;
+}
+
+.intro-astro-head--idle .intro-astro-dome {
+  animation: astroIdlePeek 4s ease-in-out infinite;
+}
+
+.intro-astro-head--excited .intro-astro-dome {
+  animation: astroExcitedBounce 0.35s ease-in-out 2;
+}
+
+.intro-astro-head--looking-up .intro-astro-dome {
+  transform: rotate(-14deg);
+  transform-origin: 50% 92%;
+}
+
+.intro-astro-head--projecting .intro-astro-dome {
+  transform-origin: 50% 92%;
+  animation: astroProjectWobble 0.7s ease-in-out infinite;
+}
+
+@keyframes astroIdlePeek {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  35% { transform: rotate(-2.5deg) translateY(-1px); }
+  65% { transform: rotate(1.5deg) translateY(0); }
+}
+
+@keyframes astroExcitedBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-6px) scale(1.02); }
+  70% { transform: translateY(2px) scale(0.99); }
+}
+
+@keyframes astroProjectWobble {
+  0%, 100% { transform: rotate(-14deg) translateX(0); }
+  25% { transform: rotate(-15.5deg) translateX(-4px); }
+  75% { transform: rotate(-12.5deg) translateX(4px); }
 }
 
 .intro-astro-sensor-beam {
   position: absolute;
   left: 50%;
-  bottom: 50%;
-  width: 3px;
+  top: 50%;
+  width: 4px;
   height: 0;
   transform: translateX(-50%);
-  transform-origin: bottom center;
-  background: linear-gradient(to top, rgba(0, 212, 255, 0.95) 0%, rgba(0, 212, 255, 0.4) 55%, rgba(0, 212, 255, 0) 100%);
-  box-shadow: 0 0 14px rgba(0, 212, 255, 0.7);
+  transform-origin: center top;
+  background: linear-gradient(to top, rgba(0, 255, 255, 1) 0%, rgba(0, 212, 255, 0.65) 40%, rgba(0, 212, 255, 0) 100%);
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.9), 0 0 36px rgba(0, 180, 255, 0.45);
   opacity: 0;
   pointer-events: none;
   border-radius: 2px;
-  z-index: 0;
+  z-index: 6;
 }
 
 .intro-astro-sensor-beam--active {
-  height: min(18vh, 140px);
-  opacity: 0.85;
-  animation: astroSensorBeamPulse 1.2s ease-in-out infinite;
+  height: min(20vh, 155px);
+  opacity: 1;
+  animation: astroSensorBeamPulse 1s ease-in-out infinite;
 }
 
 @keyframes astroSensorBeamPulse {
@@ -2198,15 +2245,33 @@ body.intro-active {
 }
 
 .intro-astro-sensor--projecting .intro-astro-sensor__lens {
+  background: radial-gradient(circle at 45% 40%, #ffffff 0%, #00e8ff 22%, #0088cc 55%, #001828 100%);
   box-shadow:
-    inset 0 0 10px rgba(0, 0, 0, 0.95),
-    0 0 18px rgba(0, 212, 255, 0.85),
-    0 0 36px rgba(0, 180, 255, 0.45);
+    0 0 22px rgba(0, 255, 255, 0.95),
+    0 0 44px rgba(0, 212, 255, 0.65),
+    inset 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.intro-astro-sensor--projecting .intro-astro-sensor__glow {
+  background: radial-gradient(circle, rgba(0, 230, 255, 0.75) 0%, rgba(0, 180, 255, 0.35) 45%, transparent 72%);
+  animation: astroSensorGlowActive 0.8s ease-in-out infinite;
+}
+
+.intro-astro-sensor--projecting .intro-astro-sensor__housing {
+  box-shadow:
+    inset 0 0 10px rgba(0, 0, 0, 0.6),
+    0 0 0 3px #8ad4ff,
+    0 0 20px rgba(0, 212, 255, 0.55);
 }
 
 .intro-astro-sensor--projecting .intro-astro-sensor__ring {
-  box-shadow: 0 0 20px rgba(60, 200, 255, 0.85);
-  border-color: rgba(120, 220, 255, 0.95);
+  box-shadow: 0 0 24px rgba(60, 220, 255, 0.95);
+  border-color: rgba(160, 240, 255, 1);
+}
+
+@keyframes astroSensorGlowActive {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
 }
 
 .intro-astro-holo-beam {
@@ -2225,41 +2290,46 @@ body.intro-active {
   box-shadow:
     inset 0 4px 12px rgba(255, 255, 255, 0.45),
     inset 0 -8px 16px rgba(0, 40, 80, 0.2);
-  overflow: hidden;
-  z-index: 2;
+  overflow: visible;
+  z-index: 3;
+  transform-origin: 50% 92%;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .intro-astro-hatch {
   position: absolute;
-  top: 0;
-  width: 50%;
-  height: 58%;
+  top: 6px;
+  width: 34%;
+  height: 38%;
   background: linear-gradient(180deg, #c5d0dc 0%, #9aabb8 100%);
   border: 1px solid #7a8fa0;
   transform-origin: bottom center;
   transition: transform 0.65s cubic-bezier(0.34, 1.2, 0.48, 1);
-  z-index: 4;
+  z-index: 2;
   box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.4);
+  pointer-events: none;
 }
 
 .intro-astro-hatch--left {
-  left: 0;
-  border-radius: 74px 0 0 0;
+  left: 6px;
+  border-radius: 40px 0 0 0;
   border-right: none;
 }
 
 .intro-astro-hatch--right {
-  right: 0;
-  border-radius: 0 74px 0 0;
+  right: 6px;
+  border-radius: 0 40px 0 0;
   border-left: none;
 }
 
 .intro-astro-head--open .intro-astro-hatch--left {
-  transform: rotate(-38deg) translateY(-6px);
+  transform: rotate(-52deg) translate(-4px, -8px);
+  opacity: 0.55;
 }
 
 .intro-astro-head--open .intro-astro-hatch--right {
-  transform: rotate(38deg) translateY(-6px);
+  transform: rotate(52deg) translate(4px, -8px);
+  opacity: 0.55;
 }
 
 .intro-astro-dome__shine {
@@ -2281,8 +2351,43 @@ body.intro-active {
   height: 38px;
   border-radius: 4px;
   background: linear-gradient(180deg, #4a9fe8 0%, #1e5a9e 55%, #123d6e 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 14px rgba(0, 180, 255, 0.45);
   z-index: 1;
+  overflow: visible;
+}
+
+.intro-astro-dome__blue-glow {
+  position: absolute;
+  inset: -4px -2px;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(0, 220, 255, 0.7) 0%, transparent 72%);
+  animation: astroSideEyeGlow 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.intro-astro-head--projecting .intro-astro-dome__blue-glow,
+.intro-astro-head--looking-up .intro-astro-dome__blue-glow {
+  animation: astroSideEyeGlowActive 0.9s ease-in-out infinite;
+}
+
+.intro-astro-head--projecting .intro-astro-dome__blue,
+.intro-astro-head--looking-up .intro-astro-dome__blue {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 20px rgba(0, 220, 255, 0.85),
+    0 0 36px rgba(0, 180, 255, 0.45);
+}
+
+@keyframes astroSideEyeGlow {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes astroSideEyeGlowActive {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
 .intro-astro-dome__blue--left { top: 34px; left: 12px; }
@@ -2291,19 +2396,20 @@ body.intro-active {
 .intro-astro-sensor {
   position: absolute;
   left: 50%;
-  top: 40px;
-  width: 52px;
-  height: 52px;
+  top: 36px;
+  width: 56px;
+  height: 56px;
   transform: translateX(-50%);
-  z-index: 3;
+  z-index: 8;
 }
 
 .intro-astro-sensor__glow {
   position: absolute;
-  inset: -22%;
+  inset: -28%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(80, 180, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(80, 200, 255, 0.5) 0%, transparent 70%);
   animation: astroSensorGlow 2.6s ease-in-out infinite;
+  z-index: 1;
 }
 
 .intro-astro-sensor__housing {
@@ -2312,6 +2418,7 @@ body.intro-active {
   border-radius: 50%;
   background: radial-gradient(circle at 50% 45%, #3a4550 0%, #1a2028 70%, #0a0c10 100%);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 0 0 3px #6a7a88;
+  z-index: 2;
 }
 
 .intro-astro-sensor__ring {
@@ -2320,21 +2427,25 @@ body.intro-active {
   border-radius: 50%;
   border: 2px solid rgba(100, 190, 255, 0.7);
   box-shadow: 0 0 12px rgba(60, 160, 255, 0.55);
+  z-index: 4;
 }
 
 .intro-astro-sensor__lens {
   position: absolute;
-  inset: 15px;
+  inset: 13px;
   border-radius: 50%;
   background: radial-gradient(circle at 42% 38%, #1a2838 0%, #05080c 65%, #000 100%);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.95);
+  z-index: 5;
 }
 
 .intro-astro-body {
-  width: 96px;
-  margin-top: -12px;
-  padding: 2px 8px 6px;
-  border-radius: 0 0 10px 10px;
+  position: relative;
+  z-index: 10;
+  width: 104px;
+  margin-top: -4px;
+  padding: 6px 10px 12px;
+  border-radius: 0 0 12px 12px;
   background: linear-gradient(180deg, #eef2f6 0%, #d4dce6 70%, #b8c4d0 100%);
   border: 2px solid #9aabb8;
   border-top: none;
@@ -2342,19 +2453,14 @@ body.intro-active {
   flex-direction: column;
   align-items: center;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  max-height: 44px;
-  overflow: hidden;
-}
-
-.intro-astro-body__stripe,
-.intro-astro-body__badge {
-  display: none;
+  overflow: visible;
 }
 
 .intro-astro-button {
   position: relative;
-  width: 44px;
-  height: 44px;
+  z-index: 12;
+  width: 48px;
+  height: 48px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -2374,8 +2480,8 @@ body.intro-active {
 }
 
 .intro-astro-button__core {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #ff5555 0%, #cc1111 45%, #880000 100%);
   box-shadow:
@@ -2398,7 +2504,12 @@ body.intro-active {
 
 .intro-astro-button--used {
   pointer-events: none;
-  opacity: 0.35;
+}
+
+.intro-astro-button--used .intro-astro-button__core {
+  box-shadow:
+    0 0 16px rgba(255, 40, 40, 0.55),
+    inset 0 2px 4px rgba(255, 180, 180, 0.4);
 }
 
 .intro-astro-button--used .intro-astro-button__pulse {
@@ -3122,6 +3233,34 @@ body.intro-active {
   max-height: 200px;
   transform: translateY(0);
   margin-top: var(--sp-2);
+}
+
+/* Narration — warm amber complements cyan hologram (split-complement) */
+.intro-holo-audio .intro-subtitle {
+  color: #f5c76a;
+  text-shadow:
+    0 0 12px rgba(255, 176, 72, 0.75),
+    0 0 24px rgba(255, 140, 50, 0.35);
+}
+
+.intro-holo-audio .intro-wave span {
+  background: linear-gradient(to top, #ff9f43, #f5c76a);
+  box-shadow: 0 0 10px rgba(255, 176, 72, 0.65);
+}
+
+.intro-holo-audio .intro-wave--active span {
+  animation-name: waveBarNarration;
+}
+
+@keyframes waveBarNarration {
+  0%, 100% {
+    height: 10px;
+    box-shadow: 0 0 10px rgba(255, 176, 72, 0.55);
+  }
+  50% {
+    height: 36px;
+    box-shadow: 0 0 18px rgba(255, 159, 67, 0.85);
+  }
 }
 
 .intro-holo-stage--audio .intro-wave {
@@ -3943,9 +4082,12 @@ body.intro-active {
   .intro-logo { transition: none; }
   .tv-eye-character__aura,
   .tv-eye-character__beam,
-  .intro-astro-button__pulse,
-  .intro-astro-sensor-beam--active,
-  .intro-astro-prompt { animation: none; }
+  .intro-astro-head--idle .intro-astro-dome,
+  .intro-astro-head--excited .intro-astro-dome,
+  .intro-astro-head--projecting .intro-astro-dome,
+  .intro-astro-dock--ascend .intro-astro-head { animation: none; }
+  .intro-astro-dome__blue-glow,
+  .intro-astro-sensor__glow { animation: none; }
   .intro-vcr-scanlines,
   .intro-vcr-tracking,
   .intro-vcr-noise,
