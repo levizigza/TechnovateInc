@@ -488,7 +488,9 @@
     }
 
     document.getElementById('intro-enter-main').addEventListener('click', enterSite);
-    document.getElementById('intro-astro-button').addEventListener('click', function () {
+    document.getElementById('intro-astro-button').addEventListener('click', openHatchAndProject);
+    document.getElementById('intro-astro-dock').addEventListener('click', function (e) {
+      if (e.target.closest('#intro-enter-main')) return;
       openHatchAndProject();
     });
     document.getElementById('intro-mute').addEventListener('click', function () {
@@ -504,8 +506,15 @@
     });
   }
 
+  function shouldForceIntro() {
+    return /[?&](intro|reset)=1/.test(window.location.search);
+  }
+
   function init() {
     if (!isHomepage()) return;
+    if (shouldForceIntro()) {
+      localStorage.removeItem(INTRO_KEY);
+    }
     if (localStorage.getItem(INTRO_KEY) === '1') return;
 
     if (synth) {
