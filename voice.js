@@ -10,6 +10,7 @@
   var britishVoice = null;
   var narrationPlaying = false;
   var faceRenderer = null;
+  var matrixRenderer = null;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -101,13 +102,14 @@
     intro.id = 'cinematic-intro';
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
-      '<button class="intro-enter" id="intro-enter" type="button">Enter website</button>' +
+      '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
+      '<button class="intro-enter" id="intro-enter" type="button" aria-label="Skip intro and enter website">Skip intro</button>' +
       '<div class="intro-content intro-content--face">' +
         '<div class="intro-face-wrap">' +
           '<canvas class="intro-binary-face" id="intro-binary-face" aria-hidden="true"></canvas>' +
           '<div class="intro-face-glow" aria-hidden="true"></div>' +
         '</div>' +
-        '<p class="intro-subtitle" id="intro-subtitle"></p>' +
+        '<p class="intro-subtitle" id="intro-subtitle">An optional welcome from Technovate</p>' +
         '<div class="intro-wave" id="intro-wave">' +
           '<span></span><span></span><span></span><span></span><span></span>' +
         '</div>' +
@@ -115,7 +117,7 @@
         '<p class="intro-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
       '</div>' +
       '<div class="intro-actions">' +
-        '<button class="intro-btn intro-btn--primary" id="intro-enter-bottom" type="button">Enter website</button>' +
+        '<button class="intro-btn intro-btn--primary" id="intro-enter-bottom" type="button">Skip intro</button>' +
         '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
       '</div>';
     document.body.appendChild(intro);
@@ -129,6 +131,10 @@
     if (faceRenderer) {
       faceRenderer.stop();
       faceRenderer = null;
+    }
+    if (matrixRenderer) {
+      matrixRenderer.stop();
+      matrixRenderer = null;
     }
 
     var intro = document.getElementById('cinematic-intro');
@@ -170,16 +176,40 @@
     });
   }
 
-  function runIntro() {
-    var intro = createIntroScreen();
+  function initIntroRenderers(intro) {
     var canvas = document.getElementById('intro-binary-face');
+    var matrixCanvas = document.getElementById('intro-matrix-bg');
+
+    if (window.TechnovateBinaryFace && matrixCanvas) {
+      matrixRenderer = window.TechnovateBinaryFace.createMatrixRain(matrixCanvas, {
+        fontSize: 18,
+        trailLen: 28,
+        fadeAlpha: 0.07,
+        headAlpha: 0.9,
+        bodyAlpha: 0.5,
+        speedMin: 2,
+        speedMax: 5
+      });
+    }
 
     if (window.TechnovateBinaryFace && canvas) {
       faceRenderer = window.TechnovateBinaryFace.create(canvas);
     }
 
     requestAnimationFrame(function () {
+      if (matrixRenderer && matrixRenderer.refresh) matrixRenderer.refresh();
+      if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
+    });
+  }
+
+  function runIntro() {
+    var intro = createIntroScreen();
+
+    requestAnimationFrame(function () {
       intro.classList.add('intro--active');
+      requestAnimationFrame(function () {
+        initIntroRenderers(intro);
+      });
     });
 
     function onEnter() {
@@ -196,8 +226,6 @@
         onEnter();
       }
     });
-
-    setTimeout(startNarration, 1200);
   }
 
   function init() {
