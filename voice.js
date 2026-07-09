@@ -25,8 +25,7 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 3800;
   var LOOP_PAUSE_MS = 2800;
-  var HEAD_RISE_MS = 900;
-  var HATCH_OPEN_MS = 550;
+  var PROJECTOR_TILT_MS = 950;
   var HOLO_PORTAL_MS = 1000;
   var EYE_ALIVE_MS = 2400;
   var HOLO_PANEL_MS = 700;
@@ -74,23 +73,19 @@
   var ASTRO_HEAD_HTML =
     '<div class="intro-astro-dock" id="intro-astro-dock">' +
       '<p class="intro-astro-prompt" id="intro-astro-prompt">Press the red button to begin</p>' +
-      '<div class="intro-astro-head intro-astro-head--idle" id="intro-astro-head">' +
+      '<div class="intro-astro-head" id="intro-astro-head">' +
         '<div class="intro-astro-dome" id="intro-astro-dome">' +
-          '<div class="intro-astro-hatch intro-astro-hatch--left" aria-hidden="true"></div>' +
-          '<div class="intro-astro-hatch intro-astro-hatch--right" aria-hidden="true"></div>' +
           '<div class="intro-astro-dome__shine"></div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left">' +
-            '<span class="intro-astro-dome__blue-glow" aria-hidden="true"></span>' +
-          '</div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right">' +
-            '<span class="intro-astro-dome__blue-glow" aria-hidden="true"></span>' +
-          '</div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
+          '<div class="intro-astro-sensor-socket" aria-hidden="true"></div>' +
           '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
-            '<div class="intro-astro-sensor-beam" id="intro-astro-sensor-beam" aria-hidden="true"></div>' +
-            '<div class="intro-astro-sensor__glow"></div>' +
-            '<div class="intro-astro-sensor__housing"></div>' +
-            '<div class="intro-astro-sensor__ring"></div>' +
-            '<div class="intro-astro-sensor__lens" id="intro-astro-sensor-lens"></div>' +
+            '<div class="intro-astro-projector" id="intro-astro-projector">' +
+              '<div class="intro-astro-sensor__glow"></div>' +
+              '<div class="intro-astro-sensor__housing"></div>' +
+              '<div class="intro-astro-sensor__ring"></div>' +
+              '<div class="intro-astro-sensor__lens" id="intro-astro-sensor-lens"></div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
         '<div class="intro-astro-body">' +
@@ -232,11 +227,8 @@
     if (introClosed || introActivated) return;
     introActivated = true;
 
-    var dock = document.getElementById('intro-astro-dock');
-    var head = document.getElementById('intro-astro-head');
     var prompt = document.getElementById('intro-astro-prompt');
     var btn = document.getElementById('intro-astro-button');
-    var beam = document.getElementById('intro-astro-sensor-beam');
     var sensor = document.getElementById('intro-astro-sensor');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
@@ -249,11 +241,7 @@
       btn.disabled = true;
       btn.classList.add('intro-astro-button--used');
     }
-    if (head) {
-      head.classList.remove('intro-astro-head--idle');
-      head.classList.add('intro-astro-head--excited', 'intro-astro-head--looking-up');
-    }
-    if (dock) dock.classList.add('intro-astro-dock--ascend');
+    if (sensor) sensor.classList.add('intro-astro-sensor--tilting');
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -262,19 +250,17 @@
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
-      if (head) {
-        head.classList.remove('intro-astro-head--excited');
-        head.classList.add('intro-astro-head--open', 'intro-astro-head--projecting');
+      if (sensor) {
+        sensor.classList.remove('intro-astro-sensor--tilting');
+        sensor.classList.add('intro-astro-sensor--tilted', 'intro-astro-sensor--projecting');
       }
-      if (sensor) sensor.classList.add('intro-astro-sensor--projecting');
-      if (beam) beam.classList.add('intro-astro-sensor-beam--active');
       if (projection) projection.classList.add('intro-projection--active');
       if (stage) {
         stage.classList.remove('intro-holo-stage--waiting');
         stage.classList.add('intro-holo-stage--portal-opening');
       }
       if (holoPortal) holoPortal.classList.add('intro-holo-portal--active');
-    }, HEAD_RISE_MS);
+    }, PROJECTOR_TILT_MS);
 
     eyeSettleTimer = setTimeout(function () {
       if (introClosed) return;
@@ -284,15 +270,15 @@
       }
       if (holoPortal) holoPortal.classList.add('intro-holo-portal--settled');
       startHoloEyeLife();
-    }, HEAD_RISE_MS + HOLO_PORTAL_MS);
+    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS);
 
     holoPanelTimer = setTimeout(function () {
       revealHoloPanel();
-    }, HEAD_RISE_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS);
+    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS);
 
     hatchAudioTimer = setTimeout(function () {
       if (!introClosed) transitionToAudioPhase();
-    }, HEAD_RISE_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
+    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
   }
 
   function transitionToAudioPhase() {
