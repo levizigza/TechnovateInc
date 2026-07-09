@@ -25,7 +25,7 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 3800;
   var LOOP_PAUSE_MS = 2800;
-  var PROJECTOR_TILT_MS = 950;
+  var PROJECTOR_TILT_MS = 1000;
   var HOLO_PORTAL_MS = 1000;
   var EYE_ALIVE_MS = 2400;
   var HOLO_PANEL_MS = 700;
