@@ -5,50 +5,82 @@
 (function () {
   'use strict';
 
+  function getViewportSize(canvas) {
+    var rect = canvas.getBoundingClientRect();
+    var w = Math.floor(rect.width) || window.innerWidth || 1280;
+    var h = Math.floor(rect.height) || window.innerHeight || 720;
+    return { w: w, h: h };
+  }
+
+  function setupCanvas(canvas, w, h) {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h, dpr: dpr };
+  }
+
   function createMatrixRain(canvas, opts) {
     opts = opts || {};
-    var ctx = canvas.getContext('2d');
-    var fontSize = opts.fontSize || 14;
-    var trailLen = opts.trailLen || 22;
-    var fadeAlpha = opts.fadeAlpha || 0.14;
-    var headAlpha = opts.headAlpha || 0.55;
-    var bodyAlpha = opts.bodyAlpha || 0.28;
-    var speedMin = opts.speedMin || 1.2;
-    var speedMax = opts.speedMax || 3.2;
+    var fontSize = opts.fontSize || 16;
+    var trailLen = opts.trailLen || 24;
+    var fadeAlpha = opts.fadeAlpha || 0.12;
+    var headAlpha = opts.headAlpha || 1;
+    var bodyAlpha = opts.bodyAlpha || 0.65;
+    var speedMin = opts.speedMin || 2;
+    var speedMax = opts.speedMax || 5;
     var W = 0;
     var H = 0;
+    var ctx = null;
     var cols = [];
     var running = true;
     var animId = 0;
+    var started = false;
 
     function resize() {
-      var rect = canvas.getBoundingClientRect();
-      W = canvas.width = Math.floor(rect.width) || window.innerWidth;
-      H = canvas.height = Math.floor(rect.height) || window.innerHeight;
+      var size = getViewportSize(canvas);
+      var setup = setupCanvas(canvas, size.w, size.h);
+      ctx = setup.ctx;
+      W = setup.w;
+      H = setup.h;
+
       var colCount = Math.max(1, Math.floor(W / fontSize));
       cols = [];
       for (var i = 0; i < colCount; i++) {
+        var chars = [];
+        for (var j = 0; j < trailLen; j++) {
+          chars.push(Math.random() > 0.5 ? '1' : '0');
+        }
         cols.push({
           x: i * fontSize + fontSize * 0.5,
           y: Math.random() * H,
           speed: speedMin + Math.random() * (speedMax - speedMin),
-          chars: []
+          chars: chars
         });
-        for (var j = 0; j < trailLen; j++) {
-          cols[i].chars.push(Math.random() > 0.5 ? '1' : '0');
-        }
       }
+
+      ctx.fillStyle = '#010204';
+      ctx.fillRect(0, 0, W, H);
+      started = W > 0 && H > 0;
     }
 
     function draw() {
       if (!running) return;
 
-      ctx.fillStyle = 'rgba(0, 0, 0, ' + fadeAlpha + ')';
+      if (!started || !ctx) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+
+      ctx.fillStyle = 'rgba(1, 2, 4, ' + fadeAlpha + ')';
       ctx.fillRect(0, 0, W, H);
 
-      ctx.font = fontSize + 'px "Courier New", monospace';
+      ctx.font = 'bold ' + fontSize + 'px "Courier New", Consolas, monospace';
       ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.textBaseline = 'top';
 
       for (var i = 0; i < cols.length; i++) {
         var col = cols[i];
@@ -62,20 +94,25 @@
           fade = fade * fade;
 
           if (j === 0) {
-            ctx.fillStyle = 'rgba(220, 255, 255, ' + (fade * headAlpha) + ')';
+            ctx.fillStyle = 'rgba(200, 255, 255, ' + (fade * headAlpha) + ')';
+            ctx.shadowColor = 'rgba(0, 255, 220, 0.8)';
+            ctx.shadowBlur = 8;
           } else {
-            ctx.fillStyle = 'rgba(0, 255, 200, ' + (fade * bodyAlpha) + ')';
+            ctx.fillStyle = 'rgba(0, 255, 170, ' + (fade * bodyAlpha) + ')';
+            ctx.shadowBlur = 0;
           }
 
-          if (Math.random() > 0.985) {
+          if (Math.random() > 0.98) {
             col.chars[j] = col.chars[j] === '1' ? '0' : '1';
           }
 
           ctx.fillText(col.chars[j], col.x, y);
         }
 
+        ctx.shadowBlur = 0;
+
         if (col.y > H + trailLen * fontSize) {
-          col.y = -trailLen * fontSize;
+          col.y = -trailLen * fontSize * Math.random();
           col.speed = speedMin + Math.random() * (speedMax - speedMin);
         }
       }
@@ -98,19 +135,17 @@
   }
 
   function createFaceRenderer(canvas) {
-    var ctx = canvas.getContext('2d');
+    var ctx = null;
     var W = 0;
     var H = 0;
     var cellSize = 11;
     var cols = 0;
     var rows = 0;
     var cells = [];
-    var rainCols = [];
     var speaking = false;
     var mouthPhase = 0;
     var animId = 0;
     var running = true;
-    var trailLen = 16;
 
     function faceRegion(nx, ny) {
       var cx = 0.5;
@@ -147,22 +182,6 @@
       return 1;
     }
 
-    function buildRain() {
-      rainCols = [];
-      var colCount = Math.max(1, Math.ceil(W / cellSize));
-      for (var i = 0; i < colCount; i++) {
-        rainCols.push({
-          x: i * cellSize + cellSize * 0.5,
-          y: Math.random() * H,
-          speed: 1.4 + Math.random() * 2.4,
-          chars: []
-        });
-        for (var j = 0; j < trailLen; j++) {
-          rainCols[i].chars.push(Math.random() > 0.5 ? '1' : '0');
-        }
-      }
-    }
-
     function buildGrid() {
       cols = Math.ceil(W / cellSize);
       rows = Math.ceil(H / cellSize);
@@ -185,58 +204,22 @@
 
     function resize() {
       var rect = canvas.getBoundingClientRect();
-      W = canvas.width = Math.floor(rect.width) || Math.floor(rect.height ? rect.width : 520);
-      H = canvas.height = Math.floor(rect.height) || Math.floor(rect.width ? rect.height : 360);
-      if (W < 10 || H < 10) {
-        W = canvas.width = Math.max(W, 320);
-        H = canvas.height = Math.max(H, 240);
-      }
-      buildRain();
+      var w = Math.floor(rect.width) || 520;
+      var h = Math.floor(rect.height) || 360;
+      var setup = setupCanvas(canvas, w, h);
+      ctx = setup.ctx;
+      W = setup.w;
+      H = setup.h;
       buildGrid();
     }
 
-    function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-      ctx.fillRect(0, 0, W, H);
-
-      ctx.font = (cellSize - 1) + 'px "Courier New", monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      for (var i = 0; i < rainCols.length; i++) {
-        var col = rainCols[i];
-        col.y += col.speed;
-
-        for (var j = 0; j < trailLen; j++) {
-          var y = col.y - j * cellSize;
-          if (y < -cellSize || y > H + cellSize) continue;
-
-          var fade = 1 - j / trailLen;
-          fade = fade * fade;
-
-          if (j === 0) {
-            ctx.fillStyle = 'rgba(220, 255, 255, ' + (fade * 0.75) + ')';
-          } else {
-            ctx.fillStyle = 'rgba(0, 255, 200, ' + (fade * 0.45) + ')';
-          }
-
-          if (Math.random() > 0.988) {
-            col.chars[j] = col.chars[j] === '1' ? '0' : '1';
-          }
-
-          ctx.fillText(col.chars[j], col.x, y);
-        }
-
-        if (col.y > H + trailLen * cellSize) {
-          col.y = -trailLen * cellSize;
-          col.speed = 1.4 + Math.random() * 2.4;
-        }
-      }
-    }
-
     function drawFace() {
+      if (!ctx) return;
+
+      ctx.clearRect(0, 0, W, H);
+
       mouthPhase += speaking ? 1.8 : 0.4;
-      ctx.font = (cellSize - 1) + 'px "Courier New", monospace';
+      ctx.font = 'bold ' + (cellSize - 1) + 'px "Courier New", Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
@@ -256,23 +239,24 @@
         var y = cell.r * cellSize + cellSize * 0.5;
         var alpha = 0.35;
 
-        if (cell.region === 1) alpha = 0.55 + Math.sin(cell.tick * 3 + i) * 0.12;
-        if (cell.region === 3) alpha = speaking ? 0.9 + Math.sin(mouthPhase * 0.3) * 0.1 : 0.6;
-        if (cell.region === 4) alpha = 0.7;
+        if (cell.region === 1) alpha = 0.65 + Math.sin(cell.tick * 3 + i) * 0.15;
+        if (cell.region === 3) alpha = speaking ? 0.95 + Math.sin(mouthPhase * 0.3) * 0.05 : 0.75;
+        if (cell.region === 4) alpha = 0.8;
 
         var hue = cell.region === 3 && speaking ? '0, 255, 220' : '0, 212, 255';
 
+        ctx.shadowColor = 'rgba(' + hue + ', 0.9)';
+        ctx.shadowBlur = cell.region === 3 ? 10 : 6;
         ctx.fillStyle = 'rgba(' + hue + ', ' + alpha + ')';
         ctx.fillText(cell.char, x, y);
       }
+
+      ctx.shadowBlur = 0;
     }
 
     function draw() {
       if (!running) return;
-
-      drawMatrix();
       drawFace();
-
       animId = requestAnimationFrame(draw);
     }
 

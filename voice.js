@@ -11,6 +11,7 @@
   var narrationPlaying = false;
   var faceRenderer = null;
   var matrixRenderer = null;
+  var introMusic = null;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -119,6 +120,7 @@
       '<div class="intro-actions">' +
         '<button class="intro-btn intro-btn--primary" id="intro-enter-bottom" type="button">Skip intro</button>' +
         '<button class="intro-btn intro-btn--ghost" id="intro-narration" type="button">Play introduction</button>' +
+        '<button class="intro-btn intro-btn--mute" id="intro-mute" type="button" aria-pressed="false" title="Toggle intro music">Music on</button>' +
       '</div>';
     document.body.appendChild(intro);
     document.body.classList.add('intro-active');
@@ -128,6 +130,10 @@
   function closeIntro() {
     if (synth) synth.cancel();
     setSpeaking(false);
+    if (introMusic) {
+      introMusic.stop();
+      introMusic = null;
+    }
     if (faceRenderer) {
       faceRenderer.stop();
       faceRenderer = null;
@@ -176,19 +182,19 @@
     });
   }
 
-  function initIntroRenderers(intro) {
+  function initIntroRenderers() {
     var canvas = document.getElementById('intro-binary-face');
     var matrixCanvas = document.getElementById('intro-matrix-bg');
 
     if (window.TechnovateBinaryFace && matrixCanvas) {
       matrixRenderer = window.TechnovateBinaryFace.createMatrixRain(matrixCanvas, {
         fontSize: 18,
-        trailLen: 28,
-        fadeAlpha: 0.07,
-        headAlpha: 0.9,
-        bodyAlpha: 0.5,
-        speedMin: 2,
-        speedMax: 5
+        trailLen: 30,
+        fadeAlpha: 0.09,
+        headAlpha: 1,
+        bodyAlpha: 0.7,
+        speedMin: 2.5,
+        speedMax: 6
       });
     }
 
@@ -196,10 +202,14 @@
       faceRenderer = window.TechnovateBinaryFace.create(canvas);
     }
 
-    requestAnimationFrame(function () {
+    function refreshRenderers() {
       if (matrixRenderer && matrixRenderer.refresh) matrixRenderer.refresh();
       if (faceRenderer && faceRenderer.refresh) faceRenderer.refresh();
-    });
+    }
+
+    requestAnimationFrame(refreshRenderers);
+    setTimeout(refreshRenderers, 100);
+    setTimeout(refreshRenderers, 400);
   }
 
   function runIntro() {
@@ -207,9 +217,7 @@
 
     requestAnimationFrame(function () {
       intro.classList.add('intro--active');
-      requestAnimationFrame(function () {
-        initIntroRenderers(intro);
-      });
+      initIntroRenderers();
     });
 
     function onEnter() {

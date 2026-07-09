@@ -1914,10 +1914,8 @@ body.intro-active {
   position: fixed;
   inset: 0;
   z-index: 100000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  display: block;
+  overflow: hidden;
   opacity: 0;
   transition: opacity 0.6s var(--ease-out-expo);
 }
@@ -1932,30 +1930,38 @@ body.intro-active {
 }
 
 .intro-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: #010204;
   z-index: 0;
+  pointer-events: none;
 }
 
 .intro-matrix-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: block;
   z-index: 1;
   pointer-events: none;
 }
 
 .intro-content--face {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   max-width: 720px;
-  padding-top: var(--sp-3);
-  padding-bottom: 120px;
+  margin: 0 auto;
+  padding-top: clamp(48px, 8vh, 80px);
+  padding-bottom: 140px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  justify-content: center;
 }
 
 .intro-face-wrap {
@@ -1963,6 +1969,7 @@ body.intro-active {
   width: min(92vw, 520px);
   height: min(44vh, 360px);
   margin-bottom: var(--sp-1);
+  background: transparent;
 }
 
 .intro-binary-face {
@@ -1971,6 +1978,7 @@ body.intro-active {
   width: 100%;
   height: 100%;
   display: block;
+  background: transparent;
 }
 
 .intro-face-glow {
@@ -2233,7 +2241,7 @@ body.intro-active {
 
 /* Prominent skip — always visible */
 .intro-enter {
-  position: absolute;
+  position: fixed;
   top: var(--sp-4);
   right: var(--sp-4);
   z-index: 110;
@@ -2270,7 +2278,7 @@ body.intro-active {
 }
 
 .intro-actions {
-  position: absolute;
+  position: fixed;
   bottom: 8%;
   left: 50%;
   transform: translateX(-50%);
@@ -2279,6 +2287,7 @@ body.intro-active {
   align-items: center;
   gap: var(--sp-2);
   z-index: 110;
+  width: min(92vw, 360px);
 }
 
 .intro-btn--primary {
