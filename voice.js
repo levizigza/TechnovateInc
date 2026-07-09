@@ -10,7 +10,9 @@
   var britishVoice = null;
   var narrationPlaying = false;
   var matrixRenderer = null;
-  var r2Floater = null;
+  var vcrClockTimer = null;
+  var hatchRevealTimer = null;
+  var hatchAudioTimer = null;
   var vcrClockTimer = null;
   var introMusic = null;
   var introNarration = null;
@@ -21,6 +23,9 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 3800;
   var LOOP_PAUSE_MS = 2800;
+  var HATCH_OPEN_MS = 700;
+  var HOLO_REVEAL_MS = 900;
+  var introActivated = false;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -38,29 +43,39 @@
     { text: 'Do come in.', pause: 0 }
   ];
 
-  var GLOBE_SVG = '';
 
-  var R2_UNIT_HTML =
-    '<div class="intro-r2-floater" id="intro-r2-floater" aria-hidden="true">' +
-      '<div class="intro-r2-unit" id="intro-r2-unit">' +
-        '<div class="intro-r2-dome">' +
-          '<div class="intro-r2-dome__shine"></div>' +
-          '<div class="intro-r2-dome__blue intro-r2-dome__blue--left"></div>' +
-          '<div class="intro-r2-dome__blue intro-r2-dome__blue--right"></div>' +
-          '<div class="intro-r2-sensor">' +
-            '<div class="intro-r2-sensor__glow"></div>' +
-            '<div class="intro-r2-sensor__housing"></div>' +
-            '<div class="intro-r2-sensor__ring"></div>' +
-            '<div class="intro-r2-sensor__lens"></div>' +
-            '<div class="intro-r2-sensor__glint"></div>' +
+  function eyeMarkHtml() {
+    if (window.TechnovateLogo && window.TechnovateLogo.eyeMarkSvg) {
+      return window.TechnovateLogo.eyeMarkSvg();
+    }
+    return '';
+  }
+
+  var ASTRO_HEAD_HTML =
+    '<div class="intro-astro-dock" id="intro-astro-dock">' +
+      '<p class="intro-astro-prompt" id="intro-astro-prompt">Press the red button to begin</p>' +
+      '<div class="intro-astro-head" id="intro-astro-head">' +
+        '<div class="intro-astro-holo-beam" id="intro-astro-holo-beam" aria-hidden="true"></div>' +
+        '<div class="intro-astro-dome">' +
+          '<div class="intro-astro-hatch intro-astro-hatch--left" aria-hidden="true"></div>' +
+          '<div class="intro-astro-hatch intro-astro-hatch--right" aria-hidden="true"></div>' +
+          '<div class="intro-astro-dome__shine"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
+          '<div class="intro-astro-sensor">' +
+            '<div class="intro-astro-sensor__glow"></div>' +
+            '<div class="intro-astro-sensor__housing"></div>' +
+            '<div class="intro-astro-sensor__ring"></div>' +
+            '<div class="intro-astro-sensor__lens"></div>' +
           '</div>' +
         '</div>' +
-        '<div class="intro-r2-body">' +
-          '<div class="intro-r2-body__panel">' +
-            '<div class="intro-r2-body__stripe"></div>' +
-            '<div class="intro-r2-body__ports"><span></span><span></span><span></span></div>' +
-          '</div>' +
-          '<div class="intro-r2-body__badge">ASTRO · MECH</div>' +
+        '<div class="intro-astro-body">' +
+          '<div class="intro-astro-body__stripe"></div>' +
+          '<button class="intro-astro-button" id="intro-astro-button" type="button" aria-label="Activate hologram">' +
+            '<span class="intro-astro-button__pulse" aria-hidden="true"></span>' +
+            '<span class="intro-astro-button__core"></span>' +
+          '</button>' +
+          '<div class="intro-astro-body__badge">ASTRO · MECH</div>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -112,8 +127,8 @@
     narrationPlaying = active;
     var wave = document.getElementById('intro-wave');
     if (wave) wave.classList.toggle('intro-wave--active', active);
-    var r2Unit = document.getElementById('intro-r2-unit');
-    if (r2Unit) r2Unit.classList.toggle('intro-r2-unit--speaking', active);
+    var astroHead = document.getElementById('intro-astro-head');
+    if (astroHead) astroHead.classList.toggle('intro-astro-head--speaking', active);
     if (introMusic) {
       if (active) introMusic.duck();
       else introMusic.unduck();
@@ -156,6 +171,66 @@
       introNarration.stop();
     }
     if (synth) synth.cancel();
+    ensureAudioPhase();
+    startNarration();
+  }
+
+  function ensureAudioPhase() {
+    var stage = document.getElementById('intro-holo-stage');
+    var projection = document.getElementById('intro-projection');
+    var mark = document.getElementById('intro-logo-mark');
+    var enterBtn = document.getElementById('intro-enter-main');
+    if (stage) {
+      stage.classList.remove('intro-holo-stage--waiting', 'intro-holo-stage--projecting', 'intro-holo-stage--static');
+      stage.classList.add('intro-holo-stage--audio');
+    }
+    if (projection) projection.classList.add('intro-projection--audio');
+    if (mark) mark.classList.remove('intro-logo-mark--static');
+    if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
+  }
+
+  function openHatchAndProject() {
+    if (introClosed || introActivated) return;
+    introActivated = true;
+
+    var head = document.getElementById('intro-astro-head');
+    var prompt = document.getElementById('intro-astro-prompt');
+    var btn = document.getElementById('intro-astro-button');
+    var beam = document.getElementById('intro-astro-holo-beam');
+    var stage = document.getElementById('intro-holo-stage');
+    var projection = document.getElementById('intro-projection');
+    var enterBtn = document.getElementById('intro-enter-main');
+
+    tryStartMusic();
+
+    if (head) head.classList.add('intro-astro-head--open');
+    if (beam) beam.classList.add('intro-astro-holo-beam--active');
+    if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('intro-astro-button--used');
+    }
+
+    clearTimeout(hatchRevealTimer);
+    clearTimeout(hatchAudioTimer);
+
+    hatchRevealTimer = setTimeout(function () {
+      if (introClosed) return;
+      if (projection) projection.classList.add('intro-projection--active', 'intro-projection--revealed');
+      if (stage) {
+        stage.classList.remove('intro-holo-stage--waiting');
+        stage.classList.add('intro-holo-stage--projecting', 'intro-holo-stage--static');
+      }
+    }, HATCH_OPEN_MS);
+
+    hatchAudioTimer = setTimeout(function () {
+      if (!introClosed) transitionToAudioPhase();
+    }, HATCH_OPEN_MS + HOLO_REVEAL_MS);
+  }
+
+  function transitionToAudioPhase() {
+    if (introClosed) return;
+    ensureAudioPhase();
     startNarration();
   }
 
@@ -257,7 +332,7 @@
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
-      R2_UNIT_HTML +
+      ASTRO_HEAD_HTML +
       '<div class="intro-vcr-overlay" aria-hidden="true">' +
         '<div class="intro-vcr-vignette"></div>' +
         '<div class="intro-vcr-scanlines"></div>' +
@@ -268,12 +343,25 @@
           '<span class="intro-vcr-time" id="intro-vcr-time">--:--:--</span>' +
         '</div>' +
       '</div>' +
+      '<div class="intro-projection" id="intro-projection" aria-hidden="true">' +
+        '<div class="intro-projection__cone"></div>' +
+        '<div class="intro-projection__beam"></div>' +
+      '</div>' +
       '<div class="intro-content intro-content--holo">' +
-        '<div class="intro-holo-stage">' +
-          '<h1 class="intro-logo-text intro-logo-text--visible">Technovate</h1>' +
-          '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
-          '<div class="intro-wave intro-wave--active" id="intro-wave">' +
-            '<span></span><span></span><span></span><span></span><span></span>' +
+        '<div class="intro-holo-stage intro-holo-stage--waiting" id="intro-holo-stage">' +
+          '<div class="intro-holo-panel" id="intro-holo-panel">' +
+            '<div class="intro-holo-panel__frame" aria-hidden="true"></div>' +
+            '<div class="intro-holo-panel__scanlines" aria-hidden="true"></div>' +
+            '<div class="intro-holo-static" id="intro-holo-static">' +
+              '<div class="intro-logo-mark intro-logo-mark--static" id="intro-logo-mark">' + eyeMarkHtml() + '</div>' +
+              '<p class="intro-holo-tagline">Technology &amp; AI for health, wealth, and growth</p>' +
+            '</div>' +
+            '<div class="intro-holo-audio" id="intro-holo-audio">' +
+              '<p class="intro-subtitle" id="intro-subtitle">in the digital realm...</p>' +
+              '<div class="intro-wave" id="intro-wave">' +
+                '<span></span><span></span><span></span><span></span><span></span>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
           '<button class="intro-enter-btn" id="intro-enter-main" type="button" aria-label="Enter website">' +
             '<span class="intro-enter-btn__label">Enter</span>' +
@@ -299,6 +387,11 @@
 
   function closeIntro() {
     introClosed = true;
+    introActivated = false;
+    clearTimeout(hatchRevealTimer);
+    clearTimeout(hatchAudioTimer);
+    hatchRevealTimer = null;
+    hatchAudioTimer = null;
     stopNarration();
     introNarration = null;
     if (introMusic) {
@@ -308,10 +401,6 @@
     if (matrixRenderer) {
       matrixRenderer.stop();
       matrixRenderer = null;
-    }
-    if (r2Floater) {
-      r2Floater.stop();
-      r2Floater = null;
     }
     if (vcrClockTimer) {
       clearInterval(vcrClockTimer);
@@ -386,149 +475,29 @@
     vcrClockTimer = setInterval(tick, 1000);
   }
 
-  function initR2Floater() {
-    var el = document.getElementById('intro-r2-floater');
-    if (!el) return null;
-
-    var unitW = 124;
-    var unitH = 172;
-    var margin = 80;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.style.transform = 'translate(calc(50vw - ' + (unitW * 0.5) + 'px), calc(32vh - ' + (unitH * 0.5) + 'px))';
-      return { stop: function () {} };
-    }
-
-    var pos = {
-      x: window.innerWidth * 0.5,
-      y: window.innerHeight * 0.35
-    };
-    var vel = { x: 0, y: 0 };
-    var target = { x: pos.x, y: pos.y };
-    var tilt = 0;
-    var floatPhase = Math.random() * Math.PI * 2;
-    var running = true;
-    var rafId = 0;
-
-    function bounds() {
-      return {
-        minX: margin + unitW * 0.5,
-        maxX: window.innerWidth - margin - unitW * 0.5,
-        minY: margin + unitH * 0.5,
-        maxY: window.innerHeight - margin - unitH * 0.5
-      };
-    }
-
-    function pickTarget() {
-      var b = bounds();
-      var attempts = 0;
-      var minDist = Math.min(window.innerWidth, window.innerHeight) * 0.28;
-
-      do {
-        target.x = b.minX + Math.random() * (b.maxX - b.minX);
-        target.y = b.minY + Math.random() * (b.maxY - b.minY);
-        attempts += 1;
-      } while (
-        attempts < 12 &&
-        Math.hypot(target.x - pos.x, target.y - pos.y) < minDist
-      );
-    }
-
-    function clampPos() {
-      var b = bounds();
-      if (pos.x < b.minX) { pos.x = b.minX; vel.x *= -0.35; }
-      if (pos.x > b.maxX) { pos.x = b.maxX; vel.x *= -0.35; }
-      if (pos.y < b.minY) { pos.y = b.minY; vel.y *= -0.35; }
-      if (pos.y > b.maxY) { pos.y = b.maxY; vel.y *= -0.35; }
-    }
-
-    pickTarget();
-
-    function tick(time) {
-      if (!running || introClosed) return;
-
-      var t = time * 0.001;
-      var dx = target.x - pos.x;
-      var dy = target.y - pos.y;
-      var dist = Math.hypot(dx, dy);
-
-      if (dist > 1) {
-        var thrust = 0.022 + Math.min(dist, 200) * 0.00008;
-        vel.x += (dx / dist) * thrust;
-        vel.y += (dy / dist) * thrust;
-      }
-
-      vel.x += Math.sin(t * 0.75 + floatPhase) * 0.012;
-      vel.y += Math.cos(t * 0.58 + floatPhase * 1.3) * 0.014;
-      vel.y -= 0.0035;
-
-      vel.x *= 0.988;
-      vel.y *= 0.988;
-
-      pos.x += vel.x;
-      pos.y += vel.y;
-      clampPos();
-
-      var speed = Math.hypot(vel.x, vel.y);
-      if (dist < 55 || speed < 0.12) pickTarget();
-
-      var depth = 0.86 + (pos.y / Math.max(window.innerHeight, 1)) * 0.22;
-      var bob = Math.sin(t * 2.4 + floatPhase) * 0.04;
-      var scale = depth + bob;
-      var bank = Math.atan2(vel.y, vel.x + 0.001) * 0.28;
-      tilt += (bank - tilt) * 0.055;
-
-      var lift = Math.sin(t * 1.6) * 3;
-
-      el.style.transform =
-        'translate3d(' + (pos.x - unitW * 0.5) + 'px,' + (pos.y - unitH * 0.5 + lift) + 'px,0) ' +
-        'rotate(' + tilt + 'rad) scale(' + scale + ')';
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    rafId = requestAnimationFrame(tick);
-
-    return {
-      stop: function () {
-        running = false;
-        cancelAnimationFrame(rafId);
-      }
-    };
-  }
-
   function runIntro() {
     introClosed = false;
+    introActivated = false;
     var intro = createIntroScreen();
     intro.classList.add('intro--active');
     initIntroRenderers();
-    r2Floater = initR2Floater();
     initVcrClock();
 
     function enterSite() {
       closeIntro();
     }
 
-    function unlockAudio() {
-      tryStartMusic();
-    }
-
     document.getElementById('intro-enter-main').addEventListener('click', enterSite);
+    document.getElementById('intro-astro-button').addEventListener('click', function () {
+      openHatchAndProject();
+    });
     document.getElementById('intro-mute').addEventListener('click', function () {
       if (!introMusic) tryStartMusic();
       toggleMusic();
     });
 
-    intro.addEventListener('click', unlockAudio, { once: true });
-    intro.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
-
-    setTimeout(function () {
-      tryStartMusic();
-      startNarration();
-    }, 400);
-
     document.addEventListener('keydown', function onKey(e) {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' || e.key === 'Enter') {
         document.removeEventListener('keydown', onKey);
         enterSite();
       }
