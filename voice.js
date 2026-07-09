@@ -13,19 +13,21 @@
   var voiceEnabled = localStorage.getItem(VOICE_PREF_KEY) !== 'false';
   var introComplete = false;
 
-  /* ---- Cinematic welcome script ---- */
+  /* ---- Cinematic welcome script — Attenborough style ---- */
   var INTRO_SCRIPT = [
-    { text: 'Welcome...', pause: 800 },
-    { text: 'to Technovate.', pause: 1200 },
-    { text: 'Where artificial intelligence meets human purpose.', pause: 1000 },
-    { text: 'We build the future.', pause: 600 },
-    { text: 'Not just for industry.', pause: 500 },
-    { text: 'But for health.', pause: 400 },
-    { text: 'For education.', pause: 400 },
-    { text: 'For communities.', pause: 800 },
-    { text: 'Technology that understands.', pause: 600 },
-    { text: 'Software that serves.', pause: 1000 },
-    { text: 'Step inside.', pause: 0 }
+    { text: 'Here...', pause: 1000 },
+    { text: 'in the digital realm...', pause: 1200 },
+    { text: 'something rather remarkable is taking shape.', pause: 1400 },
+    { text: 'Technovate.', pause: 1600 },
+    { text: 'A place where artificial intelligence...', pause: 800 },
+    { text: 'is being crafted with purpose.', pause: 1200 },
+    { text: 'Not merely for commerce or convenience.', pause: 1000 },
+    { text: 'But for health.', pause: 600 },
+    { text: 'For learning.', pause: 600 },
+    { text: 'For the bonds that hold communities together.', pause: 1400 },
+    { text: 'Each line of code...', pause: 800 },
+    { text: 'a small act of service to the human story.', pause: 1600 },
+    { text: 'Do come in.', pause: 0 }
   ];
 
   /* ---- Find best British voice ---- */
@@ -62,7 +64,7 @@
     return voices[0] || null;
   }
 
-  /* ---- Speak with cinematic timing ---- */
+  /* ---- Speak with Attenborough-style delivery ---- */
   function speak(text, onEnd) {
     if (!synth || !voiceEnabled) {
       if (onEnd) onEnd();
@@ -70,8 +72,8 @@
     }
     var utter = new SpeechSynthesisUtterance(text);
     utter.voice = britishVoice;
-    utter.rate = 0.85;
-    utter.pitch = 0.95;
+    utter.rate = 0.78;
+    utter.pitch = 0.88;
     utter.volume = 1;
     utter.onend = onEnd;
     utter.onerror = onEnd;
@@ -283,15 +285,15 @@
     });
   }
 
-  /* ---- Page narrations ---- */
+  /* ---- Page narrations — Attenborough style ---- */
   var PAGE_NARRATIONS = {
-    'about.html': 'You are now viewing our story. Technovate was built to last, and designed to matter.',
-    'technology.html': 'Explore our technology. AI that is understandable, auditable, and beneficial.',
-    'solutions.html': 'Discover our solutions. Purpose-built software across five sectors.',
-    'projects.html': 'Browse our portfolio. Real projects, built for real-world impact.',
-    'impact.html': 'See our impact. Technology that creates measurable public value.',
-    'grants.html': 'Learn about partnerships. We are prepared for funding and ready for accountability.',
-    'contact.html': 'Get in touch. Let us start a conversation about building the future together.'
+    'about.html': 'And here we observe the origins of this endeavour. Built with patience. Designed with intention.',
+    'technology.html': 'The technology at work here is quite extraordinary. Artificial intelligence, made transparent and accountable.',
+    'solutions.html': 'Across five distinct territories, purpose-built tools are taking root.',
+    'projects.html': 'A portfolio of work emerges. Each project, a response to genuine human need.',
+    'impact.html': 'The effects ripple outward. Measurable change, touching lives in ways both seen and unseen.',
+    'grants.html': 'Partnerships form the foundation. Prepared for scrutiny. Ready for accountability.',
+    'contact.html': 'And so, should you wish to be part of this story, the invitation stands open.'
   };
 
   function narratePage() {
