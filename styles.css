@@ -2606,17 +2606,39 @@ body.intro-active {
   }
 }
 
-.intro-holo-title {
-  margin: var(--sp-2) 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(0.78rem, 2.4vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #9cecff;
-  text-shadow: 0 0 16px rgba(0, 212, 255, 0.75);
+.intro-holo-brand {
+  margin-top: var(--sp-2);
+  text-align: center;
   opacity: 0;
   transform: translateY(10px);
+}
+
+.intro-holo-brand__name {
+  font-size: clamp(1.75rem, 5.5vw, 3rem);
+  margin: 0;
+  line-height: 1.05;
+}
+
+.intro-holo-brand__systems {
+  margin: var(--sp-2) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(0.72rem, 2vw, 0.92rem);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 0 14px rgba(0, 212, 255, 0.85),
+    0 0 28px rgba(0, 212, 255, 0.45),
+    0 0 40px rgba(247, 37, 133, 0.25);
+}
+
+.intro-holo-stage--eye-alive .intro-holo-brand,
+.intro-holo-stage--holo-revealed .intro-holo-brand,
+.intro-holo-stage--audio .intro-holo-brand {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.65s ease 0.2s, transform 0.65s ease 0.2s;
 }
 
 .intro-holo-stage--portal-opening .intro-holo-panel,
@@ -2625,14 +2647,6 @@ body.intro-active {
   max-height: 480px;
   overflow: visible;
   transform: translateY(0);
-}
-
-.intro-holo-stage--eye-alive .intro-holo-title,
-.intro-holo-stage--holo-revealed .intro-holo-title,
-.intro-holo-stage--audio .intro-holo-title {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.65s ease 0.2s, transform 0.65s ease 0.2s;
 }
 
 .tv-eye-character--holo {
@@ -3116,32 +3130,18 @@ body.intro-active {
   margin-top: var(--sp-2);
 }
 
-/* Narration — warm amber complements cyan hologram (split-complement) */
+/* Narration — 80s cyan hologram (matches title palette) */
 .intro-holo-audio .intro-subtitle {
-  color: #f5c76a;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.3vw, 1.25rem);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: #c8f6ff;
   text-shadow:
-    0 0 12px rgba(255, 176, 72, 0.75),
-    0 0 24px rgba(255, 140, 50, 0.35);
-}
-
-.intro-holo-audio .intro-wave span {
-  background: linear-gradient(to top, #ff9f43, #f5c76a);
-  box-shadow: 0 0 10px rgba(255, 176, 72, 0.65);
-}
-
-.intro-holo-audio .intro-wave--active span {
-  animation-name: waveBarNarration;
-}
-
-@keyframes waveBarNarration {
-  0%, 100% {
-    height: 10px;
-    box-shadow: 0 0 10px rgba(255, 176, 72, 0.55);
-  }
-  50% {
-    height: 36px;
-    box-shadow: 0 0 18px rgba(255, 159, 67, 0.85);
-  }
+    0 0 12px rgba(0, 212, 255, 0.95),
+    0 0 24px rgba(0, 212, 255, 0.55),
+    0 0 36px rgba(247, 37, 133, 0.3);
 }
 
 .intro-holo-stage--audio .intro-wave {

@@ -234,8 +234,6 @@
     var projection = document.getElementById('intro-projection');
     var holoPortal = document.getElementById('intro-holo-portal');
 
-    tryStartMusic();
-
     if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
     if (btn) {
       btn.disabled = true;
@@ -247,6 +245,9 @@
     clearTimeout(eyeSettleTimer);
     clearTimeout(holoPanelTimer);
     clearTimeout(hatchAudioTimer);
+
+    ensureMusic();
+    if (introMusic && musicEnabled) introMusic.tryStart();
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
@@ -412,7 +413,10 @@
           '<div class="intro-holo-panel intro-holo-panel--dormant" id="intro-holo-panel">' +
             '<div class="intro-holo-panel__aura" aria-hidden="true"></div>' +
             holoPortalHtml() +
-            '<p class="intro-holo-title">Technovate Digital Systems</p>' +
+            '<div class="intro-holo-brand">' +
+              '<h1 class="intro-logo-text intro-holo-brand__name">Technovate</h1>' +
+              '<p class="intro-holo-brand__systems">Digital Systems</p>' +
+            '</div>' +
             '<button class="intro-enter-btn intro-enter-btn--hidden" id="intro-enter-main" type="button" aria-label="Enter website">' +
               '<span class="intro-enter-btn__label">Enter</span>' +
               '<span class="intro-enter-btn__key" aria-hidden="true">↵</span>' +
@@ -553,7 +557,10 @@
       e.stopPropagation();
       enterSite();
     });
-    document.getElementById('intro-astro-button').addEventListener('click', openHatchAndProject);
+    document.getElementById('intro-astro-button').addEventListener('click', function (e) {
+      e.stopPropagation();
+      openHatchAndProject();
+    });
     document.getElementById('intro-astro-dock').addEventListener('click', function (e) {
       if (e.target.closest('#intro-enter-main')) return;
       openHatchAndProject();

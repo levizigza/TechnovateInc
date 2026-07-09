@@ -11,7 +11,7 @@
     var nodes = [];
     var running = false;
     var started = false;
-    var targetVolume = 0.48;
+    var targetVolume = 0.52;
     var ducked = false;
 
     function getContext() {
@@ -143,23 +143,27 @@
       var context = getContext();
       if (!context) return false;
 
+      function begin() {
+        if (!started) {
+          buildGraph();
+          started = true;
+        }
+        running = true;
+        fadeTo(ducked ? targetVolume * 0.58 : targetVolume, 1.8);
+        return true;
+      }
+
       if (context.state === 'suspended') {
-        context.resume();
+        context.resume().then(begin).catch(function () {});
+        return true;
       }
 
-      if (!started) {
-        buildGraph();
-        started = true;
-      }
-
-      running = true;
-      fadeTo(ducked ? targetVolume * 0.3 : targetVolume, 2.2);
-      return true;
+      return begin();
     }
 
     function duck() {
       ducked = true;
-      if (running) fadeTo(targetVolume * 0.22, 1);
+      if (running) fadeTo(targetVolume * 0.58, 0.8);
     }
 
     function unduck() {
