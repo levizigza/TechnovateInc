@@ -7,12 +7,12 @@
   <meta name="description" content="Software solutions addressing real needs in health, business, productivity, education, and community." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <header class="header">
+  <header class="header header--dark">
     <div class="header-inner">
       <div class="header-spacer"></div>
       <a href="index.html" class="logo">
@@ -29,7 +29,7 @@
         <a href="grants.html">Grants</a>
         <a href="contact.html" class="nav-cta">Contact</a>
       </nav>
-      <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">
+      <button class="burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -165,6 +165,7 @@
 
   <footer class="footer">
     <div class="container footer-inner">
+      <div class="footer-wordmark" aria-hidden="true">Technovate</div>
       <a href="index.html" class="footer-logo"><img src="assets/technovate_logo.png" alt="Technovate" /></a>
       <p><strong>Technovate</strong> — Technology and AI for health, wealth, and growth.</p>
       <div class="footer-links">
@@ -175,7 +176,8 @@
     </div>
   </footer>
 
-  <script>(function(){var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();})()</script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="experience.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="three-scenes.js"></script>
 </body>

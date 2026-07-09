@@ -7,12 +7,12 @@
   <meta name="description" content="Technovate builds responsible AI and software solutions across health, finance, education, enterprise, and community development." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <header class="header">
+  <header class="header header--dark">
     <div class="header-inner">
       <div class="header-spacer"></div>
       <a href="index.html" class="logo">
@@ -29,14 +29,13 @@
         <a href="grants.html">Grants</a>
         <a href="contact.html" class="nav-cta">Contact</a>
       </nav>
-      <button class="burger" aria-label="Menu" onclick="document.getElementById('nav').classList.toggle('open')">
+      <button class="burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
   <main>
-    <!-- IMMERSIVE HERO — 3D fills the entire viewport -->
     <section class="hero-immersive">
       <div class="hero-viewport viewport" id="scene-hero"></div>
       <div class="hero-overlay">
@@ -50,12 +49,41 @@
           </div>
         </div>
       </div>
+      <div class="scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-hint__line"></div>
+      </div>
     </section>
 
-    <!-- WHAT WE DO -->
+    <div class="marquee-wrap" aria-hidden="true">
+      <div class="marquee">
+        <div class="marquee__track">
+          <span class="marquee__item">Health &amp; Wellness <span>●</span></span>
+          <span class="marquee__item">Finance &amp; Wealth <span>●</span></span>
+          <span class="marquee__item">Education &amp; Learning <span>●</span></span>
+          <span class="marquee__item">Enterprise &amp; Productivity <span>●</span></span>
+          <span class="marquee__item">Community &amp; Relationships <span>●</span></span>
+        </div>
+        <div class="marquee__track" aria-hidden="true">
+          <span class="marquee__item">Health &amp; Wellness <span>●</span></span>
+          <span class="marquee__item">Finance &amp; Wealth <span>●</span></span>
+          <span class="marquee__item">Education &amp; Learning <span>●</span></span>
+          <span class="marquee__item">Enterprise &amp; Productivity <span>●</span></span>
+          <span class="marquee__item">Community &amp; Relationships <span>●</span></span>
+        </div>
+      </div>
+    </div>
+
     <section class="section">
       <div class="container">
-        <h2 class="section-title" style="text-align:center;max-width:600px;margin:0 auto var(--sp-5);">What Technovate does</h2>
+        <div class="section-head">
+          <div class="section-head__left">
+            <p class="hero-eyebrow" style="color:var(--accent-dark);">What we do</p>
+            <h2 class="section-title">Purpose-built software for institutional impact</h2>
+            <p class="section-lead">We build platforms that address real needs across five sectors — powered by explainable AI and designed for partners who need measurable outcomes.</p>
+          </div>
+          <span class="section-num">01</span>
+        </div>
         <div class="cards-row">
           <div class="card">
             <span class="card-label">Mission</span>
@@ -76,12 +104,35 @@
       </div>
     </section>
 
-    <!-- SECTORS — dark section for contrast -->
     <section class="section section--dark">
       <div class="container">
-        <h2 class="section-title" style="text-align:center;max-width:600px;margin:0 auto var(--sp-2);">Five sectors, one platform</h2>
-        <p class="section-lead" style="text-align:center;margin:0 auto var(--sp-5);max-width:520px;">Each sector gets purpose-built software. All sectors share a unified technology foundation.</p>
-        <div class="sectors-grid">
+        <div class="section-head">
+          <div class="section-head__left">
+            <p class="hero-eyebrow" style="color:var(--accent-light);">Sectors</p>
+            <h2 class="section-title">Five sectors, one platform</h2>
+            <p class="section-lead">Each sector gets purpose-built software. All sectors share a unified technology foundation.</p>
+          </div>
+          <span class="section-num">02</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="5">0</div>
+            <div class="stat-item__label">Active sectors</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="6" data-suffix="+">0</div>
+            <div class="stat-item__label">Projects delivered</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="100" data-suffix="%">0</div>
+            <div class="stat-item__label">Explainable AI</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-item__num" data-count="3">0</div>
+            <div class="stat-item__label">Development phases</div>
+          </div>
+        </div>
+        <div class="sectors-grid" style="margin-top:var(--sp-5);">
           <div class="sector-card sector-card--health">
             <div class="sector-icon">●</div>
             <h3>Health & Wellness</h3>
@@ -111,11 +162,16 @@
       </div>
     </section>
 
-    <!-- PROJECTS TEASER -->
     <section class="section section--alt">
       <div class="container">
-        <h2 class="section-title" style="text-align:center;max-width:600px;margin:0 auto var(--sp-2);">Our projects</h2>
-        <p class="section-lead" style="text-align:center;margin:0 auto var(--sp-5);max-width:520px;">From platform foundations to sector-specific modules — see the software we've built and what's in active development.</p>
+        <div class="section-head">
+          <div class="section-head__left">
+            <p class="hero-eyebrow" style="color:var(--accent-dark);">Portfolio</p>
+            <h2 class="section-title">Our projects</h2>
+            <p class="section-lead">From platform foundations to sector-specific modules — see the software we've built and what's in active development.</p>
+          </div>
+          <span class="section-num">03</span>
+        </div>
         <div class="cards-row">
           <div class="card">
             <span class="card-label">Platform</span>
@@ -139,7 +195,6 @@
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="section">
       <div class="container cta-banner">
         <h2>Ready to build together?</h2>
@@ -154,6 +209,7 @@
 
   <footer class="footer">
     <div class="container footer-inner">
+      <div class="footer-wordmark" aria-hidden="true">Technovate</div>
       <a href="index.html" class="footer-logo">
         <img src="assets/technovate_logo.png" alt="Technovate" />
       </a>
@@ -166,7 +222,8 @@
     </div>
   </footer>
 
-  <script>(function(){var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();})()</script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="experience.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script src="three-scenes.js"></script>
 </body>
