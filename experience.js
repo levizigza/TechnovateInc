@@ -77,10 +77,29 @@
     document.body.appendChild(grain);
   }
 
+  /* ---- Holographic ambient background ---- */
+  function initHoloAmbient() {
+    document.body.classList.add('holo-site');
+
+    if (reduced || document.querySelector('.holo-ambient')) return;
+
+    var layer = document.createElement('div');
+    layer.className = 'holo-ambient';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML =
+      '<div class="holo-ambient__grid"></div>' +
+      '<div class="holo-ambient__orb holo-ambient__orb--cyan"></div>' +
+      '<div class="holo-ambient__orb holo-ambient__orb--magenta"></div>' +
+      '<div class="holo-ambient__orb holo-ambient__orb--amber"></div>';
+    document.body.prepend(layer);
+  }
+
   /* ---- Header: shrink on scroll + dark/light swap ---- */
   function initHeader() {
     var header = document.querySelector('.header');
     if (!header) return;
+
+    header.classList.add('header--dark');
 
     function onScroll() {
       header.classList.toggle('header--scrolled', window.scrollY > 40);
@@ -88,35 +107,6 @@
 
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-
-    if (!('IntersectionObserver' in window)) return;
-
-    var zones = document.querySelectorAll(
-      '.hero-immersive, .page-header-immersive, .section--dark, .footer'
-    );
-
-    var lightZones = document.querySelectorAll(
-      '.section:not(.section--dark), .section--alt'
-    );
-
-    function observeZones(elements, isDark) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting && e.intersectionRatio > 0.1) {
-            header.classList.toggle('header--dark', isDark);
-          }
-        });
-      }, { rootMargin: '-' + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 80) + 'px 0px -70% 0px', threshold: [0, 0.1, 0.5] });
-
-      elements.forEach(function (z) { io.observe(z); });
-    }
-
-    observeZones(zones, true);
-    observeZones(lightZones, false);
-
-    if (document.querySelector('.hero-immersive, .page-header-immersive')) {
-      header.classList.add('header--dark');
-    }
   }
 
   /* ---- Scroll reveals (progressive enhancement) ---- */
@@ -242,6 +232,7 @@
   } else {
     document.body.classList.add('is-loaded');
   }
+  initHoloAmbient();
   initScrollProgress();
   initGrain();
   initHeader();

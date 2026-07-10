@@ -206,25 +206,68 @@
     };
   }
 
+  function buildLogoEyeHtml() {
+    return '<div class="tv-eye-character tv-eye-character--logo">' + EYE_BODY_INNER + '</div>';
+  }
+
+  function footerMarkHtml() {
+    return (
+      '<span class="tv-footer-mark">' +
+        '<span class="tv-footer-mark__eye" aria-hidden="true">' + buildLogoEyeHtml() + '</span>' +
+        '<span class="tv-footer-mark__text">Technovate</span>' +
+      '</span>'
+    );
+  }
+
+  var siteLogoAnimators = [];
+
+  function startLogoLife(root) {
+    if (!root || root.dataset.tvEyeLife === '1') return;
+    var unit = root.querySelector('.tv-eye-character--logo');
+    if (!unit) return;
+    root.dataset.tvEyeLife = '1';
+    siteLogoAnimators.push(createHoloEyeLife(unit));
+  }
+
   function mountHeaders() {
     var icons = document.querySelectorAll('.logo-icon');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     for (var i = 0; i < icons.length; i++) {
-      if (!icons[i].querySelector('.tv-logo-eye')) {
+      if (icons[i].dataset.tvEyeMounted === '1') continue;
+
+      if (reducedMotion) {
         icons[i].innerHTML = EYE_ICON_SVG;
         icons[i].classList.add('logo-icon--eye');
+      } else {
+        icons[i].innerHTML = buildLogoEyeHtml();
+        icons[i].classList.add('logo-icon--living');
+        startLogoLife(icons[i]);
       }
+
+      icons[i].dataset.tvEyeMounted = '1';
     }
   }
 
   function mountFooters() {
     var footers = document.querySelectorAll('.footer-logo');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     for (var i = 0; i < footers.length; i++) {
+      if (footers[i].dataset.tvEyeMounted === '1') continue;
+
       var img = footers[i].querySelector('img');
       if (img) img.remove();
-      if (!footers[i].querySelector('.tv-logo-mark')) {
+
+      if (reducedMotion) {
         footers[i].innerHTML = EYE_MARK_SVG;
-        footers[i].setAttribute('aria-label', 'Technovate home');
+      } else {
+        footers[i].innerHTML = footerMarkHtml();
+        startLogoLife(footers[i]);
       }
+
+      footers[i].setAttribute('aria-label', 'Technovate home');
+      footers[i].dataset.tvEyeMounted = '1';
     }
   }
 
@@ -462,6 +505,8 @@
   window.TechnovateLogo = {
     eyeIconSvg: function () { return EYE_ICON_SVG; },
     eyeMarkSvg: function () { return EYE_MARK_SVG; },
+    logoEyeHtml: buildLogoEyeHtml,
+    footerMarkHtml: footerMarkHtml,
     characterHtml: function () { return CHARACTER_HTML; },
     holoEyeHtml: holoEyeHtml,
     holoPortalHtml: holoPortalHtml,
