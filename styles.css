@@ -188,6 +188,17 @@ img { max-width: 100%; height: auto; display: block; }
   align-items: center;
   gap: var(--sp-2);
   margin-right: auto;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.25s ease;
+}
+
+.logo:hover {
+  opacity: 0.92;
+}
+
+.logo:hover .logo-text {
+  text-shadow: 0 0 22px rgba(0, 212, 255, 0.45);
 }
 
 .logo-icon {

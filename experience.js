@@ -115,6 +115,32 @@
     onScroll();
   }
 
+  /* ---- Logo / wordmark: return to homepage intro ---- */
+  function initLogoHome() {
+    var page = window.location.pathname.split('/').pop() || 'index.html';
+    var isHome = page === 'index.html' || page === '' || page.indexOf('.html') === -1;
+    var logos = document.querySelectorAll('.logo');
+
+    for (var i = 0; i < logos.length; i++) {
+      logos[i].setAttribute('aria-label', 'Technovate home');
+
+      if (!isHome) {
+        logos[i].setAttribute('href', 'index.html?intro=1');
+        continue;
+      }
+
+      logos[i].addEventListener('click', function (e) {
+        e.preventDefault();
+        if (window.TechnovateVoice && window.TechnovateVoice.replayIntro) {
+          window.TechnovateVoice.replayIntro();
+          return;
+        }
+        localStorage.removeItem('technovate_intro_done');
+        window.location.href = 'index.html?intro=1';
+      });
+    }
+  }
+
   /* ---- Scroll reveals (progressive enhancement) ---- */
   function initReveals() {
     if (reduced || !('IntersectionObserver' in window)) return;
@@ -304,6 +330,7 @@
   initScrollProgress();
   initGrain();
   initHeader();
+  initLogoHome();
   initReveals();
   initHeroEntrance();
   initMobileNav();

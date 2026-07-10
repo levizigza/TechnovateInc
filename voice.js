@@ -551,9 +551,7 @@
     narrationPlaying = false;
   }
 
-  function closeIntro() {
-    introClosed = true;
-    introActivated = false;
+  function clearIntroTimers() {
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
     clearTimeout(holoPanelTimer);
@@ -568,6 +566,14 @@
     flashTimer = null;
     chargeTimer = null;
     dockRetreatTimer = null;
+    clearNarrationTimer();
+    clearLoopTimer();
+  }
+
+  function teardownIntro(immediate) {
+    introClosed = true;
+    introActivated = false;
+    clearIntroTimers();
     stopHoloEyeLife();
     stopNarration();
     introNarration = null;
@@ -581,17 +587,47 @@
     }
 
     var intro = document.getElementById('cinematic-intro');
-    if (intro) {
-      intro.classList.add('intro--closing');
-      setTimeout(function () {
-        intro.remove();
-        document.body.classList.remove('intro-active');
-      }, 500);
-    } else {
+    if (!intro) {
       document.body.classList.remove('intro-active');
+      return;
     }
 
+    if (immediate) {
+      intro.remove();
+      document.body.classList.remove('intro-active');
+      return;
+    }
+
+    intro.classList.add('intro--closing');
+    setTimeout(function () {
+      intro.remove();
+      document.body.classList.remove('intro-active');
+    }, 500);
+  }
+
+  function closeIntro() {
+    teardownIntro(false);
     localStorage.setItem(INTRO_KEY, '1');
+  }
+
+  function replayIntro() {
+    if (!isHomepage()) {
+      window.location.href = 'index.html?intro=1';
+      return;
+    }
+
+    if (document.getElementById('cinematic-intro')) {
+      teardownIntro(true);
+    }
+
+    localStorage.removeItem(INTRO_KEY);
+    introClosed = false;
+    introActivated = false;
+    narrationPlaying = false;
+    useSpeechFallback = false;
+    musicEnabled = true;
+    window.scrollTo(0, 0);
+    runIntro();
   }
 
   function startNarration() {
@@ -697,6 +733,7 @@
   window.TechnovateVoice = {
     resetIntro: function () {
       localStorage.removeItem(INTRO_KEY);
-    }
+    },
+    replayIntro: replayIntro
   };
 })();
