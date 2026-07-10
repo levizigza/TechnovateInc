@@ -115,28 +115,69 @@
     onScroll();
   }
 
-  /* ---- Logo / wordmark: return to homepage intro ---- */
+  /* ---- Logo / wordmark ---- */
   function initLogoHome() {
-    var page = window.location.pathname.split('/').pop() || 'index.html';
-    var isHome = page === 'index.html' || page === '' || page.indexOf('.html') === -1;
     var logos = document.querySelectorAll('.logo');
-
     for (var i = 0; i < logos.length; i++) {
       logos[i].setAttribute('aria-label', 'Technovate home');
+    }
+  }
 
-      if (!isHome) {
-        logos[i].setAttribute('href', 'index.html?intro=1');
-        continue;
+  /* ---- Header red button: flash + hologram menu ---- */
+  function initHoloTrigger() {
+    var triggers = document.querySelectorAll('.holo-trigger');
+    var page = window.location.pathname.split('/').pop() || 'index.html';
+    var isHome = page === 'index.html' || page === '' || page.indexOf('.html') === -1;
+
+    function playFlash(trigger, callback) {
+      if (reduced) {
+        callback();
+        return;
       }
 
-      logos[i].addEventListener('click', function (e) {
+      if (trigger) {
+        trigger.classList.add('holo-trigger--flash');
+        setTimeout(function () {
+          trigger.classList.remove('holo-trigger--flash');
+        }, 380);
+      }
+
+      var rect = trigger ? trigger.getBoundingClientRect() : null;
+      var flash = document.createElement('div');
+      flash.className = 'holo-trigger-flash';
+      if (rect) {
+        flash.style.setProperty('--flash-x', ((rect.left + rect.width / 2) / window.innerWidth * 100) + '%');
+        flash.style.setProperty('--flash-y', ((rect.top + rect.height / 2) / window.innerHeight * 100) + '%');
+      }
+      document.body.appendChild(flash);
+
+      requestAnimationFrame(function () {
+        flash.classList.add('holo-trigger-flash--active');
+      });
+
+      setTimeout(function () {
+        flash.classList.add('holo-trigger-flash--fade');
+        setTimeout(function () {
+          if (flash.parentNode) flash.remove();
+          callback();
+        }, 320);
+      }, 180);
+    }
+
+    function openHolo() {
+      if (window.TechnovateVoice && window.TechnovateVoice.openHoloMenu) {
+        window.TechnovateVoice.openHoloMenu();
+        return;
+      }
+      window.location.href = isHome ? 'index.html?holo=1' : 'index.html?holo=1';
+    }
+
+    for (var i = 0; i < triggers.length; i++) {
+      triggers[i].addEventListener('click', function (e) {
         e.preventDefault();
-        if (window.TechnovateVoice && window.TechnovateVoice.replayIntro) {
-          window.TechnovateVoice.replayIntro();
-          return;
-        }
-        localStorage.removeItem('technovate_intro_done');
-        window.location.href = 'index.html?intro=1';
+        e.stopPropagation();
+        var btn = e.currentTarget;
+        playFlash(btn, openHolo);
       });
     }
   }
@@ -331,6 +372,7 @@
   initGrain();
   initHeader();
   initLogoHome();
+  initHoloTrigger();
   initReveals();
   initHeroEntrance();
   initMobileNav();

@@ -610,6 +610,81 @@
     localStorage.setItem(INTRO_KEY, '1');
   }
 
+  function skipToHoloMenu() {
+    if (introClosed) return;
+
+    introActivated = true;
+    clearIntroTimers();
+    stopNarration();
+    if (introMusic) {
+      introMusic.stop();
+      introMusic = null;
+    }
+
+    var dock = document.getElementById('intro-astro-dock');
+    var intro = document.getElementById('cinematic-intro');
+    var stage = document.getElementById('intro-holo-stage');
+    var holoPortal = document.getElementById('intro-holo-portal');
+    var holoPanel = document.getElementById('intro-holo-panel');
+    var sacred = document.getElementById('intro-sacred-geo');
+    var projection = document.getElementById('intro-projection');
+    var enterBtn = document.getElementById('intro-enter-main');
+    var prompt = document.getElementById('intro-astro-prompt');
+    var astroBtn = document.getElementById('intro-astro-button');
+
+    if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
+    if (astroBtn) {
+      astroBtn.disabled = true;
+      astroBtn.classList.add('intro-astro-button--used');
+    }
+    if (dock) dock.classList.add('intro-astro-dock--retreat');
+    if (intro) intro.classList.add('intro--immersive', 'intro--holo-focus');
+    if (stage) {
+      stage.classList.remove(
+        'intro-holo-stage--waiting',
+        'intro-holo-stage--portal-opening',
+        'intro-holo-stage--eye-alive',
+        'intro-holo-stage--audio'
+      );
+      stage.classList.add('intro-holo-stage--holo-revealed', 'intro-holo-stage--fullscreen');
+    }
+    if (holoPanel) holoPanel.classList.remove('intro-holo-panel--dormant');
+    if (holoPortal) holoPortal.classList.add('intro-holo-portal--active', 'intro-holo-portal--settled');
+    if (sacred) sacred.classList.add('intro-sacred-geo--active');
+    if (projection) projection.classList.add('intro-projection--dissolve');
+    if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
+
+    startHoloEyeLife();
+  }
+
+  function openHoloMenu() {
+    if (!isHomepage()) {
+      window.location.href = 'index.html?holo=1';
+      return;
+    }
+
+    if (document.getElementById('cinematic-intro')) {
+      skipToHoloMenu();
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    localStorage.removeItem(INTRO_KEY);
+    introClosed = false;
+    introActivated = false;
+    narrationPlaying = false;
+    useSpeechFallback = false;
+    musicEnabled = true;
+    window.scrollTo(0, 0);
+    runIntro();
+
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        skipToHoloMenu();
+      });
+    });
+  }
+
   function replayIntro() {
     if (!isHomepage()) {
       window.location.href = 'index.html?intro=1';
@@ -707,9 +782,13 @@
     return /[?&](intro|reset)=1/.test(window.location.search);
   }
 
+  function shouldOpenHoloMenu() {
+    return /[?&]holo=1/.test(window.location.search);
+  }
+
   function init() {
     if (!isHomepage()) return;
-    if (shouldForceIntro()) {
+    if (shouldForceIntro() || shouldOpenHoloMenu()) {
       localStorage.removeItem(INTRO_KEY);
     }
     if (localStorage.getItem(INTRO_KEY) === '1') return;
@@ -722,6 +801,14 @@
     }
 
     runIntro();
+
+    if (shouldOpenHoloMenu()) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          skipToHoloMenu();
+        });
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
@@ -734,6 +821,7 @@
     resetIntro: function () {
       localStorage.removeItem(INTRO_KEY);
     },
-    replayIntro: replayIntro
+    replayIntro: replayIntro,
+    openHoloMenu: openHoloMenu
   };
 })();

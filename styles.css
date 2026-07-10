@@ -187,7 +187,6 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  margin-right: auto;
   cursor: pointer;
   text-decoration: none;
   transition: opacity 0.25s ease;
@@ -199,6 +198,85 @@ img { max-width: 100%; height: auto; display: block; }
 
 .logo:hover .logo-text {
   text-shadow: 0 0 22px rgba(0, 212, 255, 0.45);
+}
+
+/* Header hologram trigger — red button beside logo */
+.holo-trigger {
+  position: relative;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.holo-trigger__pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 40, 40, 0.5);
+  animation: holoTriggerRing 1.8s ease-out infinite;
+}
+
+.holo-trigger__core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff5555 0%, #cc1111 45%, #880000 100%);
+  box-shadow:
+    0 0 14px rgba(255, 40, 40, 0.7),
+    inset 0 1px 3px rgba(255, 180, 180, 0.5),
+    inset 0 -3px 6px rgba(80, 0, 0, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.holo-trigger:hover .holo-trigger__core {
+  transform: scale(1.1);
+  box-shadow:
+    0 0 20px rgba(255, 60, 60, 0.95),
+    inset 0 1px 3px rgba(255, 200, 200, 0.6);
+}
+
+.holo-trigger:active .holo-trigger__core {
+  transform: scale(0.92);
+}
+
+.holo-trigger--flash .holo-trigger__core {
+  transform: scale(1.2);
+  box-shadow:
+    0 0 32px rgba(255, 80, 80, 1),
+    0 0 60px rgba(255, 40, 40, 0.8);
+}
+
+.holo-trigger-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--flash-x, 50%) var(--flash-y, 12%), rgba(255, 255, 255, 0.95) 0%, rgba(0, 212, 255, 0.35) 28%, transparent 62%);
+  opacity: 0;
+  transition: opacity 0.12s ease-out;
+}
+
+.holo-trigger-flash--active {
+  opacity: 1;
+}
+
+.holo-trigger-flash--fade {
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+
+@keyframes holoTriggerRing {
+  0% { transform: scale(0.92); opacity: 0.85; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
 }
 
 .logo-icon {
@@ -271,6 +349,8 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   align-items: center;
   gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .nav a {
@@ -1489,8 +1569,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 @media (max-width: 768px) {
-  .nav { display: none; }
-  .burger { display: flex; }
+  .nav { display: none; flex: 0; }
+  .burger { display: flex; margin-left: auto; }
   .form-row { grid-template-columns: 1fr; }
   .logo-icon { width: 28px; height: 28px; }
   .sectors-grid { grid-template-columns: 1fr; }
@@ -2471,6 +2551,8 @@ img { max-width: 100%; height: auto; display: block; }
   .tv-nova--thinking .tv-nova-head__vents,
   .tv-nova-head__led,
   .tv-nova--listening .tv-nova__mic-ring { animation: none; }
+  .holo-trigger__pulse { animation: none; }
+  .holo-trigger-flash { display: none; }
 }
 
 @media (max-width: 860px) {
