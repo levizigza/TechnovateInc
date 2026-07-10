@@ -14,6 +14,8 @@
   var eyeSettleTimer = null;
   var holoPanelTimer = null;
   var hatchAudioTimer = null;
+  var flashTimer = null;
+  var chargeTimer = null;
   var holoEyeLife = null;
   var introMusic = null;
   var introNarration = null;
@@ -24,9 +26,10 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 1600;
   var LOOP_PAUSE_MS = 2800;
-  var PROJECTOR_TILT_MS = 1000;
-  var HOLO_PORTAL_MS = 1000;
-  var EYE_ALIVE_MS = 2400;
+  var NOSE_CHARGE_MS = 1300;
+  var NOSE_FLASH_MS = 550;
+  var PROJECTOR_BEAM_MS = 1500;
+  var EYE_ALIVE_MS = 2200;
   var HOLO_PANEL_MS = 700;
   var introActivated = false;
 
@@ -88,6 +91,12 @@
                     cryptoWheelSvg() +
                   '</svg>' +
                 '</div>' +
+              '</div>' +
+              '<div class="intro-astro-nose-flash" id="intro-astro-nose-flash" aria-hidden="true"></div>' +
+              '<div class="intro-astro-projector-beam" id="intro-astro-projector-beam" aria-hidden="true">' +
+                '<div class="intro-astro-projector-beam__core"></div>' +
+                '<div class="intro-astro-projector-beam__dust"></div>' +
+                '<div class="intro-astro-projector-beam__scanlines"></div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -276,27 +285,51 @@
     clearTimeout(eyeSettleTimer);
     clearTimeout(holoPanelTimer);
     clearTimeout(hatchAudioTimer);
+    clearTimeout(flashTimer);
+    clearTimeout(chargeTimer);
 
     ensureMusic();
     if (introMusic && musicEnabled && introMusic.unlock) introMusic.unlock();
 
+    chargeTimer = setTimeout(function () {
+      if (introClosed) return;
+      if (sensor) sensor.classList.add('intro-astro-sensor--charging');
+      if (head) head.classList.add('intro-astro-head--charging');
+    }, NOSE_CHARGE_MS - 420);
+
+    flashTimer = setTimeout(function () {
+      if (introClosed) return;
+      if (sensor) {
+        sensor.classList.remove('intro-astro-sensor--activating', 'intro-astro-sensor--charging');
+        sensor.classList.add('intro-astro-sensor--flashing');
+      }
+      if (head) {
+        head.classList.remove('intro-astro-head--activating', 'intro-astro-head--charging');
+        head.classList.add('intro-astro-head--flashing');
+      }
+      if (projection) projection.classList.add('intro-projection--flash');
+    }, NOSE_CHARGE_MS);
+
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
       if (sensor) {
-        sensor.classList.remove('intro-astro-sensor--activating');
+        sensor.classList.remove('intro-astro-sensor--flashing');
         sensor.classList.add('intro-astro-sensor--projecting');
       }
       if (head) {
-        head.classList.remove('intro-astro-head--activating');
+        head.classList.remove('intro-astro-head--flashing', 'intro-astro-head--charging');
         head.classList.add('intro-astro-head--projecting');
       }
-      if (projection) projection.classList.add('intro-projection--active');
+      if (projection) {
+        projection.classList.remove('intro-projection--flash');
+        projection.classList.add('intro-projection--active');
+      }
       if (stage) {
         stage.classList.remove('intro-holo-stage--waiting');
         stage.classList.add('intro-holo-stage--portal-opening');
       }
       if (holoPortal) holoPortal.classList.add('intro-holo-portal--active');
-    }, PROJECTOR_TILT_MS);
+    }, NOSE_CHARGE_MS + NOSE_FLASH_MS);
 
     eyeSettleTimer = setTimeout(function () {
       if (introClosed) return;
@@ -306,15 +339,15 @@
       }
       if (holoPortal) holoPortal.classList.add('intro-holo-portal--settled');
       startHoloEyeLife();
-    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS);
+    }, NOSE_CHARGE_MS + NOSE_FLASH_MS + PROJECTOR_BEAM_MS);
 
     holoPanelTimer = setTimeout(function () {
       revealHoloPanel();
-    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS);
+    }, NOSE_CHARGE_MS + NOSE_FLASH_MS + PROJECTOR_BEAM_MS + EYE_ALIVE_MS);
 
     hatchAudioTimer = setTimeout(function () {
       if (!introClosed) transitionToAudioPhase();
-    }, PROJECTOR_TILT_MS + HOLO_PORTAL_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
+    }, NOSE_CHARGE_MS + NOSE_FLASH_MS + PROJECTOR_BEAM_MS + EYE_ALIVE_MS + HOLO_PANEL_MS);
   }
 
   function transitionToAudioPhase() {
@@ -433,8 +466,11 @@
         '<div class="intro-vcr-noise"></div>' +
       '</div>' +
       '<div class="intro-projection" id="intro-projection" aria-hidden="true">' +
+        '<div class="intro-projection__flash" id="intro-projection-flash" aria-hidden="true"></div>' +
         '<div class="intro-projection__cone"></div>' +
         '<div class="intro-projection__beam"></div>' +
+        '<div class="intro-projection__screen" aria-hidden="true"></div>' +
+        '<div class="intro-projection__scanlines" aria-hidden="true"></div>' +
       '</div>' +
       '<div class="intro-sacred-geo" id="intro-sacred-geo" aria-hidden="true">' +
         '<div class="intro-sacred-geo__ring intro-sacred-geo__ring--outer"></div>' +
@@ -488,10 +524,14 @@
     clearTimeout(eyeSettleTimer);
     clearTimeout(holoPanelTimer);
     clearTimeout(hatchAudioTimer);
+    clearTimeout(flashTimer);
+    clearTimeout(chargeTimer);
     hatchRevealTimer = null;
     eyeSettleTimer = null;
     holoPanelTimer = null;
     hatchAudioTimer = null;
+    flashTimer = null;
+    chargeTimer = null;
     stopHoloEyeLife();
     stopNarration();
     introNarration = null;
