@@ -1,6 +1,6 @@
 /* ============================================
-   Technovate — Nova holographic head assistant
-   Floating human head replaces the chat box
+   Technovate — Nova holographic robot assistant
+   Faceted Asaro-style head, floating (no chat box)
    ============================================ */
 (function () {
   'use strict';
@@ -48,6 +48,8 @@
     var lo = 'rgba(24,90,120,0.42)';
     var sh = 'rgba(6,28,48,0.62)';
     var deep = 'rgba(2,10,22,0.82)';
+    var metal = 'rgba(140,190,210,0.35)';
+    var led = 'rgba(0,255,255,0.92)';
 
     return (
       '<svg class="tv-nova-head__svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
@@ -60,52 +62,93 @@
             '<stop offset="0%" stop-color="rgba(220,252,255,0.55)"/>' +
             '<stop offset="100%" stop-color="rgba(0,160,210,0.22)"/>' +
           '</linearGradient>' +
+          '<linearGradient id="' + uid + 'Visor" x1="0%" y1="0%" x2="100%" y2="0%">' +
+            '<stop offset="0%" stop-color="rgba(0,255,255,0.15)"/>' +
+            '<stop offset="50%" stop-color="rgba(0,255,255,0.55)"/>' +
+            '<stop offset="100%" stop-color="rgba(0,255,255,0.15)"/>' +
+          '</linearGradient>' +
         '</defs>' +
         '<ellipse cx="100" cy="132" rx="78" ry="98" fill="url(#' + uid + 'Aura)"/>' +
         '<g class="tv-nova-head__facets" stroke-linejoin="round">' +
-          '<polygon points="74,54 126,54 118,68 82,68" fill="' + hi + '" stroke="' + e + '" stroke-width="0.65"/>' +
-          '<polygon points="58,92 74,54 82,68 72,88" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="142,92 126,54 118,68 128,88" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="68,78 88,62 96,78 84,92" fill="' + hi + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="132,78 112,62 104,78 116,92" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="88,62 112,62 108,78 92,78" fill="url(#' + uid + 'Lit)" stroke="' + e + '" stroke-width="0.65"/>' +
-          '<polygon points="84,92 96,78 108,78 116,92 108,102 92,102" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="58,92 72,88 84,92 78,108 66,112" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="142,92 128,88 116,92 122,108 134,112" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          /* cranium helmet — faceted dome */
+          '<polygon points="68,38 132,38 124,54 76,54" fill="' + hi + '" stroke="' + e + '" stroke-width="0.65"/>' +
+          '<polygon points="52,72 68,38 76,54 62,78" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="148,72 132,38 124,54 138,78" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="76,54 124,54 116,70 84,70" fill="url(#' + uid + 'Lit)" stroke="' + e + '" stroke-width="0.65"/>' +
+          '<polygon points="62,78 76,54 84,70 72,86" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="138,78 124,54 116,70 128,86" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          /* forehead sensor bank */
+          '<polygon points="84,70 116,70 112,82 88,82" fill="' + deep + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<rect class="tv-nova-head__led tv-nova-head__led--forehead" x="94" y="73" width="12" height="4" rx="1" fill="' + led + '" stroke="' + e + '" stroke-width="0.4"/>' +
+          '<line x1="90" y1="79" x2="110" y2="79" stroke="' + eSoft + '" stroke-width="0.45"/>' +
+          /* visor brow plate */
+          '<polygon points="72,82 128,82 120,96 80,96" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="80,96 120,96 116,104 84,104" fill="url(#' + uid + 'Visor)" stroke="' + e + '" stroke-width="0.55"/>' +
+          /* temple + ear modules */
+          '<polygon points="48,98 62,78 72,86 66,108" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="152,98 138,78 128,86 134,108" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="42,104 48,98 54,112 48,124" fill="' + lo + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="158,104 152,98 146,112 152,124" fill="' + lo + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<line class="tv-nova-head__antenna" x1="46" y1="104" x2="38" y2="78" stroke="' + e + '" stroke-width="0.9" stroke-linecap="round"/>' +
+          '<circle cx="38" cy="76" r="2.2" fill="' + led + '" stroke="' + e + '" stroke-width="0.4"/>' +
+          '<line class="tv-nova-head__antenna" x1="154" y1="104" x2="162" y2="78" stroke="' + e + '" stroke-width="0.9" stroke-linecap="round"/>' +
+          '<circle cx="162" cy="76" r="2.2" fill="' + led + '" stroke="' + e + '" stroke-width="0.4"/>' +
+          /* cheek armour plates */
+          '<polygon points="66,108 80,96 84,104 76,124" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="134,108 120,96 116,104 124,124" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<g class="tv-nova-head__vents" stroke="' + eSoft + '" stroke-width="0.45">' +
+            '<line x1="70" y1="112" x2="74" y2="120"/>' +
+            '<line x1="74" y1="110" x2="78" y2="118"/>' +
+            '<line x1="122" y1="110" x2="126" y2="118"/>' +
+            '<line x1="126" y1="112" x2="130" y2="120"/>' +
+          '</g>' +
+          /* optical sensor eyes */
           '<g class="tv-nova-head__eye">' +
-            '<polygon points="74,108 86,100 94,110 86,120" fill="' + deep + '" stroke="' + e + '" stroke-width="0.55"/>' +
-            '<polygon points="86,100 92,102 90,108 84,106" fill="' + sh + '" stroke="none"/>' +
+            '<polygon points="72,108 88,100 96,112 88,124" fill="' + deep + '" stroke="' + e + '" stroke-width="0.6"/>' +
+            '<polygon points="78,106 90,102 92,112 82,118" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.45"/>' +
+            '<rect x="80" y="108" width="8" height="4" rx="0.5" fill="' + led + '"/>' +
           '</g>' +
           '<g class="tv-nova-head__eye">' +
-            '<polygon points="126,108 114,100 106,110 114,120" fill="' + deep + '" stroke="' + e + '" stroke-width="0.55"/>' +
-            '<polygon points="114,100 108,102 110,108 116,106" fill="' + sh + '" stroke="none"/>' +
+            '<polygon points="128,108 112,100 104,112 112,124" fill="' + deep + '" stroke="' + e + '" stroke-width="0.6"/>' +
+            '<polygon points="122,106 110,102 108,112 118,118" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.45"/>' +
+            '<rect x="112" y="108" width="8" height="4" rx="0.5" fill="' + led + '"/>' +
           '</g>' +
-          '<polygon points="92,102 108,102 106,112 94,112" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="96,78 104,78 102,92 98,92" fill="' + hi + '" stroke="' + e + '" stroke-width="0.55"/>' +
-          '<polygon points="98,92 102,92 104,108 100,118 96,108" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="96,108 100,118 98,128 94,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.55"/>' +
-          '<polygon points="104,108 100,118 102,128 106,118" fill="' + sh + '" stroke="' + e + '" stroke-width="0.55"/>' +
-          '<polygon points="66,112 78,108 86,120 78,138 68,132" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="134,112 122,108 114,120 122,138 132,132" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="78,138 86,120 114,120 122,138 110,152 90,152" fill="' + hi + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="86,120 100,118 114,120 110,136 90,136" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="90,136 110,136 108,142 92,142" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="92,142 108,142 104,148 96,148" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
-          '<path class="tv-nova-head__mouth" d="M96,148 L100,154 L104,148 Z" fill="' + hi + '" stroke="' + e + '" stroke-width="0.65" stroke-linejoin="round"/>' +
-          '<polygon points="68,132 78,138 90,152 82,168 72,158" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="132,132 122,138 110,152 118,168 128,158" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="82,168 90,152 110,152 118,168 104,182 96,182" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
-          '<polygon points="96,182 104,182 100,192 96,192" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="52,118 58,92 66,112 62,132" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="148,118 142,92 134,112 138,132" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="50,118 54,128 58,132 56,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.5"/>' +
-          '<polygon points="150,118 146,128 142,132 144,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.5"/>' +
-          '<polygon points="82,168 76,208 88,218 96,192" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="118,168 124,208 112,218 104,192" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
-          '<polygon points="96,192 104,192 108,218 92,218" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
-          '<polygon points="76,208 92,218 88,248 78,242" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="124,208 108,218 112,248 122,242" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
-          '<polygon points="88,248 112,248 108,262 92,262" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          /* nose rangefinder */
+          '<polygon points="96,104 104,104 102,120 98,120" fill="' + hi + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="98,120 102,120 100,128 98,128" fill="' + led + '" stroke="none"/>' +
+          /* mid-face panel */
+          '<polygon points="84,104 116,104 112,124 88,124" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          /* vocoder speaker grille */
+          '<polygon points="88,124 112,124 108,136 92,136" fill="' + deep + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<g class="tv-nova-head__mouth">' +
+            '<line x1="92" y1="128" x2="108" y2="128" stroke="' + led + '" stroke-width="1.1" stroke-linecap="round"/>' +
+            '<line x1="93" y1="131" x2="107" y2="131" stroke="' + e + '" stroke-width="0.75" stroke-linecap="round"/>' +
+            '<line x1="94" y1="134" x2="106" y2="134" stroke="' + eSoft + '" stroke-width="0.65" stroke-linecap="round"/>' +
+          '</g>' +
+          /* jaw guard */
+          '<polygon points="76,124 88,124 92,136 82,148 74,138" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="124,124 112,124 108,136 118,148 126,138" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="82,148 92,136 108,136 118,148 104,158 96,158" fill="' + hi + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="88,124 112,124 108,136 92,136" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.45"/>' +
+          /* neck — segmented actuator collar */
+          '<polygon points="82,158 118,158 114,172 86,172" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="86,172 114,172 110,186 90,186" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="90,186 110,186 106,200 94,200" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="94,200 106,200 102,214 98,214" fill="' + mid + '" stroke="' + e + '" stroke-width="0.5"/>' +
+          '<line x1="88" y1="166" x2="112" y2="166" stroke="' + eSoft + '" stroke-width="0.4"/>' +
+          '<line x1="90" y1="180" x2="110" y2="180" stroke="' + eSoft + '" stroke-width="0.4"/>' +
+          '<line x1="92" y1="194" x2="108" y2="194" stroke="' + eSoft + '" stroke-width="0.4"/>' +
+          /* bolt rivets */
+          '<g class="tv-nova-head__bolts" fill="' + metal + '" stroke="' + eSoft + '" stroke-width="0.35">' +
+            '<circle cx="76" cy="54" r="1.3"/>' +
+            '<circle cx="124" cy="54" r="1.3"/>' +
+            '<circle cx="72" cy="86" r="1.2"/>' +
+            '<circle cx="128" cy="86" r="1.2"/>' +
+            '<circle cx="82" cy="148" r="1.2"/>' +
+            '<circle cx="118" cy="148" r="1.2"/>' +
+            '<circle cx="86" cy="172" r="1.1"/>' +
+            '<circle cx="114" cy="172" r="1.1"/>' +
+          '</g>' +
         '</g>' +
       '</svg>'
     );
@@ -167,7 +210,7 @@
         '<span class="tv-nova__mic-ring" aria-hidden="true"></span>' +
         '<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.71V21h2v-3.29A7 7 0 0 0 19 11h-2z"/></svg>' +
       '</button>' +
-      '<button class="tv-nova__head-wrap" id="tv-nova-head-btn" type="button" aria-label="Talk to Nova, holographic assistant">' +
+      '<button class="tv-nova__head-wrap" id="tv-nova-head-btn" type="button" aria-label="Talk to Nova, holographic robot assistant">' +
         '<div class="tv-nova-head" id="tv-nova-head">' +
           '<div class="tv-nova-head__aura" aria-hidden="true"></div>' +
           '<div class="tv-nova-head__scan" aria-hidden="true"></div>' +
