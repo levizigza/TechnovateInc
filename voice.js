@@ -76,19 +76,20 @@
       '<div class="intro-astro-head" id="intro-astro-head">' +
         '<div class="intro-astro-dome" id="intro-astro-dome">' +
           '<div class="intro-astro-dome__shine"></div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left">' +
-            '<span class="intro-astro-emitter-core" aria-hidden="true"></span>' +
-          '</div>' +
-          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right">' +
-            '<span class="intro-astro-emitter-core" aria-hidden="true"></span>' +
-          '</div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--left"></div>' +
+          '<div class="intro-astro-dome__blue intro-astro-dome__blue--right"></div>' +
           '<div class="intro-astro-sensor" id="intro-astro-sensor">' +
-            '<div class="intro-astro-projector intro-astro-projector--nose" id="intro-astro-projector">' +
-              '<span class="intro-astro-emitter-core intro-astro-emitter-core--nose" aria-hidden="true"></span>' +
+            '<div class="intro-astro-projector" id="intro-astro-projector">' +
               '<div class="intro-astro-sensor__glow"></div>' +
               '<div class="intro-astro-sensor__housing"></div>' +
               '<div class="intro-astro-sensor__ring"></div>' +
-              '<div class="intro-astro-sensor__lens" id="intro-astro-sensor-lens"></div>' +
+              '<div class="intro-astro-sensor__lens" id="intro-astro-sensor-lens">' +
+                '<div class="intro-astro-crypto-wheel" id="intro-astro-crypto-wheel" aria-hidden="true">' +
+                  '<svg class="intro-astro-crypto-wheel__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+                    cryptoWheelSvg() +
+                  '</svg>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -227,58 +228,29 @@
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
   }
 
-  function setupEmitterMorph() {
-    var stage = document.getElementById('intro-holo-stage');
-    var portal = document.getElementById('intro-holo-portal');
-    var emitters = [
-      document.querySelector('.intro-astro-dome__blue--left'),
-      document.querySelector('.intro-astro-dome__blue--right'),
-      document.getElementById('intro-astro-projector')
-    ];
-
-    if (stage) stage.classList.add('intro-holo-stage--measuring');
-
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        if (!portal) {
-          if (stage) stage.classList.remove('intro-holo-stage--measuring');
-          return;
-        }
-
-        var portalRect = portal.getBoundingClientRect();
-        var portalCx = portalRect.left + portalRect.width / 2;
-        var portalCy = portalRect.top + portalRect.height / 2;
-        var portalSize = Math.max(portalRect.width, portalRect.height, 148);
-
-        emitters.forEach(function (el, index) {
-          if (!el) return;
-          var rect = el.getBoundingClientRect();
-          var cx = rect.left + rect.width / 2;
-          var cy = rect.top + rect.height / 2;
-          var scale = portalSize / Math.max(rect.width, rect.height, 1);
-
-          el.style.setProperty('--pin-left', (cx - rect.width / 2) + 'px');
-          el.style.setProperty('--pin-top', (cy - rect.height / 2) + 'px');
-          el.style.setProperty('--pin-width', rect.width + 'px');
-          el.style.setProperty('--pin-height', rect.height + 'px');
-          el.style.setProperty('--morph-dx', (portalCx - cx) + 'px');
-          el.style.setProperty('--morph-dy', (portalCy - cy) + 'px');
-          el.style.setProperty('--morph-s', String(scale));
-          el.style.setProperty('--morph-delay', (index * 0.07) + 's');
-          el.classList.add('intro-astro-emitter--morphing');
-        });
-
-        if (stage) stage.classList.remove('intro-holo-stage--measuring');
-      });
-    });
+  function cryptoWheelRing(cx, cy, radius, count, charset, layer) {
+    var markup = '<g class="intro-astro-crypto-wheel__rotor intro-astro-crypto-wheel__rotor--' + layer + '">';
+    markup += '<circle cx="' + cx + '" cy="' + cy + '" r="' + radius + '" class="intro-astro-crypto-wheel__track"/>';
+    var i;
+    for (i = 0; i < count; i++) {
+      var angle = (i / count) * Math.PI * 2 - Math.PI / 2;
+      var x = cx + Math.cos(angle) * radius;
+      var y = cy + Math.sin(angle) * radius;
+      markup += '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" class="intro-astro-crypto-wheel__glyph">' +
+        charset.charAt(i % charset.length) + '</text>';
+    }
+    markup += '</g>';
+    return markup;
   }
 
-  function finishEmitterMorph() {
-    var emitters = document.querySelectorAll('.intro-astro-emitter--morphing');
-    emitters.forEach(function (el) {
-      el.classList.remove('intro-astro-emitter--morphing');
-      el.classList.add('intro-astro-emitter--done');
-    });
+  function cryptoWheelSvg() {
+    return (
+      cryptoWheelRing(50, 50, 43, 16, '01F3A9C7E2B4D806', 'outer') +
+      cryptoWheelRing(50, 50, 30, 12, 'C0DEAE5719F0', 'mid') +
+      cryptoWheelRing(50, 50, 18, 8, '5EC8R2PT', 'inner') +
+      '<circle cx="50" cy="50" r="7" class="intro-astro-crypto-wheel__hub"/>' +
+      '<circle cx="50" cy="50" r="2.2" class="intro-astro-crypto-wheel__pin"/>'
+    );
   }
 
   function openHatchAndProject() {
@@ -298,9 +270,8 @@
       btn.disabled = true;
       btn.classList.add('intro-astro-button--used');
     }
-    if (sensor) sensor.classList.add('intro-astro-sensor--tilting');
-    if (head) head.classList.add('intro-astro-head--tilting');
-    setupEmitterMorph();
+    if (sensor) sensor.classList.add('intro-astro-sensor--activating');
+    if (head) head.classList.add('intro-astro-head--activating');
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -312,14 +283,13 @@
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
-      finishEmitterMorph();
       if (sensor) {
-        sensor.classList.remove('intro-astro-sensor--tilting');
-        sensor.classList.add('intro-astro-sensor--tilted', 'intro-astro-sensor--projecting');
+        sensor.classList.remove('intro-astro-sensor--activating');
+        sensor.classList.add('intro-astro-sensor--projecting');
       }
       if (head) {
-        head.classList.remove('intro-astro-head--tilting');
-        head.classList.add('intro-astro-head--tilted');
+        head.classList.remove('intro-astro-head--activating');
+        head.classList.add('intro-astro-head--projecting');
       }
       if (projection) projection.classList.add('intro-projection--active');
       if (stage) {
