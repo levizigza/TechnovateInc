@@ -2097,8 +2097,11 @@ img { max-width: 100%; height: auto; display: block; }
   .holo-scanlines::before { display: none; }
   .holo-site .section::after { display: none; }
   .holo-ambient__orb { animation: none; }
-  .tv-chat-avatar__mouth,
-  .tv-chat-widget--speaking .tv-chat-avatar__mouth { animation: none; }
+  .tv-nova-head__aura,
+  .tv-nova-head__scan,
+  .tv-nova--speaking .tv-nova-head__mouth,
+  .tv-nova--thinking .tv-nova-head__mesh,
+  .tv-nova--listening .tv-nova__mic-ring { animation: none; }
 }
 
 @media (max-width: 860px) {
@@ -4411,283 +4414,234 @@ body.intro-active {
 }
 
 /* ============================================
-   HOLOGRAPHIC BOX CHAT — Nova assistant widget
+   HOLOGRAPHIC HEAD ASSISTANT — Nova (no chat box)
    ============================================ */
 
-.tv-chat-widget {
+.tv-nova {
   position: fixed;
-  bottom: 24px;
   right: 24px;
+  bottom: 24px;
   z-index: 9000;
+  width: 168px;
+  height: 210px;
+  pointer-events: none;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 32px rgba(0, 212, 255, 0.22));
   font-family: var(--font);
 }
 
-.tv-chat-panel {
+.tv-nova__head-wrap,
+.tv-nova__mic,
+.tv-nova__hud,
+.tv-nova__prompt {
+  pointer-events: auto;
+}
+
+.tv-nova__head-wrap {
   position: absolute;
-  bottom: 72px;
   right: 0;
-  width: 380px;
-  max-width: calc(100vw - 32px);
-  max-height: 540px;
-  border-radius: 18px;
-  overflow: hidden;
-  display: none;
-  flex-direction: column;
-  background: rgba(8, 16, 32, 0.94);
-  border: 1px solid rgba(0, 212, 255, 0.18);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 24px 80px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(155, 93, 229, 0.1);
-}
-
-.tv-chat-panel--open {
-  display: flex;
-}
-
-.tv-chat-panel__head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background:
-    radial-gradient(ellipse 80% 120% at 0% 0%, rgba(0, 212, 255, 0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 100% at 100% 0%, rgba(247, 37, 133, 0.08) 0%, transparent 50%),
-    rgba(6, 12, 24, 0.95);
-  border-bottom: 1px solid rgba(0, 212, 255, 0.12);
-}
-
-.tv-chat-avatar {
-  position: relative;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: 12px;
-  background: rgba(0, 212, 255, 0.06);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  box-shadow: 0 0 18px rgba(0, 212, 255, 0.15);
-}
-
-.tv-chat-avatar--panel {
-  width: 52px;
-  height: 64px;
-}
-
-.tv-chat-avatar--toggle {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+  bottom: 0;
+  width: 140px;
+  height: 178px;
   border: none;
   background: transparent;
-  box-shadow: none;
+  cursor: pointer;
+  padding: 0;
 }
 
-.tv-chat-avatar__svg {
+.tv-nova-head {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tv-nova-head__aura {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.28) 0%, rgba(247, 37, 133, 0.08) 45%, transparent 72%);
+  animation: novaHeadAura 3.4s ease-in-out infinite;
+}
+
+.tv-nova-head__scan {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  top: 18%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.85), transparent);
+  opacity: 0.55;
+  animation: novaHeadScan 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.tv-nova-head__svg {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-.tv-chat-panel__meta {
-  flex: 1;
-  min-width: 0;
-}
-
-.tv-chat-panel__title {
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.02em;
-}
-
-.tv-chat-panel__sub {
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 2px;
-}
-
-.tv-chat-panel__mic {
-  width: 38px;
-  height: 38px;
+.tv-nova__mic {
+  position: absolute;
+  left: 0;
+  bottom: 20px;
+  width: 44px;
+  height: 44px;
+  border: none;
   border-radius: 50%;
-  border: 1px solid rgba(0, 212, 255, 0.28);
-  background: rgba(0, 212, 255, 0.08);
+  cursor: pointer;
+  background: rgba(8, 16, 32, 0.92);
   color: var(--holo-cyan);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-
-.tv-chat-panel__mic:hover {
-  background: rgba(247, 37, 133, 0.12);
-  border-color: rgba(247, 37, 133, 0.35);
-  box-shadow: 0 0 16px rgba(247, 37, 133, 0.2);
-}
-
-.tv-chat-widget--listening .tv-chat-panel__mic {
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2);
-  animation: aiMicPulse 1.2s ease-out infinite;
-}
-
-.tv-chat-panel__body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 220px;
-  max-height: 360px;
-}
-
-.tv-chat-msg {
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 0.84rem;
-  line-height: 1.55;
-  max-width: 88%;
-  animation: tvChatFade 0.3s ease;
-}
-
-.tv-chat-msg--bot {
-  align-self: flex-start;
-  background: rgba(0, 212, 255, 0.08);
-  border: 1px solid rgba(0, 212, 255, 0.14);
-  color: rgba(255, 255, 255, 0.86);
-  border-bottom-left-radius: 4px;
-}
-
-.tv-chat-msg--user {
-  align-self: flex-end;
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.22) 0%, rgba(155, 93, 229, 0.28) 100%);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  color: #fff;
-  border-bottom-right-radius: 4px;
-}
-
-.tv-chat-panel__input {
-  display: flex;
-  gap: 8px;
-  padding: 12px 14px;
-  border-top: 1px solid rgba(0, 212, 255, 0.1);
-  background: rgba(4, 10, 20, 0.85);
-}
-
-.tv-chat-panel__input input {
-  flex: 1;
-  border: 1px solid rgba(0, 212, 255, 0.18);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-family: var(--font);
-  font-size: 0.84rem;
-  background: rgba(6, 12, 24, 0.9);
-  color: rgba(255, 255, 255, 0.9);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.tv-chat-panel__input input:focus {
-  border-color: var(--holo-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.12);
-}
-
-.tv-chat-panel__input input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.tv-chat-panel__input button {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--holo-cyan), var(--holo-violet));
-  color: #fff;
-  flex-shrink: 0;
-  box-shadow: 0 0 16px rgba(0, 212, 255, 0.25);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.tv-chat-panel__input button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 22px rgba(247, 37, 133, 0.28);
-}
-
-.tv-chat-toggle {
-  width: 60px;
-  height: 60px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 4px;
-  background: rgba(8, 16, 32, 0.95);
-  border: 1px solid rgba(0, 212, 255, 0.28);
   box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.45),
-    0 0 24px rgba(0, 212, 255, 0.2);
-  overflow: hidden;
-  transition: transform 0.25s var(--ease), box-shadow 0.25s;
+    0 0 0 1px rgba(0, 212, 255, 0.28),
+    0 0 20px rgba(0, 212, 255, 0.25);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, background 0.25s;
 }
 
-.tv-chat-toggle:hover {
+.tv-nova__mic:hover {
   transform: scale(1.06);
   box-shadow:
-    0 10px 32px rgba(0, 0, 0, 0.5),
-    0 0 32px rgba(247, 37, 133, 0.22);
+    0 0 0 1px rgba(0, 212, 255, 0.45),
+    0 0 28px rgba(247, 37, 133, 0.28);
 }
 
-.tv-chat-toggle--open {
+.tv-nova__mic-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.tv-nova--listening .tv-nova__mic-ring {
+  opacity: 1;
+  animation: novaMicPulse 1.2s ease-out infinite;
+}
+
+.tv-nova__hud {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: min(300px, calc(100vw - 40px));
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(8, 16, 32, 0.92);
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   box-shadow:
-    0 8px 28px rgba(0, 0, 0, 0.45),
-    0 0 28px rgba(155, 93, 229, 0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 32px rgba(155, 93, 229, 0.12);
 }
 
-.tv-chat-widget--speaking .tv-chat-avatar__mouth {
-  animation: aiMouthTalk 0.28s ease-in-out infinite alternate;
+.tv-nova__name {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--holo-cyan);
+}
+
+.tv-nova__speech {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tv-nova__prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tv-nova__prompt {
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  background: rgba(0, 212, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.tv-nova__prompt:hover {
+  border-color: rgba(247, 37, 133, 0.45);
+  background: rgba(247, 37, 133, 0.1);
+  color: #fff;
+}
+
+.tv-nova--active .tv-nova-head__aura {
+  animation-duration: 2.2s;
+}
+
+.tv-nova--listening .tv-nova-head__eye,
+.tv-nova--speaking .tv-nova-head__eye {
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.95));
+}
+
+.tv-nova--speaking .tv-nova-head__mouth {
+  animation: novaMouthTalk 0.28s ease-in-out infinite alternate;
   transform-box: fill-box;
   transform-origin: center;
 }
 
-.tv-chat-widget--thinking .tv-chat-avatar__eye {
-  animation: aiMeshPulse 0.8s ease-in-out infinite;
+.tv-nova--thinking .tv-nova-head__mesh {
+  animation: novaMeshPulse 0.8s ease-in-out infinite;
 }
 
-@keyframes tvChatFade {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
+@keyframes novaHeadAura {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 
-@keyframes aiMicPulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.45); }
-  100% { box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
+@keyframes novaHeadScan {
+  0% { top: 16%; opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { top: 78%; opacity: 0; }
 }
 
-@keyframes aiMouthTalk {
+@keyframes novaMicPulse {
+  0% { transform: scale(0.92); opacity: 0.9; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+
+@keyframes novaMouthTalk {
   from { transform: scaleY(0.85); opacity: 0.85; }
   to { transform: scaleY(1.15); opacity: 1; }
 }
 
-@keyframes aiMeshPulse {
+@keyframes novaMeshPulse {
   0%, 100% { opacity: 0.72; }
   50% { opacity: 1; }
 }
 
 @media (max-width: 480px) {
-  .tv-chat-widget {
+  .tv-nova {
     right: 12px;
     bottom: 12px;
+    width: 140px;
+    height: 188px;
   }
 
-  .tv-chat-panel {
-    width: calc(100vw - 24px);
-    bottom: 64px;
+  .tv-nova__head-wrap {
+    width: 118px;
+    height: 156px;
+  }
+
+  .tv-nova__hud {
+    width: min(280px, calc(100vw - 24px));
   }
 }
 

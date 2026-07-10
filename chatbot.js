@@ -1,6 +1,6 @@
 /* ============================================
-   Technovate — Holographic box chat assistant
-   Classic chat widget with digital human head
+   Technovate — Nova holographic head assistant
+   Floating human head replaces the chat box
    ============================================ */
 (function () {
   'use strict';
@@ -19,7 +19,7 @@
   };
 
   var PATTERNS = [
-    { keys: ['hello', 'hi', 'hey', 'greet'], response: 'Hello. I am Nova, your Technovate holographic guide. Ask me about our company, sectors, technology, projects, or how to get in touch.' },
+    { keys: ['hello', 'hi', 'hey', 'greet'], response: 'Hello. I am Nova, your Technovate holographic guide. Tap me and ask about our company, sectors, technology, or how to get in touch.' },
     { keys: ['contact', 'email', 'reach', 'location', 'address', 'where', 'calgary'], response: KNOWLEDGE.contact },
     { keys: ['sector', 'health', 'finance', 'education', 'enterprise', 'community', 'industry'], response: KNOWLEDGE.sectors },
     { keys: ['tech', 'stack', 'ai', 'artificial', 'machine', 'explain'], response: KNOWLEDGE.technology },
@@ -29,19 +29,24 @@
     { keys: ['impact', 'measure', 'outcome', 'result', 'metric'], response: KNOWLEDGE.impact },
     { keys: ['about', 'who', 'company', 'mission', 'founded', 'what is technovate'], response: KNOWLEDGE.about },
     { keys: ['career', 'job', 'hiring', 'work', 'join', 'opportunity'], response: KNOWLEDGE.careers },
-    { keys: ['help', 'can you', 'what can'], response: 'I can guide you through Technovate — our sectors, technology, projects, grants, and contact details. Type a question or tap the microphone to speak.' },
+    { keys: ['help', 'can you', 'what can'], response: 'I can guide you through Technovate — sectors, technology, projects, grants, and contact details. Tap the microphone or speak to me directly.' },
     { keys: ['thank', 'thanks', 'bye', 'goodbye'], response: 'You are welcome. I am here whenever you need guidance. Have a wonderful day.' }
   ];
 
-  var GREETING = 'Hello. I am Nova, your Technovate holographic guide. Ask me anything about the company, or tap the microphone to speak with me.';
+  var PROMPTS = [
+    'What is Technovate?',
+    'Your sectors',
+    'Contact info',
+    'Your technology'
+  ];
 
   function aiHeadSvg(uid) {
     return (
-      '<svg class="tv-chat-avatar__svg" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<svg class="tv-nova-head__svg" viewBox="0 0 220 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs>' +
           '<radialGradient id="' + uid + 'Aura" cx="50%" cy="42%" r="58%">' +
-            '<stop offset="0%" stop-color="rgba(0,212,255,0.35)"/>' +
-            '<stop offset="55%" stop-color="rgba(155,93,229,0.12)"/>' +
+            '<stop offset="0%" stop-color="rgba(0,212,255,0.4)"/>' +
+            '<stop offset="55%" stop-color="rgba(155,93,229,0.15)"/>' +
             '<stop offset="100%" stop-color="rgba(0,0,0,0)"/>' +
           '</radialGradient>' +
           '<linearGradient id="' + uid + 'Face" x1="0%" y1="0%" x2="100%" y2="100%">' +
@@ -55,23 +60,40 @@
           '</linearGradient>' +
         '</defs>' +
         '<ellipse cx="110" cy="138" rx="88" ry="102" fill="url(#' + uid + 'Aura)"/>' +
-        '<path d="M58 92 C42 48, 88 24, 118 34 C148 24, 178 52, 168 96 C176 118, 170 148, 158 168 L142 156 C152 128, 154 98, 138 72 C124 52, 96 50, 78 68 C64 84, 62 108, 68 132 Z" fill="none" stroke="url(#' + uid + 'Hair)" stroke-width="1.4" opacity="0.75"/>' +
-        '<path d="M92 78 C98 52, 128 48, 148 62 C168 76, 174 104, 170 132 C168 154, 156 176, 136 188 C126 194, 108 196, 96 188 C78 176, 70 154, 72 128 C74 102, 82 86, 92 78 Z" fill="rgba(6,14,28,0.88)" stroke="rgba(0,212,255,0.45)" stroke-width="1.2"/>' +
-        '<g opacity="0.82">' +
-          '<path d="M104 92 L132 98 L148 118 L142 146 L118 158 L96 146 L88 118 Z" fill="none" stroke="rgba(0,212,255,0.35)" stroke-width="0.7"/>' +
-          '<circle cx="118" cy="118" r="3" fill="#00d4ff" opacity="0.8"/>' +
+        '<g class="tv-nova-head__hair">' +
+          '<path d="M58 92 C42 48, 88 24, 118 34 C148 24, 178 52, 168 96 C176 118, 170 148, 158 168 L142 156 C152 128, 154 98, 138 72 C124 52, 96 50, 78 68 C64 84, 62 108, 68 132 Z" fill="none" stroke="url(#' + uid + 'Hair)" stroke-width="1.4" opacity="0.8"/>' +
+          '<path d="M72 58 C88 36, 112 30, 132 40" fill="none" stroke="rgba(0,212,255,0.55)" stroke-width="0.8"/>' +
+          '<path d="M64 78 C54 108, 56 142, 68 170" fill="none" stroke="rgba(247,37,133,0.45)" stroke-width="0.7"/>' +
         '</g>' +
-        '<ellipse class="tv-chat-avatar__eye" cx="138" cy="112" rx="11" ry="7" fill="url(#' + uid + 'Face)" opacity="0.95"/>' +
+        '<path d="M92 78 C98 52, 128 48, 148 62 C168 76, 174 104, 170 132 C168 154, 156 176, 136 188 C126 194, 108 196, 96 188 C78 176, 70 154, 72 128 C74 102, 82 86, 92 78 Z" fill="rgba(6,14,28,0.88)" stroke="rgba(0,212,255,0.5)" stroke-width="1.2"/>' +
+        '<g class="tv-nova-head__mesh" opacity="0.85">' +
+          '<path d="M104 92 L132 98 L148 118 L142 146 L118 158 L96 146 L88 118 Z" fill="none" stroke="rgba(0,212,255,0.4)" stroke-width="0.7"/>' +
+          '<path d="M104 92 L118 118 L96 146" fill="none" stroke="rgba(155,93,229,0.45)" stroke-width="0.6"/>' +
+          '<path d="M132 98 L148 118 L142 146" fill="none" stroke="rgba(0,212,255,0.4)" stroke-width="0.6"/>' +
+          '<circle cx="118" cy="118" r="3" fill="#00d4ff" opacity="0.85"/>' +
+          '<circle cx="132" cy="98" r="2" fill="#f72585" opacity="0.75"/>' +
+          '<circle cx="96" cy="146" r="2" fill="#9b5de5" opacity="0.75"/>' +
+        '</g>' +
+        '<ellipse class="tv-nova-head__eye" cx="138" cy="112" rx="11" ry="7" fill="url(#' + uid + 'Face)" opacity="0.95"/>' +
         '<ellipse cx="141" cy="110" rx="4" ry="3" fill="#ffffff" opacity="0.9"/>' +
-        '<path class="tv-chat-avatar__mouth" d="M128 152 Q142 162, 156 152" fill="none" stroke="url(#' + uid + 'Face)" stroke-width="2" stroke-linecap="round"/>' +
-        '<path d="M118 188 C126 206, 138 214, 152 220 L152 248 C138 242, 124 232, 118 218 Z" fill="rgba(4,10,20,0.9)" stroke="rgba(0,212,255,0.28)" stroke-width="1"/>' +
+        '<path d="M126 98 C132 92, 146 94, 152 100" fill="none" stroke="rgba(0,212,255,0.65)" stroke-width="1"/>' +
+        '<path d="M148 118 C152 126, 150 134, 144 138" fill="none" stroke="rgba(0,212,255,0.4)" stroke-width="0.8"/>' +
+        '<path class="tv-nova-head__mouth" d="M128 152 Q142 162, 156 152" fill="none" stroke="url(#' + uid + 'Face)" stroke-width="2" stroke-linecap="round"/>' +
+        '<path d="M118 188 C126 206, 138 214, 152 220 L152 248 C138 242, 124 232, 118 218 Z" fill="rgba(4,10,20,0.9)" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>' +
+        '<g opacity="0.75">' +
+          '<path d="M126 206 L126 238 M138 214 L138 252 M150 220 L150 248" stroke="rgba(0,212,255,0.5)" stroke-width="0.8"/>' +
+          '<circle cx="126" cy="238" r="2.5" fill="#00d4ff"/>' +
+          '<circle cx="138" cy="252" r="2.5" fill="#f72585"/>' +
+          '<circle cx="150" cy="248" r="2.5" fill="#9b5de5"/>' +
+        '</g>' +
+        '<rect x="34" y="28" width="152" height="224" rx="18" fill="none" stroke="rgba(0,212,255,0.25)" stroke-width="1" stroke-dasharray="4 6"/>' +
       '</svg>'
     );
   }
 
   function findResponse(input) {
     var lower = input.toLowerCase().trim();
-    if (!lower) return 'Please type or say a question and I will help you.';
+    if (!lower) return 'I did not catch that. Tap the microphone and try again.';
 
     for (var i = 0; i < PATTERNS.length; i++) {
       for (var j = 0; j < PATTERNS[i].keys.length; j++) {
@@ -80,7 +102,7 @@
         }
       }
     }
-    return 'I am not certain about that, but I can help with our sectors, technology, projects, grants, or contact information. You may also email info@technovateinc.org.';
+    return 'I am not certain about that, but I can help with our sectors, technology, projects, grants, or contact information. Email info@technovateinc.org anytime.';
   }
 
   function findAssistantVoice() {
@@ -98,53 +120,59 @@
     return voices[0] || null;
   }
 
-  function createWidget() {
-    if (document.getElementById('tv-chat-widget')) return;
+  function createNova() {
+    if (document.getElementById('tv-nova')) return;
 
-    var uid = 'chatHead' + Math.floor(Math.random() * 10000);
-    var headSvg = aiHeadSvg(uid);
+    var uid = 'novaHead' + Math.floor(Math.random() * 10000);
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var synth = window.speechSynthesis;
     var assistantVoice = null;
     var recognition = null;
     var listening = false;
     var speaking = false;
-    var isOpen = false;
+    var active = false;
+    var floatRaf = 0;
+    var floatPhase = Math.random() * Math.PI * 2;
 
-    var widget = document.createElement('div');
-    widget.className = 'tv-chat-widget';
-    widget.id = 'tv-chat-widget';
-    widget.innerHTML =
-      '<div class="tv-chat-panel" id="tv-chat-panel">' +
-        '<div class="tv-chat-panel__head">' +
-          '<div class="tv-chat-avatar tv-chat-avatar--panel">' + headSvg + '</div>' +
-          '<div class="tv-chat-panel__meta">' +
-            '<div class="tv-chat-panel__title">Nova</div>' +
-            '<div class="tv-chat-panel__sub">Holographic guide</div>' +
-          '</div>' +
-          '<button class="tv-chat-panel__mic" id="tv-chat-mic" type="button" aria-label="Speak to Nova">' +
-            '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.71V21h2v-3.29A7 7 0 0 0 19 11h-2z"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="tv-chat-panel__body" id="tv-chat-body"></div>' +
-        '<div class="tv-chat-panel__input">' +
-          '<input type="text" id="tv-chat-input" placeholder="Ask Nova anything..." autocomplete="off" />' +
-          '<button id="tv-chat-send" type="button" aria-label="Send message">' +
-            '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>' +
-          '</button>' +
-        '</div>' +
+    var root = document.createElement('div');
+    root.className = 'tv-nova';
+    root.id = 'tv-nova';
+    root.innerHTML =
+      '<div class="tv-nova__hud" id="tv-nova-hud" hidden>' +
+        '<p class="tv-nova__name">Nova</p>' +
+        '<p class="tv-nova__speech" id="tv-nova-speech"></p>' +
+        '<div class="tv-nova__prompts" id="tv-nova-prompts"></div>' +
       '</div>' +
-      '<button class="tv-chat-toggle" id="tv-chat-toggle" type="button" aria-label="Open chat assistant">' +
-        '<span class="tv-chat-avatar tv-chat-avatar--toggle">' + headSvg + '</span>' +
+      '<button class="tv-nova__mic" id="tv-nova-mic" type="button" aria-label="Speak to Nova">' +
+        '<span class="tv-nova__mic-ring" aria-hidden="true"></span>' +
+        '<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.71V21h2v-3.29A7 7 0 0 0 19 11h-2z"/></svg>' +
+      '</button>' +
+      '<button class="tv-nova__head-wrap" id="tv-nova-head-btn" type="button" aria-label="Talk to Nova, holographic assistant">' +
+        '<div class="tv-nova-head" id="tv-nova-head">' +
+          '<div class="tv-nova-head__aura" aria-hidden="true"></div>' +
+          '<div class="tv-nova-head__scan" aria-hidden="true"></div>' +
+          aiHeadSvg(uid) +
+        '</div>' +
       '</button>';
 
-    document.body.appendChild(widget);
+    document.body.appendChild(root);
 
-    var panel = document.getElementById('tv-chat-panel');
-    var body = document.getElementById('tv-chat-body');
-    var input = document.getElementById('tv-chat-input');
-    var send = document.getElementById('tv-chat-send');
-    var toggle = document.getElementById('tv-chat-toggle');
-    var mic = document.getElementById('tv-chat-mic');
+    var hud = document.getElementById('tv-nova-hud');
+    var speech = document.getElementById('tv-nova-speech');
+    var prompts = document.getElementById('tv-nova-prompts');
+    var micBtn = document.getElementById('tv-nova-mic');
+    var headBtn = document.getElementById('tv-nova-head-btn');
+
+    PROMPTS.forEach(function (label) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tv-nova__prompt';
+      btn.textContent = label;
+      btn.addEventListener('click', function () {
+        handleQuestion(label);
+      });
+      prompts.appendChild(btn);
+    });
 
     if (synth) {
       if (synth.getVoices().length) assistantVoice = findAssistantVoice();
@@ -161,36 +189,49 @@
       recognition.lang = 'en-US';
 
       recognition.onresult = function (e) {
-        var text = e.results[0][0].transcript;
-        input.value = text;
-        handleSend();
+        handleQuestion(e.results[0][0].transcript);
       };
 
       recognition.onerror = function () {
         listening = false;
-        widget.classList.remove('tv-chat-widget--listening');
-        addMessage('I could not hear you clearly. Please try again or type your question.', false);
+        setState('idle');
+        showSpeech('I could not hear you clearly. Tap the microphone and try again.');
       };
 
       recognition.onend = function () {
         listening = false;
-        widget.classList.remove('tv-chat-widget--listening');
+        if (!speaking) setState(active ? 'idle' : 'idle');
       };
     }
 
-    function addMessage(text, isUser) {
-      var msg = document.createElement('div');
-      msg.className = 'tv-chat-msg tv-chat-msg--' + (isUser ? 'user' : 'bot');
-      msg.textContent = text;
-      body.appendChild(msg);
-      body.scrollTop = body.scrollHeight;
+    function setState(state) {
+      root.classList.remove('tv-nova--listening', 'tv-nova--speaking', 'tv-nova--thinking', 'tv-nova--active');
+      if (state === 'listening') root.classList.add('tv-nova--listening');
+      if (state === 'speaking') root.classList.add('tv-nova--speaking');
+      if (state === 'thinking') root.classList.add('tv-nova--thinking');
+      if (active) root.classList.add('tv-nova--active');
     }
 
-    function speak(text) {
-      if (!synth) return;
+    function showSpeech(text) {
+      speech.textContent = text;
+    }
+
+    function activate() {
+      active = true;
+      hud.hidden = false;
+      setState('idle');
+    }
+
+    function speak(text, callback) {
+      showSpeech(text);
+      if (!synth) {
+        if (callback) callback();
+        return;
+      }
+
       synth.cancel();
       speaking = true;
-      widget.classList.add('tv-chat-widget--speaking');
+      setState('speaking');
 
       var utter = new SpeechSynthesisUtterance(text);
       utter.voice = assistantVoice;
@@ -198,72 +239,72 @@
       utter.pitch = 1.05;
       utter.onend = utter.onerror = function () {
         speaking = false;
-        widget.classList.remove('tv-chat-widget--speaking');
+        setState('idle');
+        if (callback) callback();
       };
       synth.speak(utter);
     }
 
-    function respond(text) {
-      widget.classList.add('tv-chat-widget--thinking');
+    function handleQuestion(text) {
+      activate();
+      setState('thinking');
+      showSpeech('You: ' + text);
+
       window.setTimeout(function () {
-        widget.classList.remove('tv-chat-widget--thinking');
         var reply = findResponse(text);
-        addMessage(reply, false);
         speak(reply);
-      }, 320 + Math.random() * 280);
-    }
-
-    function handleSend() {
-      var q = input.value.trim();
-      if (!q) return;
-      addMessage(q, true);
-      input.value = '';
-      respond(q);
-    }
-
-    function togglePanel() {
-      isOpen = !isOpen;
-      panel.classList.toggle('tv-chat-panel--open', isOpen);
-      toggle.classList.toggle('tv-chat-toggle--open', isOpen);
-      toggle.setAttribute('aria-label', isOpen ? 'Close chat assistant' : 'Open chat assistant');
-
-      if (isOpen && !widget.dataset.greeted) {
-        widget.dataset.greeted = '1';
-        addMessage(GREETING, false);
-        speak(GREETING);
-        window.setTimeout(function () { input.focus(); }, 120);
-      } else if (isOpen) {
-        input.focus();
-      }
+      }, 350 + Math.random() * 300);
     }
 
     function startListening() {
+      activate();
       if (!recognition) {
-        addMessage('Voice input is not available in this browser. Please type your question instead.', false);
+        showSpeech('Voice is not available here. Tap one of the prompts below.');
         return;
       }
       if (listening || speaking) return;
       try {
         listening = true;
-        widget.classList.add('tv-chat-widget--listening');
+        setState('listening');
+        showSpeech('Listening...');
         recognition.start();
       } catch (err) {
         listening = false;
-        widget.classList.remove('tv-chat-widget--listening');
+        setState('idle');
+        showSpeech('Microphone not ready. Tap a prompt below.');
       }
     }
 
-    toggle.addEventListener('click', togglePanel);
-    send.addEventListener('click', handleSend);
-    mic.addEventListener('click', startListening);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') handleSend();
+    headBtn.addEventListener('click', function () {
+      if (!active) {
+        activate();
+        speak('Hello. I am Nova, your Technovate holographic guide. Tap the microphone and ask me anything.');
+        return;
+      }
+      startListening();
     });
+
+    micBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      startListening();
+    });
+
+    if (!reduced) {
+      function floatTick(time) {
+        var t = time * 0.001;
+        var y = Math.sin(t * 0.85 + floatPhase) * 10;
+        var x = Math.cos(t * 0.5 + floatPhase) * 6;
+        var rot = Math.sin(t * 0.35 + floatPhase) * 2;
+        root.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + rot + 'deg)';
+        floatRaf = requestAnimationFrame(floatTick);
+      }
+      floatRaf = requestAnimationFrame(floatTick);
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createWidget);
+    document.addEventListener('DOMContentLoaded', createNova);
   } else {
-    createWidget();
+    createNova();
   }
 })();

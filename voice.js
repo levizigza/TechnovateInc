@@ -22,7 +22,7 @@
   var narrationTimer = null;
   var loopTimer = null;
   var introClosed = false;
-  var MUSIC_PRE_ROLL_MS = 3800;
+  var MUSIC_PRE_ROLL_MS = 1600;
   var LOOP_PAUSE_MS = 2800;
   var PROJECTOR_TILT_MS = 1000;
   var HOLO_PORTAL_MS = 1000;
@@ -278,7 +278,7 @@
     clearTimeout(hatchAudioTimer);
 
     ensureMusic();
-    if (introMusic && musicEnabled) introMusic.tryStart();
+    if (introMusic && musicEnabled && introMusic.unlock) introMusic.unlock();
 
     hatchRevealTimer = setTimeout(function () {
       if (introClosed) return;
@@ -325,10 +325,10 @@
 
   function beginNarrationVoice() {
     narrationTimer = null;
-    setSpeaking(true);
     ensureNarration();
 
     if (useSpeechFallback || !introNarration) {
+      setSpeaking(true);
       speakSequenceFallback(INTRO_SCRIPT, 0, function () {
         updateSubtitle('Do come in.');
         onIntroCycleComplete();
@@ -375,8 +375,11 @@
   }
 
   function tryStartMusic() {
+    if (!musicEnabled) return;
     ensureMusic();
-    if (introMusic && musicEnabled) introMusic.tryStart();
+    if (!introMusic) return;
+    if (introMusic.unlock) introMusic.unlock();
+    introMusic.tryStart();
   }
 
   function toggleMusic() {
@@ -402,6 +405,7 @@
     introNarration = window.TechnovateIntroNarration.create({
       onLine: function (text) {
         updateSubtitle(text);
+        setSpeaking(true);
       },
       onBlocked: function () {
         useSpeechFallback = true;
@@ -519,9 +523,9 @@
     if (narrationPlaying || narrationTimer) return;
 
     narrationPlaying = true;
-    tryStartMusic();
     updateSubtitle('Here...');
     setPrelude(true);
+    tryStartMusic();
 
     narrationTimer = setTimeout(beginNarrationVoice, MUSIC_PRE_ROLL_MS);
   }

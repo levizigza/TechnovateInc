@@ -138,8 +138,21 @@
       master.gain.linearRampToValueAtTime(value, now + duration);
     }
 
+    function unlock() {
+      var context = getContext();
+      if (!context) return false;
+      if (context.state === 'suspended') {
+        try {
+          context.resume();
+        } catch (e) { /* noop */ }
+      }
+      return context.state === 'running' || context.state === 'suspended';
+    }
+
     function start() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) targetVolume = 0.34;
+
       var context = getContext();
       if (!context) return false;
 
@@ -149,16 +162,15 @@
           started = true;
         }
         running = true;
-        fadeTo(ducked ? targetVolume * 0.58 : targetVolume, 1.8);
+        fadeTo(ducked ? targetVolume * 0.58 : targetVolume, reduced ? 1.2 : 0.65);
         return true;
       }
 
       if (context.state === 'suspended') {
-        context.resume().then(begin).catch(function () {});
-        return true;
+        return context.resume().then(begin).catch(function () { return false; });
       }
 
-      return begin();
+      return Promise.resolve(begin());
     }
 
     function duck() {
@@ -192,8 +204,18 @@
       }, 900);
     }
 
+    function tryStart() {
+      var result = start();
+      if (result && result.then) {
+        result.catch(function () {});
+        return true;
+      }
+      return !!result;
+    }
+
     return {
-      tryStart: start,
+      unlock: unlock,
+      tryStart: tryStart,
       start: start,
       stop: stop,
       duck: duck,
