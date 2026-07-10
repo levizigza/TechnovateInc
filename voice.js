@@ -14,8 +14,7 @@
   var eyeSettleTimer = null;
   var holoPanelTimer = null;
   var hatchAudioTimer = null;
-  var flashTimer = null;
-  var chargeTimer = null;
+  var dockRetreatTimer = null;
   var holoEyeLife = null;
   var introMusic = null;
   var introNarration = null;
@@ -221,6 +220,20 @@
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
   }
 
+  function enterImmersiveHolo() {
+    if (introClosed) return;
+    var intro = document.getElementById('cinematic-intro');
+    var dock = document.getElementById('intro-astro-dock');
+    var stage = document.getElementById('intro-holo-stage');
+    var projection = document.getElementById('intro-projection');
+    var sacred = document.getElementById('intro-sacred-geo');
+    if (intro) intro.classList.add('intro--immersive');
+    if (dock) dock.classList.add('intro-astro-dock--retreat');
+    if (stage) stage.classList.add('intro-holo-stage--fullscreen');
+    if (projection) projection.classList.add('intro-projection--dissolve');
+    if (sacred) sacred.classList.add('intro-sacred-geo--active');
+  }
+
   function revealHoloPanel() {
     if (introClosed) return;
     var intro = document.getElementById('cinematic-intro');
@@ -287,6 +300,7 @@
     clearTimeout(hatchAudioTimer);
     clearTimeout(flashTimer);
     clearTimeout(chargeTimer);
+    clearTimeout(dockRetreatTimer);
 
     ensureMusic();
     if (introMusic && musicEnabled && introMusic.unlock) introMusic.unlock();
@@ -333,6 +347,7 @@
 
     eyeSettleTimer = setTimeout(function () {
       if (introClosed) return;
+      enterImmersiveHolo();
       if (stage) {
         stage.classList.remove('intro-holo-stage--portal-opening');
         stage.classList.add('intro-holo-stage--eye-alive');
@@ -526,12 +541,14 @@
     clearTimeout(hatchAudioTimer);
     clearTimeout(flashTimer);
     clearTimeout(chargeTimer);
+    clearTimeout(dockRetreatTimer);
     hatchRevealTimer = null;
     eyeSettleTimer = null;
     holoPanelTimer = null;
     hatchAudioTimer = null;
     flashTimer = null;
     chargeTimer = null;
+    dockRetreatTimer = null;
     stopHoloEyeLife();
     stopNarration();
     introNarration = null;

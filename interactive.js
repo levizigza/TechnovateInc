@@ -204,6 +204,29 @@
     counters.forEach(function (c) { io.observe(c); });
   }
 
+  /* ---- Button glow + nav shimmer ---- */
+  function initButtonLife() {
+    if (reduced) return;
+
+    document.querySelectorAll('.btn').forEach(function (btn) {
+      btn.addEventListener('mouseenter', function () {
+        btn.classList.add('btn--alive');
+      });
+      btn.addEventListener('mouseleave', function () {
+        btn.classList.remove('btn--alive');
+      });
+    });
+
+    document.querySelectorAll('.nav a:not(.nav-cta)').forEach(function (link) {
+      link.addEventListener('mouseenter', function () {
+        link.classList.add('nav-link--glow');
+      });
+      link.addEventListener('mouseleave', function () {
+        link.classList.remove('nav-link--glow');
+      });
+    });
+  }
+
   /* ---- Init ---- */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -216,5 +239,6 @@
     initCardTilt();
     initHeroOrbs();
     initCounters();
+    initButtonLife();
   }
 })();

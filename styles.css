@@ -609,6 +609,15 @@ img { max-width: 100%; height: auto; display: block; }
   box-shadow: 0 8px 28px rgba(247, 37, 133, 0.28);
 }
 
+.btn--alive {
+  box-shadow: 0 0 28px rgba(0, 212, 255, 0.38), 0 0 48px rgba(155, 93, 229, 0.15);
+}
+
+.nav-link--glow {
+  text-shadow: 0 0 14px rgba(0, 212, 255, 0.65);
+}
+}
+
 .btn--outline {
   background: rgba(0, 212, 255, 0.04);
   color: rgba(255, 255, 255, 0.82);
@@ -2019,7 +2028,7 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.045;
+  opacity: 0.062;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cg fill='none' stroke='%2300d4ff' stroke-width='0.5'%3E%3Ccircle cx='60' cy='52' r='30'/%3E%3Ccircle cx='30' cy='52' r='30'/%3E%3Ccircle cx='90' cy='52' r='30'/%3E%3Ccircle cx='45' cy='26' r='30'/%3E%3Ccircle cx='75' cy='26' r='30'/%3E%3Ccircle cx='45' cy='78' r='30'/%3E%3Ccircle cx='75' cy='78' r='30'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 120px 104px;
@@ -2031,7 +2040,7 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.028;
+  opacity: 0.042;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='174' viewBox='0 0 200 174'%3E%3Cg fill='none' stroke='%2338bdf8' stroke-width='0.4'%3E%3Ccircle cx='100' cy='87' r='50'/%3E%3Ccircle cx='100' cy='87' r='25'/%3E%3Ccircle cx='75' cy='43.7' r='25'/%3E%3Ccircle cx='125' cy='43.7' r='25'/%3E%3Ccircle cx='75' cy='130.3' r='25'/%3E%3Ccircle cx='125' cy='130.3' r='25'/%3E%3Ccircle cx='50' cy='87' r='25'/%3E%3Ccircle cx='150' cy='87' r='25'/%3E%3Cline x1='100' y1='37' x2='100' y2='137'/%3E%3Cline x1='56.7' y1='62' x2='143.3' y2='112'/%3E%3Cline x1='56.7' y1='112' x2='143.3' y2='62'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px 174px;
@@ -2043,7 +2052,7 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.018;
+  opacity: 0.032;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cg fill='none' stroke='%230d9488' stroke-width='0.5'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66Z'/%3E%3Cpath d='M28 100L0 84L0 50L28 34L56 50L56 84L28 100Z' transform='translate(0,34)'/%3E%3C/g%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 56px 100px;
@@ -2073,6 +2082,59 @@ img { max-width: 100%; height: auto; display: block; }
   z-index: 1;
 }
 
+/* Sacred geometry — heroes, header, footer, alive sections */
+.sacred-geo-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.sacred-geo-hero::after {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='174' viewBox='0 0 200 174'%3E%3Cg fill='none' stroke='%2300d4ff' stroke-width='0.45'%3E%3Ccircle cx='100' cy='87' r='50'/%3E%3Ccircle cx='100' cy='87' r='25'/%3E%3Ccircle cx='75' cy='43.7' r='25'/%3E%3Ccircle cx='125' cy='43.7' r='25'/%3E%3Ccircle cx='75' cy='130.3' r='25'/%3E%3Ccircle cx='125' cy='130.3' r='25'/%3E%3Ccircle cx='50' cy='87' r='25'/%3E%3Ccircle cx='150' cy='87' r='25'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(72vw, 520px);
+  animation: sacredHeroPulse 8s ease-in-out infinite;
+}
+
+.sacred-geo-bg.sacred-geo--alive::before,
+.sacred-geo-dark.sacred-geo--alive::before,
+.sacred-geo-hex.sacred-geo--alive::before {
+  opacity: 0.095;
+  animation: sacredSectionPulse 6s ease-in-out infinite;
+}
+
+.header.sacred-geo-header::after,
+.footer.sacred-geo-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'%3E%3Cg fill='none' stroke='%2300d4ff' stroke-width='0.45'%3E%3Ccircle cx='60' cy='52' r='30'/%3E%3Ccircle cx='30' cy='52' r='30'/%3E%3Ccircle cx='90' cy='52' r='30'/%3E%3Ccircle cx='45' cy='26' r='30'/%3E%3Ccircle cx='75' cy='26' r='30'/%3E%3Ccircle cx='45' cy='78' r='30'/%3E%3Ccircle cx='75' cy='78' r='30'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 140px 122px;
+}
+
+.header.sacred-geo-header::after { opacity: 0.04; }
+.footer.sacred-geo-footer::after { opacity: 0.035; top: 8px; }
+
+@keyframes sacredHeroPulse {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.16; transform: scale(1.03); }
+}
+
+@keyframes sacredSectionPulse {
+  0%, 100% { opacity: 0.07; }
+  50% { opacity: 0.11; }
+}
+
 /* Matrix rain canvas — z-order below content */
 .matrix-rain {
   mix-blend-mode: screen;
@@ -2097,10 +2159,14 @@ img { max-width: 100%; height: auto; display: block; }
   .holo-scanlines::before { display: none; }
   .holo-site .section::after { display: none; }
   .holo-ambient__orb { animation: none; }
+  .holo-ambient__ring,
+  .holo-ambient__flower,
+  .sacred-geo-hero::after,
+  .sacred-geo--alive::before { animation: none; }
   .tv-nova-head__aura,
   .tv-nova-head__scan,
   .tv-nova--speaking .tv-nova-head__mouth,
-  .tv-nova--thinking .tv-nova-head__mesh,
+  .tv-nova--thinking .tv-nova-head__brain,
   .tv-nova--listening .tv-nova__mic-ring { animation: none; }
 }
 
@@ -2332,6 +2398,123 @@ body.intro-active {
 
 .intro-astro-dock--ascend {
   transform: translateX(-50%);
+}
+
+.intro-astro-dock--retreat {
+  opacity: 0 !important;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(130%) scale(0.82);
+  transition:
+    opacity 0.7s ease,
+    transform 1s cubic-bezier(0.55, 0, 1, 0.45),
+    visibility 0.9s;
+  pointer-events: none !important;
+}
+
+#cinematic-intro.intro--immersive .intro-matrix-bg {
+  opacity: 0.04;
+  filter: saturate(0.1) brightness(0.28);
+}
+
+#cinematic-intro.intro--immersive .intro-content--holo {
+  padding: 0;
+  z-index: 20;
+}
+
+#cinematic-intro.intro--immersive .intro-projection--dissolve {
+  opacity: 0 !important;
+  transition: opacity 0.85s ease;
+}
+
+.intro-holo-stage--fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  justify-content: center;
+  z-index: 18;
+}
+
+.intro-holo-stage--fullscreen .intro-holo-panel {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8vh 5vw;
+  animation: holoFullscreenExpand 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-holo-stage--fullscreen .intro-holo-portal {
+  width: min(32vw, 240px);
+  height: min(32vw, 240px);
+}
+
+.intro-holo-stage--fullscreen .tv-eye-character--holo {
+  width: 100%;
+  height: 100%;
+}
+
+.intro-holo-stage--fullscreen .intro-holo-brand__name {
+  font-size: clamp(2.6rem, 11vw, 6.5rem);
+}
+
+.intro-holo-stage--fullscreen .intro-holo-brand__systems {
+  font-size: clamp(0.85rem, 2.4vw, 1.35rem);
+  letter-spacing: 0.42em;
+}
+
+.intro-holo-stage--fullscreen .intro-holo-panel__aura {
+  inset: -8vh -8vw;
+  opacity: 1;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0, 212, 255, 0.2) 0%, rgba(0, 140, 220, 0.08) 50%, transparent 75%);
+}
+
+#cinematic-intro.intro--immersive .intro-sacred-geo {
+  opacity: 1;
+  z-index: 8;
+}
+
+#cinematic-intro.intro--immersive .intro-sacred-geo__ring--outer {
+  width: min(130vw, 880px);
+  height: min(130vw, 880px);
+}
+
+#cinematic-intro.intro--immersive .intro-sacred-geo__ring--mid {
+  width: min(95vw, 640px);
+  height: min(95vw, 640px);
+}
+
+#cinematic-intro.intro--immersive .intro-sacred-geo__ring--inner {
+  width: min(62vw, 420px);
+  height: min(62vw, 420px);
+}
+
+#cinematic-intro.intro--immersive .intro-sacred-geo__flower {
+  width: min(48vw, 320px);
+  height: min(48vw, 320px);
+  opacity: 0.65;
+}
+
+@keyframes holoFullscreenExpand {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.55;
+    filter: brightness(2.4) blur(4px);
+  }
+  45% {
+    opacity: 0.88;
+    filter: brightness(1.6) blur(1px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1) blur(0);
+  }
 }
 
 .intro-astro-prompt {
@@ -4685,6 +4868,62 @@ body.intro-active {
   opacity: 0.45;
 }
 
+.holo-ambient__sacred {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(92vw, 640px);
+  height: min(92vw, 640px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.holo-ambient__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 255, 0.12);
+  transform: translate(-50%, -50%);
+}
+
+.holo-ambient__ring--outer {
+  width: 100%;
+  height: 100%;
+  animation: sacredSpin 140s linear infinite;
+}
+
+.holo-ambient__ring--mid {
+  width: 72%;
+  height: 72%;
+  border-color: rgba(155, 93, 229, 0.1);
+  animation: sacredSpin 95s linear infinite reverse;
+}
+
+.holo-ambient__ring--inner {
+  width: 46%;
+  height: 46%;
+  border-color: rgba(0, 212, 255, 0.16);
+  animation: sacredSpin 60s linear infinite;
+}
+
+.holo-ambient__flower {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  height: 34%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 104'%3E%3Cg fill='none' stroke='%2300d4ff' stroke-width='0.6'%3E%3Ccircle cx='60' cy='52' r='30'/%3E%3Ccircle cx='30' cy='52' r='30'/%3E%3Ccircle cx='90' cy='52' r='30'/%3E%3Ccircle cx='45' cy='26' r='30'/%3E%3Ccircle cx='75' cy='26' r='30'/%3E%3Ccircle cx='45' cy='78' r='30'/%3E%3Ccircle cx='75' cy='78' r='30'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: sacredPulse 7s ease-in-out infinite;
+}
+
 .holo-ambient__orb {
   position: absolute;
   border-radius: 50%;
@@ -4918,8 +5157,17 @@ body.intro-active {
   transform-origin: center;
 }
 
-.tv-nova--thinking .tv-nova-head__mesh {
+.tv-nova--thinking .tv-nova-head__brain {
   animation: novaMeshPulse 0.8s ease-in-out infinite;
+}
+
+.tv-nova--speaking .tv-nova-head__brain {
+  animation: novaBrainPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes novaBrainPulse {
+  0%, 100% { opacity: 0.85; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.2); }
 }
 
 @keyframes novaHeadAura {
@@ -4981,8 +5229,10 @@ body.intro-active {
   .intro-astro-head--idle .intro-astro-dome,
   .intro-astro-head--excited .intro-astro-dome,
   .intro-astro-head--projecting .intro-astro-dome,
-  .intro-astro-dock--ascend .intro-astro-head,
-  .intro-projection__cone,
+  .intro-astro-dock--retreat,
+  .intro-holo-stage--fullscreen .intro-holo-panel,
+  .holo-ambient__ring,
+  .holo-ambient__flower { animation: none; }
   .intro-projection__beam,
   .intro-projection__screen,
   .intro-projection__scanlines,

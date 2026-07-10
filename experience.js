@@ -88,6 +88,12 @@
     layer.setAttribute('aria-hidden', 'true');
     layer.innerHTML =
       '<div class="holo-ambient__grid"></div>' +
+      '<div class="holo-ambient__sacred" aria-hidden="true">' +
+        '<div class="holo-ambient__ring holo-ambient__ring--outer"></div>' +
+        '<div class="holo-ambient__ring holo-ambient__ring--mid"></div>' +
+        '<div class="holo-ambient__ring holo-ambient__ring--inner"></div>' +
+        '<div class="holo-ambient__flower"></div>' +
+      '</div>' +
       '<div class="holo-ambient__orb holo-ambient__orb--cyan"></div>' +
       '<div class="holo-ambient__orb holo-ambient__orb--magenta"></div>' +
       '<div class="holo-ambient__orb holo-ambient__orb--amber"></div>';
@@ -222,6 +228,65 @@
     });
   }
 
+  /* ---- Sacred geometry on heroes + chrome ---- */
+  function initSacredChrome() {
+    document.querySelectorAll('.hero-immersive, .page-header-immersive').forEach(function (el) {
+      el.classList.add('sacred-geo-hero');
+    });
+    var header = document.querySelector('.header');
+    var footer = document.querySelector('.footer');
+    if (header) header.classList.add('sacred-geo-header');
+    if (footer) footer.classList.add('sacred-geo-footer');
+  }
+
+  /* ---- Sacred sections pulse when in view ---- */
+  function initSacredPulse() {
+    if (reduced || !('IntersectionObserver' in window)) return;
+
+    var sections = document.querySelectorAll('.sacred-geo-bg, .sacred-geo-dark, .sacred-geo-hex');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        e.target.classList.toggle('sacred-geo--alive', e.isIntersecting);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    sections.forEach(function (s) { io.observe(s); });
+  }
+
+  /* ---- Ambient parallax (subtle, site-wide) ---- */
+  function initAmbientParallax() {
+    if (reduced) return;
+
+    var sacred = document.querySelector('.holo-ambient__sacred');
+    var orbs = document.querySelectorAll('.holo-ambient__orb');
+    if (!sacred && !orbs.length) return;
+
+    var mx = 0.5;
+    var my = 0.5;
+    var fine = window.matchMedia('(pointer: fine)').matches;
+
+    if (fine) {
+      document.addEventListener('mousemove', function (e) {
+        mx = e.clientX / window.innerWidth;
+        my = e.clientY / window.innerHeight;
+      }, { passive: true });
+    }
+
+    function tick() {
+      var dx = (mx - 0.5) * 22;
+      var dy = (my - 0.5) * 16;
+      if (sacred) {
+        sacred.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      }
+      orbs.forEach(function (orb, i) {
+        var f = 0.55 + i * 0.18;
+        orb.style.transform = 'translate(' + (dx * f) + 'px,' + (dy * f) + 'px)';
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   /* ---- Init ---- */
   var isHomepage = !window.location.pathname.split('/').pop() ||
     window.location.pathname.split('/').pop() === 'index.html' ||
@@ -233,6 +298,9 @@
     document.body.classList.add('is-loaded');
   }
   initHoloAmbient();
+  initSacredChrome();
+  initSacredPulse();
+  initAmbientParallax();
   initScrollProgress();
   initGrain();
   initHeader();
