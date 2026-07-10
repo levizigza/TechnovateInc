@@ -25,6 +25,7 @@
   var narrationTimer = null;
   var loopTimer = null;
   var introClosed = false;
+  var openedFromLogo = false;
   var MUSIC_PRE_ROLL_MS = 1600;
   var LOOP_PAUSE_MS = 2800;
   var NOSE_CHARGE_MS = 800;
@@ -609,6 +610,30 @@
     teardownIntro(false);
   }
 
+  function enterSoftwareHub() {
+    introClosed = true;
+    openedFromLogo = false;
+    teardownIntro(false);
+
+    if (!isHomepage()) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    if (window.location.search) {
+      history.replaceState(null, '', 'index.html');
+    }
+
+    document.body.classList.remove('intro-active');
+    document.body.classList.add('is-loaded');
+    window.scrollTo(0, 0);
+
+    var hero = document.querySelector('.hero-immersive');
+    if (hero) {
+      hero.scrollIntoView({ block: 'start' });
+    }
+  }
+
   function skipToHoloMenu() {
     if (introClosed) return;
 
@@ -656,7 +681,11 @@
     startHoloEyeLife();
   }
 
-  function openHoloMenu() {
+  function openHoloMenu(options) {
+    if (options && options.fromLogo) {
+      openedFromLogo = true;
+    }
+
     if (!isHomepage()) {
       window.location.href = 'index.html?holo=1';
       return;
@@ -749,7 +778,13 @@
     initIntroRenderers();
 
     function enterSite() {
+      if (openedFromLogo) {
+        enterSoftwareHub();
+        return;
+      }
       closeIntro();
+      window.scrollTo(0, 0);
+      document.body.classList.add('is-loaded');
     }
 
     document.getElementById('intro-enter-main').addEventListener('click', function (e) {
@@ -794,6 +829,7 @@
     runIntro();
 
     if (shouldOpenHoloMenu()) {
+      openedFromLogo = true;
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           skipToHoloMenu();
@@ -813,6 +849,7 @@
       localStorage.removeItem(INTRO_KEY);
     },
     replayIntro: replayIntro,
-    openHoloMenu: openHoloMenu
+    openHoloMenu: openHoloMenu,
+    enterSoftwareHub: enterSoftwareHub
   };
 })();

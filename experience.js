@@ -156,7 +156,7 @@
 
     function openHolo() {
       if (window.TechnovateVoice && window.TechnovateVoice.openHoloMenu) {
-        window.TechnovateVoice.openHoloMenu();
+        window.TechnovateVoice.openHoloMenu({ fromLogo: true });
         return;
       }
       window.location.href = 'index.html?holo=1';
