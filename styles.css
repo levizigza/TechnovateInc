@@ -556,9 +556,10 @@ img { max-width: 100%; height: auto; display: block; }
 .section--dark .content-cols p,
 .section--dark .value-item p { color: rgba(255,255,255,0.6); }
 .section--dark .card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+.section--dark .holo-box { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.1) !important; }
 .section--dark .card:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
 .section--dark .card h3 { color: var(--white); }
-.section--dark .value-item { border-top-color: rgba(255,255,255,0.08); }
+.section--dark .value-item { border-top-color: transparent; }
 .section--dark .value-item h3 { color: var(--white); }
 
 .section-title {
@@ -633,6 +634,120 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* ============================================
+   HOLO FLOAT BOXES — 3D translucent cards
+   ============================================ */
+
+.cards-row,
+.values-grid,
+.stats-row,
+.projects-grid,
+.sectors-grid {
+  perspective: 1400px;
+}
+
+.holo-box {
+  position: relative;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  background: rgba(6, 14, 28, 0.34) !important;
+  border: 1px solid rgba(0, 212, 255, 0.16) !important;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px) saturate(1.35);
+  -webkit-backdrop-filter: blur(20px) saturate(1.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 212, 255, 0.06),
+    0 18px 50px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  animation: holoBoxFloat 5.5s ease-in-out infinite;
+  animation-delay: var(--holo-delay, 0s);
+  transition:
+    border-color 0.35s var(--ease),
+    box-shadow 0.35s var(--ease),
+    transform 0.25s ease-out;
+}
+
+.holo-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.02) 28%,
+    transparent 52%
+  );
+  opacity: 0.85;
+}
+
+.holo-box::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.55), rgba(155, 93, 229, 0.45), transparent);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.holo-box:hover::after {
+  opacity: 1;
+}
+
+.holo-box:hover {
+  border-color: rgba(0, 212, 255, 0.32) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 28px 60px rgba(0, 0, 0, 0.35),
+    0 0 36px rgba(0, 212, 255, 0.12);
+}
+
+.holo-box--detail {
+  cursor: pointer;
+}
+
+.holo-box--detail:focus-visible {
+  outline: 2px solid rgba(0, 212, 255, 0.55);
+  outline-offset: 3px;
+}
+
+.holo-box__hint {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.55);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.holo-box--detail:hover .holo-box__hint,
+.holo-box--detail:focus-visible .holo-box__hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes holoBoxFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+  }
+  33% {
+    transform: translate3d(0, calc(-1 * var(--holo-drift, 6px)), 0) rotateX(1.2deg) rotateY(-1deg);
+  }
+  66% {
+    transform: translate3d(0, var(--holo-drift, 6px), 0) rotateX(-0.8deg) rotateY(1deg);
+  }
+}
+
+/* ============================================
    CARDS — glass morphism on dark, clean on light
    ============================================ */
 
@@ -644,30 +759,18 @@ img { max-width: 100%; height: auto; display: block; }
 
 .card {
   padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  background: rgba(8, 16, 32, 0.72);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 40px rgba(0, 0, 0, 0.28);
-  transition: border-color 0.35s var(--ease), box-shadow 0.35s var(--ease), transform 0.35s var(--ease);
 }
 
 .card:hover {
-  border-color: rgba(0, 212, 255, 0.28);
-  transform: translateY(-4px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.35),
-    0 0 28px rgba(0, 212, 255, 0.08);
+  transform: translateY(-6px) scale(1.01);
 }
 
 .card-label {
   display: block;
+  position: relative;
+  z-index: 1;
   font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
@@ -682,12 +785,16 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 700;
   color: var(--text-holo);
   margin-bottom: var(--sp-1);
+  position: relative;
+  z-index: 1;
 }
 
 .card p {
   font-size: var(--text-base);
   color: var(--text-holo-muted);
   line-height: 1.65;
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
@@ -724,8 +831,10 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .value-item {
-  padding: var(--sp-3) 0;
-  border-top: 2px solid rgba(0, 212, 255, 0.12);
+  padding: var(--sp-4);
+  border-top: none;
+  position: relative;
+  z-index: 1;
 }
 
 .value-item h3 {
@@ -733,12 +842,16 @@ img { max-width: 100%; height: auto; display: block; }
   font-weight: 700;
   color: var(--text-holo);
   margin-bottom: var(--sp-1);
+  position: relative;
+  z-index: 1;
 }
 
 .value-item p {
   font-size: var(--text-base);
   color: var(--text-holo-muted);
   line-height: 1.65;
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
@@ -753,17 +866,11 @@ img { max-width: 100%; height: auto; display: block; }
 
 .sector-card {
   padding: var(--sp-3);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: var(--radius);
   border-top: 3px solid transparent;
-  transition: all 0.35s var(--ease);
 }
 
 .sector-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-6px) scale(1.01);
 }
 
 .sector-card--health   { border-top-color: var(--sector-health); }
@@ -779,7 +886,21 @@ img { max-width: 100%; height: auto; display: block; }
 .sector-card--enterprise .sector-icon{ color: var(--sector-enterprise); }
 .sector-card--community .sector-icon{ color: var(--sector-community); }
 
-.sector-card h3 { font-family: var(--font-display); font-size: var(--text-base); font-weight: 700; color: var(--white); margin-bottom: var(--sp-1); }
+.sector-card h3,
+.sector-card p,
+.sector-icon,
+.sector-cta {
+  position: relative;
+  z-index: 1;
+}
+
+.project-card h3,
+.project-card__desc,
+.project-card__header,
+.project-highlights {
+  position: relative;
+  z-index: 1;
+}
 .sector-card p { font-size: var(--text-sm); color: rgba(255,255,255,0.55); line-height: 1.65; }
 
 /* ============================================
@@ -1092,28 +1213,16 @@ img { max-width: 100%; height: auto; display: block; }
 
 .project-card {
   padding: var(--sp-4);
-  background: rgba(8, 16, 32, 0.72);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
   border-top: 3px solid var(--holo-cyan);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.28);
-  transition: all 0.35s var(--ease);
 }
 
 .project-card:hover {
-  border-color: rgba(0, 212, 255, 0.28);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 40px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(0, 212, 255, 0.08);
-  transform: translateY(-4px);
+  transform: translateY(-6px) scale(1.01);
 }
 
 .project-card--featured {
   border-top-color: var(--holo-amber);
-  background: linear-gradient(145deg, rgba(12, 20, 36, 0.9) 0%, rgba(8, 16, 32, 0.78) 100%);
+  background: linear-gradient(145deg, rgba(12, 20, 36, 0.42) 0%, rgba(8, 16, 32, 0.34) 100%) !important;
 }
 
 .project-card--health    { border-top-color: var(--sector-health); }
@@ -1126,6 +1235,10 @@ img { max-width: 100%; height: auto; display: block; }
 .section--dark .project-card {
   background: rgba(255,255,255,0.04);
   border-color: rgba(255,255,255,0.08);
+}
+
+.section--dark .holo-box.project-card {
+  background: rgba(255, 255, 255, 0.06) !important;
 }
 
 .section--dark .project-card:hover {
@@ -1540,26 +1653,15 @@ img { max-width: 100%; height: auto; display: block; }
 .stat-item {
   text-align: center;
   padding: var(--sp-4) var(--sp-2);
-  border-radius: var(--radius-lg);
-  background: rgba(8, 16, 32, 0.72);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  transition: all 0.4s var(--ease-out-expo);
 }
 
 .stat-item:hover {
-  border-color: rgba(0, 212, 255, 0.28);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 28px rgba(0, 212, 255, 0.08);
-}
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+  transform: translateY(-6px) scale(1.02);
 }
 
 .stat-item__num {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
@@ -1570,6 +1672,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .stat-item__label {
+  position: relative;
+  z-index: 1;
   font-size: var(--text-sm);
   color: rgba(255,255,255,0.5);
   line-height: 1.4;
@@ -1665,21 +1769,114 @@ img { max-width: 100%; height: auto; display: block; }
 .sector-card--enterprise:hover{ box-shadow: 0 12px 40px rgba(56,189,248,0.15), 0 0 20px rgba(56,189,248,0.08); }
 .sector-card--community:hover{ box-shadow: 0 12px 40px rgba(244,114,182,0.15), 0 0 20px rgba(244,114,182,0.08); }
 
-/* Gradient accent line on cards */
+/* Gradient accent line on cards — holo-box ::after handles glow */
 .card::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--holo-cyan), var(--holo-violet), var(--holo-magenta), var(--holo-amber));
-  opacity: 0;
-  transition: opacity 0.35s var(--ease);
+  display: none;
 }
 
-.card:hover::after {
+/* ============================================
+   HOLO DETAIL OVERLAY — click-to-expand boxes
+   ============================================ */
+
+.holo-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 7900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s var(--ease-out-expo), visibility 0.4s;
+}
+
+.holo-detail-overlay--open {
   opacity: 1;
+  visibility: visible;
+}
+
+.holo-detail-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 10, 22, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.holo-detail-overlay__panel {
+  position: relative;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: var(--sp-4);
+  border-radius: var(--radius-lg);
+  background: rgba(8, 16, 32, 0.55);
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 32px 80px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(0, 212, 255, 0.1);
+  transform: translateY(24px) scale(0.94) rotateX(4deg);
+  transform-origin: center bottom;
+  transition: transform 0.45s var(--ease-out-expo);
+}
+
+.holo-detail-overlay--open .holo-detail-overlay__panel {
+  transform: translateY(0) scale(1) rotateX(0deg);
+}
+
+.holo-detail-overlay__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  background: rgba(0, 212, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.holo-detail-overlay__label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--holo-amber);
+  margin-bottom: var(--sp-1);
+}
+
+.holo-detail-overlay__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 var(--sp-2);
+  letter-spacing: -0.02em;
+}
+
+.holo-detail-overlay__body {
+  font-size: var(--text-base);
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.holo-detail-overlay__body p {
+  margin: 0 0 var(--sp-2);
+}
+
+.holo-detail-overlay__body ul {
+  margin: var(--sp-2) 0 0;
+  padding-left: 1.2em;
+}
+
+.holo-detail-overlay__body li {
+  margin-bottom: 0.5em;
 }
 
 
@@ -2162,7 +2359,8 @@ img { max-width: 100%; height: auto; display: block; }
   .holo-ambient__ring,
   .holo-ambient__flower,
   .sacred-geo-hero::after,
-  .sacred-geo--alive::before { animation: none; }
+  .sacred-geo--alive::before,
+  .holo-box { animation: none; }
   .tv-nova-head__aura,
   .tv-nova-head__scan,
   .tv-nova--speaking .tv-nova-head__mouth,

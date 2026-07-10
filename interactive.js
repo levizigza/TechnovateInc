@@ -114,21 +114,119 @@
     });
   }
 
+  /* ---- 3D holo float boxes ---- */
+  function initHoloBoxes() {
+    var boxes = document.querySelectorAll('.card, .value-item, .stat-item, .project-card, .sector-card');
+    boxes.forEach(function (box, i) {
+      box.classList.add('holo-box');
+      box.style.setProperty('--holo-delay', ((i % 5) * 0.65).toFixed(2) + 's');
+      box.style.setProperty('--holo-drift', (4 + (i % 4) * 2) + 'px');
+    });
+  }
+
+  /* ---- Click-to-open detail overlay (mission, values, projects) ---- */
+  function initHoloDetailOverlay() {
+    var targets = document.querySelectorAll('.card, .value-item, .project-card');
+    if (!targets.length) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'holo-detail-overlay';
+    overlay.innerHTML =
+      '<div class="holo-detail-overlay__backdrop"></div>' +
+      '<div class="holo-detail-overlay__panel">' +
+        '<button class="holo-detail-overlay__close" type="button" aria-label="Close">&times;</button>' +
+        '<span class="holo-detail-overlay__label"></span>' +
+        '<h2 class="holo-detail-overlay__title"></h2>' +
+        '<div class="holo-detail-overlay__body"></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    var backdrop = overlay.querySelector('.holo-detail-overlay__backdrop');
+    var closeBtn = overlay.querySelector('.holo-detail-overlay__close');
+    var labelEl = overlay.querySelector('.holo-detail-overlay__label');
+    var titleEl = overlay.querySelector('.holo-detail-overlay__title');
+    var bodyEl = overlay.querySelector('.holo-detail-overlay__body');
+
+    function buildBody(el) {
+      bodyEl.innerHTML = '';
+      var desc = el.querySelector('.project-card__desc');
+      if (desc) {
+        var p = document.createElement('p');
+        p.textContent = desc.textContent;
+        bodyEl.appendChild(p);
+      } else {
+        el.querySelectorAll('p').forEach(function (para) {
+          if (para.closest('.sector-overlay')) return;
+          var copy = document.createElement('p');
+          copy.textContent = para.textContent;
+          bodyEl.appendChild(copy);
+        });
+      }
+      var list = el.querySelector('.project-highlights');
+      if (list) bodyEl.appendChild(list.cloneNode(true));
+    }
+
+    function openDetail(el) {
+      var label = el.querySelector('.card-label, .project-tag, .project-card__tag');
+      var title = el.querySelector('h3');
+      labelEl.textContent = label ? label.textContent : '';
+      labelEl.style.display = label ? '' : 'none';
+      titleEl.textContent = title ? title.textContent : '';
+      buildBody(el);
+      overlay.classList.add('holo-detail-overlay--open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetail() {
+      overlay.classList.remove('holo-detail-overlay--open');
+      document.body.style.overflow = '';
+    }
+
+    targets.forEach(function (el) {
+      el.classList.add('holo-box--detail');
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('role', 'button');
+
+      if (!el.querySelector('.holo-box__hint') && !el.querySelector('.sector-cta')) {
+        var hint = document.createElement('span');
+        hint.className = 'holo-box__hint';
+        hint.textContent = 'Click to open';
+        el.appendChild(hint);
+      }
+
+      el.addEventListener('click', function () { openDetail(el); });
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openDetail(el);
+        }
+      });
+    });
+
+    closeBtn.addEventListener('click', closeDetail);
+    backdrop.addEventListener('click', closeDetail);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDetail();
+    });
+  }
+
   /* ---- 3D card tilt ---- */
   function initCardTilt() {
     if (!finePointer || reduced) return;
 
-    var cards = document.querySelectorAll('.card, .sector-card, .project-card, .stat-item');
+    var cards = document.querySelectorAll('.card, .sector-card, .project-card, .stat-item, .value-item');
     cards.forEach(function (card) {
       card.addEventListener('mousemove', function (e) {
+        card.style.animationPlayState = 'paused';
         var r = card.getBoundingClientRect();
         var x = (e.clientX - r.left) / r.width;
         var y = (e.clientY - r.top) / r.height;
         var rotY = (x - 0.5) * 8;
         var rotX = (0.5 - y) * 8;
-        card.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateY(-4px)';
+        card.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateY(-6px) scale(1.02)';
       });
       card.addEventListener('mouseleave', function () {
+        card.style.animationPlayState = '';
         card.style.transform = '';
       });
     });
@@ -235,7 +333,9 @@
   }
 
   function init() {
+    initHoloBoxes();
     initSectorOverlay();
+    initHoloDetailOverlay();
     initCardTilt();
     initHeroOrbs();
     initCounters();
