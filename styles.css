@@ -4604,9 +4604,15 @@ body.intro-active {
   100% { transform: scale(1.28); opacity: 0; }
 }
 
+.tv-ai-assistant--speaking .tv-ai-head__mouth {
+  animation: aiMouthTalk 0.28s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
 @keyframes aiMouthTalk {
-  from { d: path("M128 152 Q142 158, 156 152"); }
-  to { d: path("M128 154 Q142 168, 156 154"); }
+  from { transform: scaleY(0.85); opacity: 0.85; }
+  to { transform: scaleY(1.15); opacity: 1; }
 }
 
 @keyframes aiMeshPulse {
