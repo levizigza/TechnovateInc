@@ -115,69 +115,58 @@
     onScroll();
   }
 
-  /* ---- Logo / wordmark ---- */
-  function initLogoHome() {
-    var logos = document.querySelectorAll('.logo');
-    for (var i = 0; i < logos.length; i++) {
-      logos[i].setAttribute('aria-label', 'Technovate home');
+  /* ---- Logo: flash + hologram menu ---- */
+  function playHoloFlash(sourceEl, callback) {
+    if (reduced) {
+      callback();
+      return;
     }
+
+    if (sourceEl) {
+      sourceEl.classList.add(sourceEl.classList.contains('logo') ? 'logo--flash' : 'holo-trigger--flash');
+      setTimeout(function () {
+        sourceEl.classList.remove('logo--flash', 'holo-trigger--flash');
+      }, 380);
+    }
+
+    var rect = sourceEl ? sourceEl.getBoundingClientRect() : null;
+    var flash = document.createElement('div');
+    flash.className = 'holo-trigger-flash';
+    if (rect) {
+      flash.style.setProperty('--flash-x', ((rect.left + rect.width / 2) / window.innerWidth * 100) + '%');
+      flash.style.setProperty('--flash-y', ((rect.top + rect.height / 2) / window.innerHeight * 100) + '%');
+    }
+    document.body.appendChild(flash);
+
+    requestAnimationFrame(function () {
+      flash.classList.add('holo-trigger-flash--active');
+    });
+
+    setTimeout(function () {
+      flash.classList.add('holo-trigger-flash--fade');
+      setTimeout(function () {
+        if (flash.parentNode) flash.remove();
+        callback();
+      }, 320);
+    }, 180);
   }
 
-  /* ---- Header red button: flash + hologram menu ---- */
-  function initHoloTrigger() {
-    var triggers = document.querySelectorAll('.holo-trigger');
-    var page = window.location.pathname.split('/').pop() || 'index.html';
-    var isHome = page === 'index.html' || page === '' || page.indexOf('.html') === -1;
-
-    function playFlash(trigger, callback) {
-      if (reduced) {
-        callback();
-        return;
-      }
-
-      if (trigger) {
-        trigger.classList.add('holo-trigger--flash');
-        setTimeout(function () {
-          trigger.classList.remove('holo-trigger--flash');
-        }, 380);
-      }
-
-      var rect = trigger ? trigger.getBoundingClientRect() : null;
-      var flash = document.createElement('div');
-      flash.className = 'holo-trigger-flash';
-      if (rect) {
-        flash.style.setProperty('--flash-x', ((rect.left + rect.width / 2) / window.innerWidth * 100) + '%');
-        flash.style.setProperty('--flash-y', ((rect.top + rect.height / 2) / window.innerHeight * 100) + '%');
-      }
-      document.body.appendChild(flash);
-
-      requestAnimationFrame(function () {
-        flash.classList.add('holo-trigger-flash--active');
-      });
-
-      setTimeout(function () {
-        flash.classList.add('holo-trigger-flash--fade');
-        setTimeout(function () {
-          if (flash.parentNode) flash.remove();
-          callback();
-        }, 320);
-      }, 180);
-    }
+  function initLogoHolo() {
+    var logos = document.querySelectorAll('.logo');
 
     function openHolo() {
       if (window.TechnovateVoice && window.TechnovateVoice.openHoloMenu) {
         window.TechnovateVoice.openHoloMenu();
         return;
       }
-      window.location.href = isHome ? 'index.html?holo=1' : 'index.html?holo=1';
+      window.location.href = 'index.html?holo=1';
     }
 
-    for (var i = 0; i < triggers.length; i++) {
-      triggers[i].addEventListener('click', function (e) {
+    for (var i = 0; i < logos.length; i++) {
+      logos[i].setAttribute('aria-label', 'Open Technovate hologram');
+      logos[i].addEventListener('click', function (e) {
         e.preventDefault();
-        e.stopPropagation();
-        var btn = e.currentTarget;
-        playFlash(btn, openHolo);
+        playHoloFlash(e.currentTarget, openHolo);
       });
     }
   }
@@ -371,8 +360,7 @@
   initScrollProgress();
   initGrain();
   initHeader();
-  initLogoHome();
-  initHoloTrigger();
+  initLogoHolo();
   initReveals();
   initHeroEntrance();
   initMobileNav();
