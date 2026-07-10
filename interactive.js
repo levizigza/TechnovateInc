@@ -119,9 +119,33 @@
     var boxes = document.querySelectorAll('.card, .value-item, .stat-item, .project-card, .sector-card');
     boxes.forEach(function (box, i) {
       box.classList.add('holo-box');
+      var rx = 5 + (i % 4) * 1.5;
+      var ry = -5 + (i % 5) * 2.2;
       box.style.setProperty('--holo-delay', ((i % 5) * 0.65).toFixed(2) + 's');
       box.style.setProperty('--holo-drift', (4 + (i % 4) * 2) + 'px');
+      box.style.setProperty('--holo-rx', rx.toFixed(1) + 'deg');
+      box.style.setProperty('--holo-ry', ry.toFixed(1) + 'deg');
+      box.style.setProperty('--holo-depth', (12 + (i % 3) * 4) + 'px');
+
+      if (!box.querySelector('.holo-box__shell')) {
+        var shell = document.createElement('div');
+        shell.className = 'holo-box__shell';
+        shell.setAttribute('aria-hidden', 'true');
+        shell.innerHTML =
+          '<span class="holo-box__plate holo-box__plate--slab"></span>' +
+          '<span class="holo-box__plate holo-box__plate--slab2"></span>' +
+          '<span class="holo-box__plate holo-box__plate--edge-r"></span>' +
+          '<span class="holo-box__plate holo-box__plate--edge-b"></span>';
+        box.insertBefore(shell, box.firstChild);
+      }
     });
+  }
+
+  function getHoloTilt(card) {
+    var rx = parseFloat(card.style.getPropertyValue('--holo-rx')) || 5;
+    var ry = parseFloat(card.style.getPropertyValue('--holo-ry')) || -4;
+    var depth = parseFloat(card.style.getPropertyValue('--holo-depth')) || 14;
+    return { rx: rx, ry: ry, depth: depth };
   }
 
   /* ---- Click-to-open detail overlay (mission, values, projects) ---- */
@@ -218,12 +242,17 @@
     cards.forEach(function (card) {
       card.addEventListener('mousemove', function (e) {
         card.style.animationPlayState = 'paused';
+        var base = getHoloTilt(card);
         var r = card.getBoundingClientRect();
         var x = (e.clientX - r.left) / r.width;
         var y = (e.clientY - r.top) / r.height;
-        var rotY = (x - 0.5) * 8;
-        var rotX = (0.5 - y) * 8;
-        card.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateY(-6px) scale(1.02)';
+        var rotY = (x - 0.5) * 14;
+        var rotX = (0.5 - y) * 14;
+        card.style.transform =
+          'rotateX(' + (base.rx + rotX) + 'deg) ' +
+          'rotateY(' + (base.ry + rotY) + 'deg) ' +
+          'translateZ(' + (base.depth + 8) + 'px) ' +
+          'translateY(-8px) scale(1.02)';
       });
       card.addEventListener('mouseleave', function () {
         card.style.animationPlayState = '';

@@ -556,7 +556,7 @@ img { max-width: 100%; height: auto; display: block; }
 .section--dark .content-cols p,
 .section--dark .value-item p { color: rgba(255,255,255,0.6); }
 .section--dark .card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-.section--dark .holo-box { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.1) !important; }
+.section--dark .holo-box { background: rgba(255, 255, 255, 0.05) !important; border-color: rgba(255, 255, 255, 0.12) !important; }
 .section--dark .card:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
 .section--dark .card h3 { color: var(--white); }
 .section--dark .value-item { border-top-color: transparent; }
@@ -642,29 +642,97 @@ img { max-width: 100%; height: auto; display: block; }
 .stats-row,
 .projects-grid,
 .sectors-grid {
-  perspective: 1400px;
+  perspective: 1600px;
+  perspective-origin: 50% 40%;
 }
 
 .holo-box {
   position: relative;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  background: rgba(6, 14, 28, 0.34) !important;
-  border: 1px solid rgba(0, 212, 255, 0.16) !important;
+  background: rgba(6, 14, 28, 0.22) !important;
+  border: 1px solid rgba(0, 212, 255, 0.2) !important;
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(20px) saturate(1.35);
-  -webkit-backdrop-filter: blur(20px) saturate(1.35);
+  backdrop-filter: blur(22px) saturate(1.4);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translateZ(var(--holo-lift, 0px));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 212, 255, 0.06),
-    0 18px 50px rgba(0, 0, 0, 0.28),
-    0 0 0 1px rgba(255, 255, 255, 0.03);
-  animation: holoBoxFloat 5.5s ease-in-out infinite;
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 1px 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(0, 212, 255, 0.08),
+    1px 3px 0 rgba(0, 180, 255, 0.1),
+    2px 6px 0 rgba(0, 140, 220, 0.08),
+    4px 10px 0 rgba(0, 100, 180, 0.06),
+    0 22px 48px rgba(0, 0, 0, 0.32),
+    0 0 40px rgba(0, 212, 255, 0.06);
+  animation: holoBoxFloat3d 5.5s ease-in-out infinite;
   animation-delay: var(--holo-delay, 0s);
   transition:
     border-color 0.35s var(--ease),
     box-shadow 0.35s var(--ease),
-    transform 0.25s ease-out;
+    transform 0.28s ease-out;
+}
+
+.holo-box__shell {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.holo-box__plate {
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.holo-box__plate--slab {
+  inset: 0;
+  background: rgba(0, 50, 80, 0.28);
+  border: 1px solid rgba(0, 212, 255, 0.12);
+  transform: translateZ(calc(-1 * var(--holo-depth, 14px)));
+  box-shadow: 0 0 20px rgba(0, 120, 200, 0.12);
+}
+
+.holo-box__plate--slab2 {
+  inset: 2px;
+  background: rgba(0, 35, 60, 0.35);
+  border: 1px solid rgba(0, 160, 220, 0.1);
+  transform: translateZ(calc(-2 * var(--holo-depth, 14px)));
+  opacity: 0.75;
+}
+
+.holo-box__plate--edge-r {
+  top: 3px;
+  right: 0;
+  width: var(--holo-depth, 14px);
+  height: calc(100% - 6px);
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(180deg, rgba(0, 220, 255, 0.22) 0%, rgba(0, 80, 130, 0.55) 100%);
+  transform-origin: left center;
+  transform: rotateY(78deg) translateX(calc(100% - 2px));
+  opacity: 0.85;
+}
+
+.holo-box__plate--edge-b {
+  bottom: 0;
+  left: 3px;
+  width: calc(100% - 6px);
+  height: var(--holo-depth, 14px);
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(90deg, rgba(0, 200, 255, 0.18) 0%, rgba(0, 60, 100, 0.5) 100%);
+  transform-origin: top center;
+  transform: rotateX(78deg) translateY(calc(100% - 2px));
+  opacity: 0.8;
+}
+
+.holo-box > *:not(.holo-box__shell) {
+  position: relative;
+  z-index: 2;
+  transform: translateZ(calc(var(--holo-depth, 14px) * 0.65));
+  transform-style: preserve-3d;
 }
 
 .holo-box::before {
@@ -673,24 +741,28 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
+  z-index: 1;
+  transform: translateZ(calc(var(--holo-depth, 14px) * 0.35));
   background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.02) 28%,
-    transparent 52%
+    148deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 22%,
+    transparent 48%
   );
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .holo-box::after {
   content: "";
   position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.55), rgba(155, 93, 229, 0.45), transparent);
+  left: 10%;
+  right: 10%;
+  bottom: 4px;
+  height: 3px;
+  z-index: 3;
+  border-radius: 3px;
+  transform: translateZ(calc(var(--holo-depth, 14px) * 0.8));
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.65), rgba(155, 93, 229, 0.5), transparent);
   opacity: 0;
   transition: opacity 0.35s var(--ease);
 }
@@ -700,11 +772,15 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .holo-box:hover {
-  border-color: rgba(0, 212, 255, 0.32) !important;
+  border-color: rgba(0, 212, 255, 0.38) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 28px 60px rgba(0, 0, 0, 0.35),
-    0 0 36px rgba(0, 212, 255, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    2px 4px 0 rgba(0, 180, 255, 0.12),
+    4px 8px 0 rgba(0, 140, 220, 0.1),
+    6px 14px 0 rgba(0, 100, 180, 0.08),
+    0 32px 64px rgba(0, 0, 0, 0.38),
+    0 0 48px rgba(0, 212, 255, 0.14);
 }
 
 .holo-box--detail {
@@ -735,15 +811,12 @@ img { max-width: 100%; height: auto; display: block; }
   transform: translateY(0);
 }
 
-@keyframes holoBoxFloat {
+@keyframes holoBoxFloat3d {
   0%, 100% {
-    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg);
+    transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translate3d(0, 0, 0);
   }
-  33% {
-    transform: translate3d(0, calc(-1 * var(--holo-drift, 6px)), 0) rotateX(1.2deg) rotateY(-1deg);
-  }
-  66% {
-    transform: translate3d(0, var(--holo-drift, 6px), 0) rotateX(-0.8deg) rotateY(1deg);
+  50% {
+    transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translate3d(0, calc(-1 * var(--holo-drift, 6px)), 12px);
   }
 }
 
@@ -764,7 +837,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .card:hover {
-  transform: translateY(-6px) scale(1.01);
+  transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translateZ(calc(var(--holo-depth, 14px) + 6px)) translateY(-6px) scale(1.02);
 }
 
 .card-label {
@@ -870,7 +943,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .sector-card:hover {
-  transform: translateY(-6px) scale(1.01);
+  transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translateZ(calc(var(--holo-depth, 14px) + 6px)) translateY(-6px) scale(1.02);
 }
 
 .sector-card--health   { border-top-color: var(--sector-health); }
@@ -1656,7 +1729,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .stat-item:hover {
-  transform: translateY(-6px) scale(1.02);
+  transform: rotateX(var(--holo-rx, 5deg)) rotateY(var(--holo-ry, -4deg)) translateZ(calc(var(--holo-depth, 14px) + 6px)) translateY(-6px) scale(1.02);
 }
 
 .stat-item__num {
@@ -2364,7 +2437,7 @@ img { max-width: 100%; height: auto; display: block; }
   .tv-nova-head__aura,
   .tv-nova-head__scan,
   .tv-nova--speaking .tv-nova-head__mouth,
-  .tv-nova--thinking .tv-nova-head__brain,
+  .tv-nova--thinking .tv-nova-head__mesh,
   .tv-nova--listening .tv-nova__mic-ring { animation: none; }
 }
 
