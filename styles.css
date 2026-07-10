@@ -2437,7 +2437,7 @@ img { max-width: 100%; height: auto; display: block; }
   .tv-nova-head__aura,
   .tv-nova-head__scan,
   .tv-nova--speaking .tv-nova-head__mouth,
-  .tv-nova--thinking .tv-nova-head__mesh,
+  .tv-nova--thinking .tv-nova-head__facets,
   .tv-nova--listening .tv-nova__mic-ring { animation: none; }
 }
 
@@ -2690,6 +2690,51 @@ body.intro-active {
 #cinematic-intro.intro--immersive .intro-content--holo {
   padding: 0;
   z-index: 20;
+}
+
+#cinematic-intro.intro--holo-burst .intro-content--holo {
+  z-index: 100025;
+}
+
+#cinematic-intro.intro--holo-burst .intro-holo-stage--flash-burst {
+  z-index: 100026 !important;
+}
+
+.intro-holo-stage--flash-burst .intro-holo-panel,
+.intro-holo-stage--flash-burst .intro-holo-panel.intro-holo-panel--dormant {
+  opacity: 1;
+  max-height: none;
+  overflow: visible;
+  animation: holoFlashFill 0.42s cubic-bezier(0.12, 0.92, 0.18, 1) forwards;
+}
+
+.intro-holo-stage--flash-burst .intro-holo-stage__aura {
+  opacity: 1;
+  animation: holoBurstAura 0.48s ease-out forwards;
+}
+
+@keyframes holoFlashFill {
+  0% {
+    opacity: 0;
+    transform: scale(0.12);
+    filter: brightness(4.2) blur(14px);
+  }
+  32% {
+    opacity: 1;
+    transform: scale(1.06);
+    filter: brightness(2.4) blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1) blur(0);
+  }
+}
+
+@keyframes holoBurstAura {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); filter: brightness(3); }
+  40% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); filter: brightness(2); }
+  100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); filter: brightness(1.1); }
 }
 
 #cinematic-intro.intro--immersive .intro-projection--dissolve {
@@ -3065,17 +3110,32 @@ body.intro-active {
   animation: noseChargeGlow 0.35s ease-in-out infinite alternate;
 }
 
+.intro-astro-sensor--activating .intro-astro-projector-beam {
+  opacity: 1;
+  animation: projectorBeamCharge 0.52s cubic-bezier(0.14, 0.9, 0.2, 1) forwards;
+}
+
+.intro-astro-sensor--charging .intro-astro-projector-beam {
+  opacity: 1;
+  animation: projectorBeamCharge 0.52s cubic-bezier(0.14, 0.9, 0.2, 1) forwards;
+}
+
+.intro-astro-sensor--flashing .intro-astro-projector-beam {
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
 .intro-astro-sensor--flashing .intro-astro-sensor__lens {
   background: radial-gradient(circle at 50% 50%, #ffffff 0%, #b8f8ff 42%, #00d4ff 100%);
   box-shadow:
     0 0 30px rgba(255, 255, 255, 1),
     0 0 60px rgba(0, 255, 255, 1),
     0 0 100px rgba(0, 200, 255, 0.85);
-  animation: noseFlashLens 0.55s ease-out forwards;
+  animation: noseFlashLens 0.38s ease-out forwards;
 }
 
 .intro-astro-sensor--flashing .intro-astro-nose-flash {
-  animation: noseFlashBurst 0.55s ease-out forwards;
+  animation: noseFlashBurst 0.38s ease-out forwards;
 }
 
 .intro-astro-sensor--flashing .intro-astro-crypto-wheel {
@@ -3086,13 +3146,14 @@ body.intro-active {
 
 .intro-astro-projector-beam {
   bottom: calc(100% - 6px);
-  width: min(78vw, 620px);
+  width: min(92vw, 720px);
   height: 0;
   transform: translateX(-50%);
   transform-origin: center bottom;
   opacity: 0;
-  overflow: hidden;
+  overflow: visible;
   clip-path: polygon(49.2% 100%, 50.8% 100%, 100% 0%, 0% 0%);
+  z-index: 20;
 }
 
 .intro-astro-projector-beam__core {
@@ -3136,7 +3197,7 @@ body.intro-active {
 
 .intro-astro-sensor--projecting .intro-astro-projector-beam {
   opacity: 1;
-  animation: projectorBeamExtend 1.35s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
+  animation: projectorBeamExtend 0.65s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
 }
 
 .intro-astro-sensor--projecting .intro-astro-sensor__lens {
@@ -3170,9 +3231,14 @@ body.intro-active {
 }
 
 @keyframes projectorBeamExtend {
-  0% { height: 0; opacity: 0; filter: brightness(2.2); }
-  12% { opacity: 1; }
-  100% { height: min(68vh, 520px); opacity: 0.92; filter: brightness(1); }
+  0% { height: min(62vh, 520px); opacity: 0.95; filter: brightness(1.5); }
+  100% { height: min(78vh, 620px); opacity: 1; filter: brightness(1.15); }
+}
+
+@keyframes projectorBeamCharge {
+  0% { height: 0; opacity: 0; filter: brightness(3); }
+  22% { opacity: 1; }
+  100% { height: min(72vh, 580px); opacity: 1; filter: brightness(1.45); }
 }
 
 @keyframes projectorDustDrift {
@@ -4184,7 +4250,7 @@ body.intro-active {
   opacity: 0;
 }
 
-/* Hologram projection — nose flash + screen pool */
+/* Hologram projection — charge beam → nose flash → screen pool */
 .intro-projection {
   position: fixed;
   inset: 0;
@@ -4194,9 +4260,27 @@ body.intro-active {
   transition: opacity 0.35s ease;
 }
 
+.intro-projection--charging,
 .intro-projection--flash,
 .intro-projection--active {
   opacity: 1;
+  z-index: 100020;
+  transition: opacity 0.08s ease;
+}
+
+.intro-projection--charging .intro-projection__cone {
+  display: block;
+  opacity: 1;
+  animation: chargeConeBuild 0.52s cubic-bezier(0.12, 0.92, 0.18, 1) forwards;
+}
+
+.intro-projection--charging .intro-projection__beam {
+  display: block;
+  animation: chargeBeamBuild 0.52s cubic-bezier(0.12, 0.92, 0.18, 1) forwards;
+}
+
+.intro-projection--charging .intro-projection__screen {
+  animation: chargeScreenFill 0.52s cubic-bezier(0.12, 0.92, 0.18, 1) forwards;
 }
 
 .intro-projection__flash {
@@ -4204,13 +4288,13 @@ body.intro-active {
   inset: 0;
   opacity: 0;
   background:
-    radial-gradient(ellipse 34% 22% at 50% 90%, rgba(255, 255, 255, 1) 0%, rgba(200, 248, 255, 0.95) 28%, rgba(0, 220, 255, 0.55) 52%, transparent 78%),
-    radial-gradient(ellipse 90% 70% at 50% 38%, rgba(0, 210, 255, 0.35) 0%, rgba(0, 160, 255, 0.12) 45%, transparent 72%);
+    radial-gradient(ellipse 140% 120% at 50% 52%, rgba(255, 255, 255, 1) 0%, rgba(220, 250, 255, 0.98) 18%, rgba(120, 235, 255, 0.82) 38%, rgba(0, 210, 255, 0.55) 58%, rgba(0, 140, 220, 0.22) 78%, transparent 100%),
+    linear-gradient(180deg, rgba(0, 200, 255, 0.35) 0%, rgba(255, 255, 255, 0.92) 42%, rgba(0, 220, 255, 0.45) 100%);
   z-index: 4;
 }
 
 .intro-projection--flash .intro-projection__flash {
-  animation: projectionFlashBurst 0.55s ease-out forwards;
+  animation: projectionFlashBurst 0.38s ease-out forwards;
 }
 
 .intro-projection__cone {
@@ -4218,8 +4302,8 @@ body.intro-active {
   position: absolute;
   bottom: 10.5%;
   left: 50%;
-  width: min(52vw, 420px);
-  height: 52vh;
+  width: min(88vw, 680px);
+  height: 72vh;
   transform: translateX(-50%);
   transform-origin: center bottom;
   background: linear-gradient(
@@ -4236,7 +4320,7 @@ body.intro-active {
 }
 
 .intro-projection--active .intro-projection__cone {
-  animation: projectorConeIn 1.2s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
+  animation: projectorConeIn 0.65s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
 }
 
 .intro-projection__beam {
@@ -4254,7 +4338,7 @@ body.intro-active {
 }
 
 .intro-projection--active .intro-projection__beam {
-  animation: projectorHotspot 1.2s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
+  animation: projectorHotspot 0.65s cubic-bezier(0.12, 0.82, 0.18, 1) forwards;
 }
 
 .intro-projection__screen {
@@ -4272,7 +4356,7 @@ body.intro-active {
 }
 
 .intro-projection--active .intro-projection__screen {
-  animation: projectionScreenBloom 1.35s ease-out forwards;
+  animation: projectionScreenBloom 0.7s ease-out forwards;
 }
 
 .intro-projection__scanlines {
@@ -4297,10 +4381,27 @@ body.intro-active {
 }
 
 @keyframes projectionFlashBurst {
-  0% { opacity: 0; }
-  12% { opacity: 1; filter: brightness(2.8); }
-  35% { opacity: 0.95; filter: brightness(2.2); }
-  100% { opacity: 0; filter: brightness(1); }
+  0% { opacity: 0; transform: scale(0.88); }
+  12% { opacity: 1; filter: brightness(4); }
+  32% { opacity: 1; filter: brightness(3); transform: scale(1); }
+  58% { opacity: 0.95; filter: brightness(2.2); }
+  100% { opacity: 0; filter: brightness(1); transform: scale(1.02); }
+}
+
+@keyframes chargeConeBuild {
+  0% { opacity: 0; transform: translateX(-50%) scaleY(0.02); filter: brightness(3.2); }
+  100% { opacity: 1; transform: translateX(-50%) scaleY(1); filter: brightness(1.5); }
+}
+
+@keyframes chargeBeamBuild {
+  0% { height: 0; opacity: 0; filter: brightness(3); }
+  15% { opacity: 1; }
+  100% { height: min(72vh, 620px); opacity: 1; filter: brightness(1.5); }
+}
+
+@keyframes chargeScreenFill {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); filter: brightness(4); }
+  100% { opacity: 0.88; transform: translate(-50%, -50%) scale(1.05); filter: brightness(1.6); }
 }
 
 @keyframes projectorConeIn {
@@ -5430,7 +5531,7 @@ body.intro-active {
 .tv-nova--speaking .tv-nova-head__mouth {
   animation: novaMouthTalk 0.28s ease-in-out infinite alternate;
   transform-box: fill-box;
-  transform-origin: center;
+  transform-origin: center bottom;
 }
 
 .tv-nova--thinking .tv-nova-head__facets,
@@ -5464,14 +5565,14 @@ body.intro-active {
   to { transform: scaleY(1.15); opacity: 1; }
 }
 
-@keyframes novaMeshPulse {
-  0%, 100% { opacity: 0.82; }
+@keyframes novaFacetPulse {
+  0%, 100% { opacity: 0.92; }
   50% { opacity: 1; }
 }
 
-@keyframes novaMeshShimmer {
-  0%, 100% { opacity: 0.88; filter: brightness(1); }
-  50% { opacity: 1; filter: brightness(1.15); }
+@keyframes novaFacetShimmer {
+  0%, 100% { opacity: 0.9; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.12); }
 }
 
 @media (max-width: 480px) {

@@ -15,6 +15,8 @@
   var holoPanelTimer = null;
   var hatchAudioTimer = null;
   var dockRetreatTimer = null;
+  var chargeTimer = null;
+  var flashTimer = null;
   var holoEyeLife = null;
   var introMusic = null;
   var introNarration = null;
@@ -25,9 +27,9 @@
   var introClosed = false;
   var MUSIC_PRE_ROLL_MS = 1600;
   var LOOP_PAUSE_MS = 2800;
-  var NOSE_CHARGE_MS = 1300;
-  var NOSE_FLASH_MS = 550;
-  var PROJECTOR_BEAM_MS = 1500;
+  var NOSE_CHARGE_MS = 800;
+  var NOSE_FLASH_MS = 380;
+  var PROJECTOR_BEAM_MS = 700;
   var EYE_ALIVE_MS = 2200;
   var HOLO_PANEL_MS = 700;
   var introActivated = false;
@@ -220,18 +222,37 @@
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
   }
 
+  function burstHoloFromFlash() {
+    if (introClosed) return;
+    var intro = document.getElementById('cinematic-intro');
+    var stage = document.getElementById('intro-holo-stage');
+    var holoPortal = document.getElementById('intro-holo-portal');
+    var holoPanel = document.getElementById('intro-holo-panel');
+    var sacred = document.getElementById('intro-sacred-geo');
+    if (intro) intro.classList.add('intro--immersive', 'intro--holo-burst');
+    if (stage) {
+      stage.classList.remove('intro-holo-stage--waiting');
+      stage.classList.add(
+        'intro-holo-stage--portal-opening',
+        'intro-holo-stage--flash-burst',
+        'intro-holo-stage--fullscreen'
+      );
+    }
+    if (holoPanel) holoPanel.classList.remove('intro-holo-panel--dormant');
+    if (holoPortal) holoPortal.classList.add('intro-holo-portal--active');
+    if (sacred) sacred.classList.add('intro-sacred-geo--active');
+  }
+
   function enterImmersiveHolo() {
     if (introClosed) return;
     var intro = document.getElementById('cinematic-intro');
     var dock = document.getElementById('intro-astro-dock');
     var stage = document.getElementById('intro-holo-stage');
     var projection = document.getElementById('intro-projection');
-    var sacred = document.getElementById('intro-sacred-geo');
-    if (intro) intro.classList.add('intro--immersive');
+    if (intro) intro.classList.remove('intro--holo-burst');
     if (dock) dock.classList.add('intro-astro-dock--retreat');
     if (stage) stage.classList.add('intro-holo-stage--fullscreen');
     if (projection) projection.classList.add('intro-projection--dissolve');
-    if (sacred) sacred.classList.add('intro-sacred-geo--active');
   }
 
   function revealHoloPanel() {
@@ -291,8 +312,13 @@
       btn.disabled = true;
       btn.classList.add('intro-astro-button--used');
     }
-    if (sensor) sensor.classList.add('intro-astro-sensor--activating');
-    if (head) head.classList.add('intro-astro-head--activating');
+    if (sensor) {
+      sensor.classList.add('intro-astro-sensor--activating', 'intro-astro-sensor--charging');
+    }
+    if (head) {
+      head.classList.add('intro-astro-head--activating', 'intro-astro-head--charging');
+    }
+    if (projection) projection.classList.add('intro-projection--charging');
 
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -305,12 +331,6 @@
     ensureMusic();
     if (introMusic && musicEnabled && introMusic.unlock) introMusic.unlock();
 
-    chargeTimer = setTimeout(function () {
-      if (introClosed) return;
-      if (sensor) sensor.classList.add('intro-astro-sensor--charging');
-      if (head) head.classList.add('intro-astro-head--charging');
-    }, NOSE_CHARGE_MS - 420);
-
     flashTimer = setTimeout(function () {
       if (introClosed) return;
       if (sensor) {
@@ -321,7 +341,11 @@
         head.classList.remove('intro-astro-head--activating', 'intro-astro-head--charging');
         head.classList.add('intro-astro-head--flashing');
       }
-      if (projection) projection.classList.add('intro-projection--flash');
+      if (projection) {
+        projection.classList.remove('intro-projection--charging');
+        projection.classList.add('intro-projection--flash');
+      }
+      burstHoloFromFlash();
     }, NOSE_CHARGE_MS);
 
     hatchRevealTimer = setTimeout(function () {
@@ -335,14 +359,9 @@
         head.classList.add('intro-astro-head--projecting');
       }
       if (projection) {
-        projection.classList.remove('intro-projection--flash');
+        projection.classList.remove('intro-projection--flash', 'intro-projection--charging');
         projection.classList.add('intro-projection--active');
       }
-      if (stage) {
-        stage.classList.remove('intro-holo-stage--waiting');
-        stage.classList.add('intro-holo-stage--portal-opening');
-      }
-      if (holoPortal) holoPortal.classList.add('intro-holo-portal--active');
     }, NOSE_CHARGE_MS + NOSE_FLASH_MS);
 
     eyeSettleTimer = setTimeout(function () {
