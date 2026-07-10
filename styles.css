@@ -522,6 +522,7 @@ img { max-width: 100%; height: auto; display: block; }
   color: transparent;
   margin-bottom: var(--sp-2);
   max-width: 720px;
+  animation: titleFloat 5.5s ease-in-out 1.2s infinite;
 }
 
 .page-header-overlay .page-lead {
@@ -1652,6 +1653,11 @@ img { max-width: 100%; height: auto; display: block; }
 .reveal-ready .hero-enter--active > *:nth-child(4) { transition-delay: 0.38s; opacity: 1; transform: none; }
 .reveal-ready .hero-enter--active > *:nth-child(5) { transition-delay: 0.48s; opacity: 1; transform: none; }
 
+.reveal-ready .hero-enter--active .page-title,
+.reveal-ready .hero-enter--active .hero-title {
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+
 /* Scroll indicator */
 .scroll-hint {
   position: absolute;
@@ -1800,6 +1806,16 @@ img { max-width: 100%; height: auto; display: block; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: titleFloat 5.5s ease-in-out 1.2s infinite;
+}
+
+@keyframes titleFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
 }
 
 /* Animated mesh background for hero */
@@ -2436,7 +2452,8 @@ img { max-width: 100%; height: auto; display: block; }
   .sector-overlay__panel { transition: none; }
   .matrix-rain { display: none; }
   .section--dark .section-title,
-  .page-header-overlay .page-title { animation: none; }
+  .page-header-overlay .page-title,
+  .hero-overlay .hero-title { animation: none; }
   .holo-scanlines::before { display: none; }
   .holo-site .section::after { display: none; }
   .holo-ambient__orb { animation: none; }
