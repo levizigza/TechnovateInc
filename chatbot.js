@@ -41,91 +41,71 @@
   ];
 
   function aiHeadSvg(uid) {
+    var e = 'rgba(0,212,255,0.62)';
+    var eSoft = 'rgba(0,212,255,0.38)';
+    var hi = 'rgba(210,248,255,0.48)';
+    var mid = 'rgba(90,200,230,0.3)';
+    var lo = 'rgba(24,90,120,0.42)';
+    var sh = 'rgba(6,28,48,0.62)';
+    var deep = 'rgba(2,10,22,0.82)';
+
     return (
-      '<svg class="tv-nova-head__svg" viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<svg class="tv-nova-head__svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
         '<defs>' +
-          '<radialGradient id="' + uid + 'Aura" cx="50%" cy="38%" r="58%">' +
-            '<stop offset="0%" stop-color="rgba(0,212,255,0.32)"/>' +
-            '<stop offset="60%" stop-color="rgba(155,93,229,0.1)"/>' +
+          '<radialGradient id="' + uid + 'Aura" cx="50%" cy="36%" r="58%">' +
+            '<stop offset="0%" stop-color="rgba(0,212,255,0.28)"/>' +
             '<stop offset="100%" stop-color="rgba(0,0,0,0)"/>' +
           '</radialGradient>' +
-          '<linearGradient id="' + uid + 'Wire" x1="0%" y1="0%" x2="100%" y2="100%">' +
-            '<stop offset="0%" stop-color="#e8feff"/>' +
-            '<stop offset="45%" stop-color="#00d4ff"/>' +
-            '<stop offset="100%" stop-color="#9b5de5"/>' +
+          '<linearGradient id="' + uid + 'Lit" x1="20%" y1="0%" x2="80%" y2="100%">' +
+            '<stop offset="0%" stop-color="rgba(220,252,255,0.55)"/>' +
+            '<stop offset="100%" stop-color="rgba(0,160,210,0.22)"/>' +
           '</linearGradient>' +
-          '<radialGradient id="' + uid + 'FaceVol" cx="48%" cy="40%" r="55%">' +
-            '<stop offset="0%" stop-color="rgba(0,80,120,0.22)"/>' +
-            '<stop offset="70%" stop-color="rgba(4,12,24,0.55)"/>' +
-            '<stop offset="100%" stop-color="rgba(2,6,14,0.75)"/>' +
-          '</radialGradient>' +
         '</defs>' +
-        '<ellipse cx="110" cy="138" rx="82" ry="104" fill="url(#' + uid + 'Aura)"/>' +
-        '<path class="tv-nova-head__sculpt" d="M78 56 C54 72, 46 104, 50 136 C54 166, 70 186, 92 194 C100 198, 110 200, 120 198 C142 192, 158 172, 166 142 C174 108, 168 72, 142 54 C128 44, 96 44, 78 56 Z" fill="url(#' + uid + 'FaceVol)" stroke="none"/>' +
-        '<g class="tv-nova-head__hair" opacity="0.75" fill="none" stroke-width="0.65">' +
-          '<path d="M68 62 C52 42, 78 28, 110 26 C142 28, 168 42, 152 62" stroke="rgba(0,212,255,0.5)"/>' +
-          '<path d="M58 78 C44 98, 40 128, 46 158" stroke="rgba(0,212,255,0.35)"/>' +
-          '<path d="M162 78 C176 98, 180 128, 174 158" stroke="rgba(247,37,133,0.3)"/>' +
-          '<path d="M82 48 C96 36, 124 36, 138 48" stroke="rgba(155,93,229,0.4)"/>' +
-          '<path d="M74 54 C66 68, 62 86, 64 104" stroke="rgba(0,212,255,0.28)"/>' +
-          '<path d="M146 54 C154 68, 158 86, 156 104" stroke="rgba(0,212,255,0.28)"/>' +
-        '</g>' +
-        '<g class="tv-nova-head__mesh" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-          '<g stroke="rgba(0,212,255,0.22)" stroke-width="0.45">' +
-            '<path d="M110 34 L110 248 M92 48 L128 48 M84 62 L136 62 M78 76 L142 76 M72 90 L148 90 M68 104 L152 104 M66 118 L154 118 M68 132 L152 132 M72 146 L148 146 M78 160 L142 160 M86 174 L134 174 M94 188 L126 188 M98 202 L122 202 M100 216 L120 216"/>' +
-            '<path d="M68 76 C84 68, 96 64, 110 62 C124 64, 136 68, 152 76 M66 104 C82 96, 96 92, 110 90 C124 92, 138 96, 154 104 M68 132 C84 124, 96 120, 110 118 C124 120, 136 124, 152 132 M74 160 C88 154, 98 150, 110 148 C122 150, 132 154, 146 160 M84 186 C94 182, 102 180, 110 178 C118 180, 126 182, 136 186"/>' +
-            '<path d="M78 56 C88 72, 94 88, 96 104 M142 56 C132 72, 126 88, 124 104 M96 104 C100 118, 104 132, 108 146 M124 104 C120 118, 116 132, 112 146 M108 146 C108 158, 108 170, 110 182 M96 104 L124 104 M88 118 L132 118 M90 132 L130 132 M92 146 L128 146"/>' +
-          '</g>' +
-          '<g stroke="url(#' + uid + 'Wire)" stroke-width="0.55" opacity="0.9">' +
-            '<path d="M110 48 L110 182"/>' +
-            '<path d="M78 72 L142 72 M82 86 L138 86 M86 100 L134 100 M88 114 L132 114 M90 128 L130 128 M92 142 L128 142 M94 156 L126 156 M96 170 L124 170"/>' +
-            '<path d="M78 56 L68 76 L66 104 L68 132 L74 160 L86 186 L110 198 L134 186 L146 160 L152 132 L154 104 L152 76 L142 56"/>' +
-            '<path d="M78 56 L96 64 L110 68 L124 64 L142 56"/>' +
-            '<path d="M68 76 L86 82 L110 86 L134 82 L152 76"/>' +
-            '<path d="M66 104 L84 108 L110 112 L136 108 L154 104"/>' +
-            '<path d="M68 132 L86 136 L110 140 L134 136 L152 132"/>' +
-            '<path d="M74 160 L92 166 L110 170 L128 166 L146 160"/>' +
-            '<path d="M86 186 L98 192 L110 194 L122 192 L134 186"/>' +
-            '<path d="M78 56 L86 82 L84 108 L86 136 L94 156 L110 170 L126 156 L134 136 L136 108 L134 82 L142 56"/>' +
-            '<path d="M142 56 L134 82 L136 108 L134 136 L126 156 L110 170 L94 156 L86 136 L84 108 L86 82 L78 56"/>' +
-            '<path d="M96 64 L86 82 L84 108 M124 64 L134 82 L136 108 M84 108 L90 128 L94 156 M136 108 L130 128 L126 156 M110 86 L110 112 M110 112 L110 140 L110 170"/>' +
-          '</g>' +
-          '<g stroke="rgba(155,93,229,0.42)" stroke-width="0.4">' +
-            '<path d="M78 72 L96 64 L110 68 L124 64 L142 72"/>' +
-            '<path d="M66 104 L82 86 L110 82 L138 86 L154 104"/>' +
-            '<path d="M68 132 L88 114 L110 110 L132 114 L152 132"/>' +
-            '<path d="M74 160 L94 142 L110 138 L126 142 L146 160"/>' +
-            '<path d="M86 82 L110 98 L134 82 M88 114 L110 128 L132 114 M94 142 L110 154 L126 142"/>' +
-          '</g>' +
-          '<g fill="#00d4ff" stroke="none" opacity="0.7">' +
-            '<circle cx="110" cy="68" r="1.3"/><circle cx="86" cy="82" r="1.1"/><circle cx="134" cy="82" r="1.1"/>' +
-            '<circle cx="68" cy="104" r="1.1"/><circle cx="110" cy="112" r="1.4"/><circle cx="152" cy="104" r="1.1"/>' +
-            '<circle cx="74" cy="132" r="1"/><circle cx="110" cy="140" r="1.5"/><circle cx="146" cy="132" r="1"/>' +
-            '<circle cx="86" cy="156" r="1"/><circle cx="110" cy="170" r="1.3"/><circle cx="134" cy="156" r="1"/>' +
-          '</g>' +
-        '</g>' +
-        '<g class="tv-nova-head__features">' +
+        '<ellipse cx="100" cy="132" rx="78" ry="98" fill="url(#' + uid + 'Aura)"/>' +
+        '<g class="tv-nova-head__facets" stroke-linejoin="round">' +
+          '<polygon points="74,54 126,54 118,68 82,68" fill="' + hi + '" stroke="' + e + '" stroke-width="0.65"/>' +
+          '<polygon points="58,92 74,54 82,68 72,88" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="142,92 126,54 118,68 128,88" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="68,78 88,62 96,78 84,92" fill="' + hi + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="132,78 112,62 104,78 116,92" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="88,62 112,62 108,78 92,78" fill="url(#' + uid + 'Lit)" stroke="' + e + '" stroke-width="0.65"/>' +
+          '<polygon points="84,92 96,78 108,78 116,92 108,102 92,102" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="58,92 72,88 84,92 78,108 66,112" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="142,92 128,88 116,92 122,108 134,112" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
           '<g class="tv-nova-head__eye">' +
-            '<ellipse cx="92" cy="98" rx="11" ry="7" fill="rgba(0,24,40,0.85)" stroke="rgba(0,212,255,0.65)" stroke-width="0.8"/>' +
-            '<ellipse cx="93" cy="97" rx="4.5" ry="3.2" fill="url(#' + uid + 'Wire)" opacity="0.95"/>' +
-            '<ellipse cx="94.5" cy="96" rx="1.8" ry="1.4" fill="#ffffff" opacity="0.95"/>' +
-            '<path d="M80 92 C86 88, 98 88, 104 92" fill="none" stroke="rgba(0,212,255,0.55)" stroke-width="0.7"/>' +
+            '<polygon points="74,108 86,100 94,110 86,120" fill="' + deep + '" stroke="' + e + '" stroke-width="0.55"/>' +
+            '<polygon points="86,100 92,102 90,108 84,106" fill="' + sh + '" stroke="none"/>' +
           '</g>' +
           '<g class="tv-nova-head__eye">' +
-            '<ellipse cx="128" cy="98" rx="11" ry="7" fill="rgba(0,24,40,0.85)" stroke="rgba(0,212,255,0.65)" stroke-width="0.8"/>' +
-            '<ellipse cx="127" cy="97" rx="4.5" ry="3.2" fill="url(#' + uid + 'Wire)" opacity="0.95"/>' +
-            '<ellipse cx="125.5" cy="96" rx="1.8" ry="1.4" fill="#ffffff" opacity="0.95"/>' +
-            '<path d="M116 92 C122 88, 134 88, 140 92" fill="none" stroke="rgba(0,212,255,0.55)" stroke-width="0.7"/>' +
+            '<polygon points="126,108 114,100 106,110 114,120" fill="' + deep + '" stroke="' + e + '" stroke-width="0.55"/>' +
+            '<polygon points="114,100 108,102 110,108 116,106" fill="' + sh + '" stroke="none"/>' +
           '</g>' +
-          '<path d="M110 86 L108 118 L110 124 L112 118 Z" fill="none" stroke="rgba(0,212,255,0.5)" stroke-width="0.65"/>' +
-          '<path d="M102 118 C104 122, 106 124, 110 124 C114 124, 116 122, 118 118" fill="none" stroke="rgba(0,212,255,0.4)" stroke-width="0.55"/>' +
-          '<path class="tv-nova-head__mouth" d="M94 150 Q110 158, 126 150" fill="none" stroke="url(#' + uid + 'Wire)" stroke-width="1.5" stroke-linecap="round"/>' +
-          '<path d="M94 150 Q110 146, 126 150" fill="none" stroke="rgba(247,37,133,0.45)" stroke-width="0.6"/>' +
-        '</g>' +
-        '<g class="tv-nova-head__neck" fill="none" opacity="0.8">' +
-          '<path d="M98 198 C96 214, 94 232, 92 252 M122 198 C124 214, 126 232, 128 252" stroke="rgba(0,212,255,0.4)" stroke-width="0.65"/>' +
-          '<path d="M92 214 L110 220 L128 214 M90 232 L110 238 L130 232 M88 252 L110 258 L132 252" stroke="rgba(0,212,255,0.32)" stroke-width="0.5"/>' +
-          '<path d="M92 214 L90 232 L88 252 M128 214 L130 232 L132 252 M98 198 L92 214 M122 198 L128 214" stroke="rgba(155,93,229,0.28)" stroke-width="0.45"/>' +
+          '<polygon points="92,102 108,102 106,112 94,112" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="96,78 104,78 102,92 98,92" fill="' + hi + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="98,92 102,92 104,108 100,118 96,108" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="96,108 100,118 98,128 94,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="104,108 100,118 102,128 106,118" fill="' + sh + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="66,112 78,108 86,120 78,138 68,132" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="134,112 122,108 114,120 122,138 132,132" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="78,138 86,120 114,120 122,138 110,152 90,152" fill="' + hi + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="86,120 100,118 114,120 110,136 90,136" fill="' + mid + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="90,136 110,136 108,142 92,142" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="92,142 108,142 104,148 96,148" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<path class="tv-nova-head__mouth" d="M96,148 L100,154 L104,148 Z" fill="' + hi + '" stroke="' + e + '" stroke-width="0.65" stroke-linejoin="round"/>' +
+          '<polygon points="68,132 78,138 90,152 82,168 72,158" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="132,132 122,138 110,152 118,168 128,158" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="82,168 90,152 110,152 118,168 104,182 96,182" fill="' + mid + '" stroke="' + e + '" stroke-width="0.6"/>' +
+          '<polygon points="96,182 104,182 100,192 96,192" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="52,118 58,92 66,112 62,132" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="148,118 142,92 134,112 138,132" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="50,118 54,128 58,132 56,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.5"/>' +
+          '<polygon points="150,118 146,128 142,132 144,118" fill="' + lo + '" stroke="' + e + '" stroke-width="0.5"/>' +
+          '<polygon points="82,168 76,208 88,218 96,192" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="118,168 124,208 112,218 104,192" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.55"/>' +
+          '<polygon points="96,192 104,192 108,218 92,218" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
+          '<polygon points="76,208 92,218 88,248 78,242" fill="' + lo + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="124,208 108,218 112,248 122,242" fill="' + sh + '" stroke="' + eSoft + '" stroke-width="0.5"/>' +
+          '<polygon points="88,248 112,248 108,262 92,262" fill="' + mid + '" stroke="' + e + '" stroke-width="0.55"/>' +
         '</g>' +
       '</svg>'
     );
