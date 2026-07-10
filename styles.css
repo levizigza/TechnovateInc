@@ -5522,6 +5522,7 @@ body.intro-active {
 
 .tv-nova__head-wrap,
 .tv-nova__mic,
+.tv-nova__mute,
 .tv-nova__hud,
 .tv-nova__prompt {
   pointer-events: auto;
@@ -5613,6 +5614,56 @@ body.intro-active {
   box-shadow:
     0 0 0 1px rgba(0, 212, 255, 0.45),
     0 0 28px rgba(247, 37, 133, 0.28);
+}
+
+.tv-nova__mute {
+  position: absolute;
+  left: 0;
+  bottom: 72px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(8, 16, 32, 0.92);
+  color: var(--holo-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.22),
+    0 0 16px rgba(0, 212, 255, 0.18);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, background 0.25s, color 0.25s;
+}
+
+.tv-nova__mute:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.4),
+    0 0 22px rgba(0, 212, 255, 0.28);
+}
+
+.tv-nova__mute-icon {
+  display: block;
+}
+
+.tv-nova__mute-icon--off {
+  display: none;
+}
+
+.tv-nova--muted .tv-nova__mute {
+  color: rgba(247, 37, 133, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(247, 37, 133, 0.35),
+    0 0 18px rgba(247, 37, 133, 0.22);
+}
+
+.tv-nova--muted .tv-nova__mute-icon--on {
+  display: none;
+}
+
+.tv-nova--muted .tv-nova__mute-icon--off {
+  display: block;
 }
 
 .tv-nova__mic-ring {
@@ -5817,6 +5868,12 @@ body.intro-active {
 
   .tv-nova__hud {
     width: min(280px, calc(100vw - 24px));
+  }
+
+  .tv-nova__mute {
+    bottom: 60px;
+    width: 36px;
+    height: 36px;
   }
 }
 
