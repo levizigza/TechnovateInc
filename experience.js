@@ -171,6 +171,155 @@
     }
   }
 
+  /* ---- Nav page hologram projection ---- */
+  function initNavPageHologram() {
+    if (reduced) return;
+
+    var NAV_KEY = 'tv_nav_holo';
+    var main = document.querySelector('main');
+    var nav = document.getElementById('nav');
+    if (!main || !nav) return;
+
+    var pageName = window.location.pathname.split('/').pop() || 'index.html';
+    var isHome = pageName === 'index.html' || pageName === '' || pageName.indexOf('.html') === -1;
+
+    function readStoredNav() {
+      try {
+        var raw = sessionStorage.getItem(NAV_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function clearStoredNav() {
+      try {
+        sessionStorage.removeItem(NAV_KEY);
+      } catch (e) {}
+    }
+
+    function linkTarget(href) {
+      if (!href) return '';
+      return href.split('/').pop() || 'index.html';
+    }
+
+    function isCurrentPage(href) {
+      var target = linkTarget(href);
+      if (target === pageName) return true;
+      if (target === 'index.html' && (pageName === '' || pageName.indexOf('.html') === -1)) return true;
+      return false;
+    }
+
+    function getLinkOrigin(link) {
+      var rect = link.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.bottom - 2
+      };
+    }
+
+    function createProjector(origin) {
+      var layer = document.createElement('div');
+      layer.className = 'page-holo-projector holo-scanlines';
+      layer.setAttribute('aria-hidden', 'true');
+      layer.innerHTML =
+        '<div class="page-holo-projector__source"></div>' +
+        '<div class="page-holo-projector__cone"></div>' +
+        '<div class="page-holo-projector__beam"></div>' +
+        '<div class="page-holo-projector__wash"></div>' +
+        '<div class="page-holo-projector__scanlines"></div>';
+      layer.style.setProperty('--proj-x', origin.x + 'px');
+      layer.style.setProperty('--proj-y', origin.y + 'px');
+      document.body.appendChild(layer);
+      return layer;
+    }
+
+    function playPageReveal(origin) {
+      if (document.body.classList.contains('intro-active') || document.getElementById('cinematic-intro')) {
+        return;
+      }
+
+      main.classList.add('page-holo-stage', 'page-holo-stage--hidden');
+      document.body.classList.add('page-holo-entering');
+
+      var layer = createProjector(origin);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          layer.classList.add('page-holo-projector--active');
+          main.classList.remove('page-holo-stage--hidden');
+          main.classList.add('page-holo-stage--revealed');
+          document.body.classList.add('is-loaded');
+        });
+      });
+
+      setTimeout(function () {
+        layer.classList.add('page-holo-projector--fade');
+        document.body.classList.remove('page-holo-entering');
+        setTimeout(function () {
+          if (layer.parentNode) layer.remove();
+          main.classList.remove('page-holo-stage', 'page-holo-stage--revealed');
+        }, 750);
+      }, 1100);
+    }
+
+    function playPageRevealFromLink(link) {
+      playPageReveal(getLinkOrigin(link));
+    }
+
+    var stored = readStoredNav();
+    clearStoredNav();
+
+    function currentPageKey() {
+      return isHome ? 'index.html' : pageName;
+    }
+
+    if (stored && stored.x != null && stored.href && linkTarget(stored.href) === currentPageKey()) {
+      setTimeout(function () {
+        playPageReveal({ x: stored.x, y: stored.y });
+      }, 60);
+    } else if (!isHome) {
+      var active = nav.querySelector('a.active');
+      if (active) {
+        setTimeout(function () {
+          playPageRevealFromLink(active);
+        }, 80);
+      }
+    }
+
+    var navLinks = nav.querySelectorAll('a[href]');
+    for (var i = 0; i < navLinks.length; i++) {
+      navLinks[i].addEventListener('click', function (e) {
+        var link = e.currentTarget;
+        var href = link.getAttribute('href');
+        if (!href || href.charAt(0) === '#') return;
+        if (isCurrentPage(href)) return;
+
+        e.preventDefault();
+
+        var origin = getLinkOrigin(link);
+        try {
+          sessionStorage.setItem(NAV_KEY, JSON.stringify({
+            x: origin.x,
+            y: origin.y,
+            href: href
+          }));
+          if (linkTarget(href) === 'index.html') {
+            sessionStorage.setItem('tv_skip_intro', '1');
+          }
+        } catch (err) {}
+
+        document.body.classList.add('page-holo-leaving');
+        var leavingLayer = createProjector(origin);
+        leavingLayer.classList.add('page-holo-projector--active', 'page-holo-projector--leaving');
+
+        setTimeout(function () {
+          window.location.href = href;
+        }, 320);
+      });
+    }
+  }
+
   /* ---- Scroll reveals (progressive enhancement) ---- */
   function initReveals() {
     if (reduced || !('IntersectionObserver' in window)) return;
@@ -348,7 +497,7 @@
     window.location.pathname.split('/').pop() === 'index.html' ||
     window.location.pathname.split('/').pop().indexOf('.html') === -1;
 
-  if (!isHomepage) {
+  if (!isHomepage && reduced) {
     initLoader();
   } else {
     document.body.classList.add('is-loaded');
@@ -361,6 +510,7 @@
   initGrain();
   initHeader();
   initLogoHolo();
+  initNavPageHologram();
   initReveals();
   initHeroEntrance();
   initMobileNav();

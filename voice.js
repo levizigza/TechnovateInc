@@ -816,6 +816,14 @@
     return /[?&]holo=1/.test(window.location.search);
   }
 
+  function shouldSkipIntroForNav() {
+    try {
+      return sessionStorage.getItem('tv_skip_intro') === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
   function init() {
     if (!isHomepage()) return;
 
@@ -824,6 +832,12 @@
       synth.onvoiceschanged = function () {
         britishVoice = findBritishVoice();
       };
+    }
+
+    if (shouldSkipIntroForNav()) {
+      sessionStorage.removeItem('tv_skip_intro');
+      document.body.classList.add('is-loaded');
+      return;
     }
 
     runIntro();
