@@ -607,7 +607,6 @@
 
   function closeIntro() {
     teardownIntro(false);
-    localStorage.setItem(INTRO_KEY, '1');
   }
 
   function skipToHoloMenu() {
@@ -778,20 +777,12 @@
     });
   }
 
-  function shouldForceIntro() {
-    return /[?&](intro|reset)=1/.test(window.location.search);
-  }
-
   function shouldOpenHoloMenu() {
     return /[?&]holo=1/.test(window.location.search);
   }
 
   function init() {
     if (!isHomepage()) return;
-    if (shouldForceIntro() || shouldOpenHoloMenu()) {
-      localStorage.removeItem(INTRO_KEY);
-    }
-    if (localStorage.getItem(INTRO_KEY) === '1') return;
 
     if (synth) {
       if (synth.getVoices().length) britishVoice = findBritishVoice();

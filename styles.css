@@ -143,6 +143,10 @@ img { max-width: 100%; height: auto; display: block; }
   transition: height 0.45s var(--ease-out-expo), background 0.4s, border-color 0.4s, transform 0.4s var(--ease-out-expo);
 }
 
+body.intro-active .header {
+  z-index: 100001;
+}
+
 .header--scrolled {
   height: var(--header-h-scrolled);
   background: rgba(6, 11, 24, 0.94);
@@ -204,43 +208,61 @@ img { max-width: 100%; height: auto; display: block; }
 .holo-trigger {
   position: relative;
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
+  margin-right: 4px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.35);
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(255, 60, 60, 0.35),
+    0 0 18px rgba(255, 40, 40, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .holo-trigger__pulse {
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 40, 40, 0.5);
-  animation: holoTriggerRing 1.8s ease-out infinite;
+  border: 2px solid rgba(255, 60, 60, 0.75);
+  animation: holoTriggerRing 1.6s ease-out infinite;
+  pointer-events: none;
 }
 
 .holo-trigger__core {
-  width: 22px;
-  height: 22px;
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ff5555 0%, #cc1111 45%, #880000 100%);
+  background: radial-gradient(circle at 35% 30%, #ff6666 0%, #dd1111 42%, #990000 100%);
+  border: 2px solid rgba(255, 140, 140, 0.85);
   box-shadow:
-    0 0 14px rgba(255, 40, 40, 0.7),
-    inset 0 1px 3px rgba(255, 180, 180, 0.5),
-    inset 0 -3px 6px rgba(80, 0, 0, 0.5);
+    0 0 22px rgba(255, 50, 50, 0.95),
+    0 0 40px rgba(255, 30, 30, 0.45),
+    inset 0 2px 4px rgba(255, 200, 200, 0.55),
+    inset 0 -4px 8px rgba(80, 0, 0, 0.55);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.holo-trigger:hover .holo-trigger__core {
-  transform: scale(1.1);
+.holo-trigger:hover {
+  transform: scale(1.06);
   box-shadow:
-    0 0 20px rgba(255, 60, 60, 0.95),
-    inset 0 1px 3px rgba(255, 200, 200, 0.6);
+    0 0 0 1px rgba(255, 80, 80, 0.55),
+    0 0 28px rgba(255, 40, 40, 0.45);
+}
+
+.holo-trigger:hover .holo-trigger__core {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 28px rgba(255, 70, 70, 1),
+    0 0 48px rgba(255, 40, 40, 0.55),
+    inset 0 2px 4px rgba(255, 220, 220, 0.65);
 }
 
 .holo-trigger:active .holo-trigger__core {
@@ -1571,6 +1593,14 @@ img { max-width: 100%; height: auto; display: block; }
 @media (max-width: 768px) {
   .nav { display: none; flex: 0; }
   .burger { display: flex; margin-left: auto; }
+  .holo-trigger {
+    width: 40px;
+    height: 40px;
+  }
+  .holo-trigger__core {
+    width: 26px;
+    height: 26px;
+  }
   .form-row { grid-template-columns: 1fr; }
   .logo-icon { width: 28px; height: 28px; }
   .sectors-grid { grid-template-columns: 1fr; }
