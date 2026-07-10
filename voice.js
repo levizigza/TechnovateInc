@@ -10,7 +10,6 @@
   var britishVoice = null;
   var narrationPlaying = false;
   var matrixRenderer = null;
-  var vcrClockTimer = null;
   var hatchRevealTimer = null;
   var eyeSettleTimer = null;
   var holoPanelTimer = null;
@@ -418,7 +417,7 @@
   function createIntroScreen() {
     var intro = document.createElement('div');
     intro.id = 'cinematic-intro';
-    intro.className = 'holo-scanlines intro-vcr';
+    intro.className = 'holo-scanlines intro-cinematic';
     intro.innerHTML =
       '<div class="intro-backdrop"></div>' +
       '<canvas class="intro-matrix-bg" id="intro-matrix-bg" aria-hidden="true"></canvas>' +
@@ -428,10 +427,6 @@
         '<div class="intro-vcr-scanlines"></div>' +
         '<div class="intro-vcr-tracking"></div>' +
         '<div class="intro-vcr-noise"></div>' +
-        '<div class="intro-vcr-hud">' +
-          '<span class="intro-vcr-rec"><span class="intro-vcr-rec__dot"></span> REC</span>' +
-          '<span class="intro-vcr-time" id="intro-vcr-time">--:--:--</span>' +
-        '</div>' +
       '</div>' +
       '<div class="intro-projection" id="intro-projection" aria-hidden="true">' +
         '<div class="intro-projection__cone"></div>' +
@@ -504,10 +499,6 @@
       matrixRenderer.stop();
       matrixRenderer = null;
     }
-    if (vcrClockTimer) {
-      clearInterval(vcrClockTimer);
-      vcrClockTimer = null;
-    }
 
     var intro = document.getElementById('cinematic-intro');
     if (intro) {
@@ -560,30 +551,12 @@
     window.addEventListener('resize', refreshRenderers);
   }
 
-  function initVcrClock() {
-    var el = document.getElementById('intro-vcr-time');
-    if (!el) return;
-
-    function pad(n) {
-      return n < 10 ? '0' + n : String(n);
-    }
-
-    function tick() {
-      var d = new Date();
-      el.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-    }
-
-    tick();
-    vcrClockTimer = setInterval(tick, 1000);
-  }
-
   function runIntro() {
     introClosed = false;
     introActivated = false;
     var intro = createIntroScreen();
     intro.classList.add('intro--active');
     initIntroRenderers();
-    initVcrClock();
 
     function enterSite() {
       closeIntro();

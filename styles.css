@@ -2097,6 +2097,11 @@ img { max-width: 100%; height: auto; display: block; }
   .holo-scanlines::before { display: none; }
   .holo-site .section::after { display: none; }
   .holo-ambient__orb { animation: none; }
+  .tv-ai-head__aura,
+  .tv-ai-head__scan,
+  .tv-ai-assistant--speaking .tv-ai-head__mouth,
+  .tv-ai-assistant--thinking .tv-ai-head__mesh,
+  .tv-ai-assistant--listening .tv-ai-assistant__mic-ring { animation: none; }
 }
 
 @media (max-width: 860px) {
@@ -2139,8 +2144,14 @@ body.intro-active {
   pointer-events: none;
 }
 
-#cinematic-intro.intro-vcr {
+#cinematic-intro.intro-cinematic {
   filter: contrast(1.08) saturate(0.92);
+}
+
+.intro-vcr-hud,
+.intro-vcr-rec,
+.intro-vcr-time {
+  display: none !important;
 }
 
 .intro-vcr-overlay {
@@ -4400,6 +4411,225 @@ body.intro-active {
 @keyframes holoOrbDrift {
   0% { transform: translate(0, 0) scale(1); }
   100% { transform: translate(3%, -4%) scale(1.08); }
+}
+
+/* ============================================
+   HOLOGRAPHIC VOICE ASSISTANT — floating AI head
+   ============================================ */
+
+.tv-ai-assistant {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 9000;
+  width: 148px;
+  height: 188px;
+  pointer-events: none;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 32px rgba(0, 212, 255, 0.22));
+}
+
+.tv-ai-assistant__head-btn,
+.tv-ai-assistant__mic,
+.tv-ai-assistant__panel,
+.tv-ai-assistant__chip {
+  pointer-events: auto;
+}
+
+.tv-ai-assistant__head-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 132px;
+  height: 168px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tv-ai-head {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tv-ai-head__aura {
+  position: absolute;
+  inset: -12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.28) 0%, rgba(247, 37, 133, 0.08) 45%, transparent 72%);
+  animation: aiHeadAura 3.4s ease-in-out infinite;
+}
+
+.tv-ai-head__scan {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  top: 18%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.85), transparent);
+  opacity: 0.55;
+  animation: aiHeadScan 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.tv-ai-head__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.tv-ai-assistant__mic {
+  position: absolute;
+  left: 0;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(8, 16, 32, 0.92);
+  color: var(--holo-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.28),
+    0 0 20px rgba(0, 212, 255, 0.25);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s, background 0.25s;
+}
+
+.tv-ai-assistant__mic:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.45),
+    0 0 28px rgba(247, 37, 133, 0.28);
+}
+
+.tv-ai-assistant__mic-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.tv-ai-assistant--listening .tv-ai-assistant__mic-ring {
+  opacity: 1;
+  animation: aiMicPulse 1.2s ease-out infinite;
+}
+
+.tv-ai-assistant__panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  width: min(300px, calc(100vw - 40px));
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(8, 16, 32, 0.92);
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 32px rgba(155, 93, 229, 0.12);
+}
+
+.tv-ai-assistant__caption {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tv-ai-assistant__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tv-ai-assistant__chip {
+  border: 1px solid rgba(0, 212, 255, 0.22);
+  background: rgba(0, 212, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  line-height: 1.3;
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.tv-ai-assistant__chip:hover {
+  border-color: rgba(247, 37, 133, 0.45);
+  background: rgba(247, 37, 133, 0.1);
+  color: #fff;
+}
+
+.tv-ai-assistant--open .tv-ai-head__aura {
+  animation-duration: 2.2s;
+}
+
+.tv-ai-assistant--listening .tv-ai-head__eye,
+.tv-ai-assistant--speaking .tv-ai-head__eye {
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.95));
+}
+
+.tv-ai-assistant--speaking .tv-ai-head__mouth {
+  animation: aiMouthTalk 0.28s ease-in-out infinite alternate;
+}
+
+.tv-ai-assistant--thinking .tv-ai-head__mesh {
+  animation: aiMeshPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes aiHeadAura {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes aiHeadScan {
+  0% { top: 16%; opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { top: 78%; opacity: 0; }
+}
+
+@keyframes aiMicPulse {
+  0% { transform: scale(0.92); opacity: 0.9; }
+  100% { transform: scale(1.28); opacity: 0; }
+}
+
+@keyframes aiMouthTalk {
+  from { d: path("M128 152 Q142 158, 156 152"); }
+  to { d: path("M128 154 Q142 168, 156 154"); }
+}
+
+@keyframes aiMeshPulse {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 480px) {
+  .tv-ai-assistant {
+    right: 12px;
+    bottom: 12px;
+    width: 128px;
+    height: 168px;
+  }
+
+  .tv-ai-assistant__head-btn {
+    width: 112px;
+    height: 148px;
+  }
+
+  .tv-ai-assistant__panel {
+    width: min(280px, calc(100vw - 24px));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
