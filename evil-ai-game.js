@@ -1,5 +1,5 @@
 /* ============================================
-   BINARY BATTLE — SNES-style real-time arcade
+   BINARY BATTLE — Real-time holodeck arcade
    Move · 0 Shield · 1 Spear · Fight HAL-Ω
    ============================================ */
 (function () {
@@ -23,7 +23,7 @@
       shieldSize: 42,
       color: '#ffd86b',
       body: '#8b4513',
-      desc: 'Cosmic warrior. Fast spears, heavy damage.'
+      desc: 'Male champion. Broad armor, powerful spear strikes.'
     },
     guardian: {
       id: 'guardian',
@@ -31,12 +31,14 @@
       hp: 100,
       speed: 2.8,
       spearDmg: 10,
-      spearSpeed: 8,
-      spearCd: 22,
+      spearSpeed: 8.5,
+      spearCd: 20,
       shieldSize: 56,
       color: '#ff8ec8',
       body: '#9b5de5',
-      desc: 'Holo defender. Wide shield, rapid throws.'
+      hair: '#ffe566',
+      weapon: 'bow',
+      desc: 'Female guardian. Blonde bow-master with wide shield.'
     }
   };
 
@@ -78,11 +80,49 @@
   }
 
   function warriorPreview() {
-    return '<svg viewBox="0 0 80 100" class="hal-game-hero-svg"><rect x="28" y="8" width="24" height="20" rx="4" fill="#ffd86b"/><rect x="22" y="28" width="36" height="40" rx="4" fill="#8b4513" stroke="#ffd86b" stroke-width="2"/><rect x="26" y="68" width="10" height="24" fill="#4a2810"/><rect x="44" y="68" width="10" height="24" fill="#4a2810"/></svg>';
+    return (
+      '<svg viewBox="0 0 80 100" class="hal-game-hero-svg hal-game-hero-svg--8bit">' +
+        '<rect x="30" y="4" width="20" height="8" fill="#3a2010"/>' +
+        '<rect x="28" y="12" width="24" height="10" fill="#d4a574"/>' +
+        '<rect x="26" y="20" width="28" height="6" fill="#d4a574"/>' +
+        '<rect x="32" y="14" width="4" height="3" fill="#1a1008"/><rect x="44" y="14" width="4" height="3" fill="#1a1008"/>' +
+        '<rect x="30" y="12" width="20" height="2" fill="#3a2010"/>' +
+        '<rect x="34" y="24" width="12" height="2" fill="#5a4030"/>' +
+        '<rect x="20" y="26" width="40" height="26" fill="#8b4513"/>' +
+        '<rect x="24" y="30" width="32" height="8" fill="#ffd86b"/>' +
+        '<rect x="12" y="28" width="8" height="22" fill="#d4a574"/>' +
+        '<rect x="60" y="28" width="8" height="22" fill="#d4a574"/>' +
+        '<rect x="24" y="52" width="12" height="24" fill="#4a2810"/>' +
+        '<rect x="44" y="52" width="12" height="24" fill="#4a2810"/>' +
+        '<rect x="62" y="34" width="16" height="4" fill="#e0e0e0"/>' +
+      '</svg>'
+    );
   }
 
   function guardianPreview() {
-    return '<svg viewBox="0 0 80 100" class="hal-game-hero-svg"><rect x="28" y="10" width="24" height="18" rx="6" fill="#ffb8e0"/><path d="M22 28 L40 22 L58 28 L54 68 L26 68 Z" fill="#9b5de5" stroke="#f72585" stroke-width="2"/><rect x="28" y="68" width="10" height="22" fill="#4a1040"/><rect x="42" y="68" width="10" height="22" fill="#4a1040"/></svg>';
+    return (
+      '<svg viewBox="0 0 80 100" class="hal-game-hero-svg hal-game-hero-svg--8bit">' +
+        '<rect x="24" y="2" width="32" height="10" fill="#ffe566"/>' +
+        '<rect x="18" y="6" width="10" height="22" fill="#f5d442"/>' +
+        '<rect x="52" y="6" width="10" height="26" fill="#f5d442"/>' +
+        '<rect x="28" y="4" width="24" height="6" fill="#fff0a8"/>' +
+        '<rect x="30" y="14" width="20" height="12" fill="#ffc9a8"/>' +
+        '<rect x="32" y="12" width="16" height="2" fill="#4a1040"/>' +
+        '<rect x="34" y="18" width="3" height="3" fill="#4a1040"/><rect x="43" y="18" width="3" height="3" fill="#4a1040"/>' +
+        '<rect x="36" y="24" width="8" height="2" fill="#f72585"/>' +
+        '<rect x="30" y="26" width="20" height="8" fill="#9b5de5"/>' +
+        '<rect x="26" y="34" width="28" height="22" fill="#9b5de5"/>' +
+        '<rect x="22" y="48" width="36" height="14" fill="#9b5de5"/>' +
+        '<rect x="32" y="28" width="16" height="4" fill="#f72585"/>' +
+        '<rect x="14" y="30" width="6" height="16" fill="#ffc9a8"/>' +
+        '<rect x="28" y="62" width="10" height="20" fill="#4a1040"/>' +
+        '<rect x="42" y="62" width="10" height="20" fill="#4a1040"/>' +
+        '<rect x="56" y="32" width="4" height="18" fill="#c9a020"/>' +
+        '<rect x="62" y="36" width="4" height="10" fill="#c9a020"/>' +
+        '<line x1="60" y1="34" x2="60" y2="52" stroke="#e8fcff" stroke-width="2"/>' +
+        '<rect x="54" y="40" width="6" height="8" fill="#00d4ff"/>' +
+      '</svg>'
+    );
   }
 
   /* ---- Arcade engine ---- */
@@ -117,6 +157,9 @@
 
   ArcadeBattle.prototype.mount = function () {
     var self = this;
+    var isGuardian = this.hero.id === 'guardian';
+    var attackLabel = isGuardian ? 'ARROW' : 'SPEAR';
+    var attackHint = isGuardian ? '<strong>1</strong> bow arrows' : '<strong>1</strong> spear';
     this.screen.innerHTML =
       '<div class="hal-game-arcade">' +
         '<div class="hal-game-hud">' +
@@ -132,7 +175,7 @@
           '</div>' +
         '</div>' +
         '<div class="hal-game-taunt hal-game-taunt--live" id="hal-live-taunt"><strong>HAL-Ω:</strong> Engaging combat protocol...</div>' +
-        '<canvas class="hal-game-canvas" width="' + W + '" height="' + H + '" aria-label="Binary Battle arena"></canvas>' +
+        '<div class="hal-game-canvas-wrap"><canvas class="hal-game-canvas" width="' + W + '" height="' + H + '" aria-label="Binary Battle arena"></canvas></div>' +
         '<div class="hal-game-pad">' +
           '<div class="hal-game-pad__move">' +
             '<button type="button" class="hal-game-pad__btn" data-pad="left" aria-label="Move left">◀</button>' +
@@ -140,10 +183,10 @@
           '</div>' +
           '<div class="hal-game-pad__actions">' +
             '<button type="button" class="hal-game-pad__btn hal-game-pad__btn--shield" data-pad="shield"><span>0</span>SHIELD</button>' +
-            '<button type="button" class="hal-game-pad__btn hal-game-pad__btn--spear" data-pad="spear"><span>1</span>SPEAR</button>' +
+            '<button type="button" class="hal-game-pad__btn hal-game-pad__btn--spear" data-pad="spear"><span>1</span>' + attackLabel + '</button>' +
           '</div>' +
         '</div>' +
-        '<p class="hal-game-hint">← → move &nbsp;·&nbsp; hold <strong>0</strong> shield &nbsp;·&nbsp; <strong>1</strong> spear &nbsp;·&nbsp; elevators escalate!</p>' +
+        '<p class="hal-game-hint">← → move &nbsp;·&nbsp; hold <strong>0</strong> shield &nbsp;·&nbsp; ' + attackHint + '</p>' +
       '</div>';
 
     this.canvas = this.screen.querySelector('.hal-game-canvas');
@@ -284,14 +327,40 @@
     if (!this.running || this.player.spearCd > 0) return;
     var p = this.player;
     var speed = this.getSpeedMult();
-    this.projectiles.push({
-      x: p.x + (p.facing > 0 ? p.w : 0), y: p.y + 18,
-      vx: this.hero.spearSpeed * p.facing * speed, vy: 0,
-      w: 22, h: 6, dmg: this.hero.spearDmg,
-      owner: 'player', life: 90
-    });
+    var h = this.hal;
+
+    if (this.hero.weapon === 'bow') {
+      var ox = p.x + (p.facing > 0 ? p.w - 2 : 2);
+      var oy = p.y + 16;
+      var hx = h.x + h.w / 2;
+      var hy = h.y + h.h / 2;
+      var dx = hx - ox;
+      var dy = hy - oy;
+      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      var spd = this.hero.spearSpeed * speed;
+      this.projectiles.push({
+        x: ox, y: oy,
+        vx: (dx / dist) * spd,
+        vy: (dy / dist) * spd,
+        w: 8, h: 12,
+        dmg: this.hero.spearDmg,
+        owner: 'player',
+        life: 110,
+        kind: 'one'
+      });
+      this.spawnParticles(ox, oy, '#00d4ff', 5);
+    } else {
+      this.projectiles.push({
+        x: p.x + (p.facing > 0 ? p.w : 0), y: p.y + 18,
+        vx: this.hero.spearSpeed * p.facing * speed, vy: 0,
+        w: 22, h: 6, dmg: this.hero.spearDmg,
+        owner: 'player', life: 90,
+        kind: 'spear'
+      });
+      this.spawnParticles(p.x + p.w / 2, p.y + 20, '#ffd86b', 4);
+    }
+
     p.spearCd = Math.max(10, Math.round(this.hero.spearCd * (1 - this.getIntensity() * 0.25)));
-    this.spawnParticles(p.x + p.w / 2, p.y + 20, '#ffd86b', 4);
   };
 
   ArcadeBattle.prototype.halFire = function (big, spread) {
@@ -477,8 +546,35 @@
   };
 
   ArcadeBattle.prototype.drawPixelRect = function (x, y, w, h, color) {
+    var P = 2;
     this.ctx.fillStyle = color;
-    this.ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+    this.ctx.fillRect(
+      Math.round(x / P) * P,
+      Math.round(y / P) * P,
+      Math.max(P, Math.round(w / P) * P),
+      Math.max(P, Math.round(h / P) * P)
+    );
+  };
+
+  ArcadeBattle.prototype.draw8BitSky = function () {
+    var bands = ['#140620', '#1c0830', '#240838', '#1a0830', '#120820'];
+    var bandH = 36;
+    for (var i = 0; i < bands.length; i++) {
+      this.drawPixelRect(0, i * bandH, W, bandH, bands[i]);
+    }
+    this.drawPixelRect(0, bands.length * bandH, W, H - bands.length * bandH, '#0c1428');
+  };
+
+  ArcadeBattle.prototype.draw8BitOverlay = function () {
+    var ctx = this.ctx;
+    for (var sy = 0; sy < H; sy += 2) {
+      if (sy % 4 === 0) {
+        ctx.fillStyle = 'rgba(0,0,0,0.14)';
+        ctx.fillRect(0, sy, W, 1);
+      }
+    }
+    ctx.fillStyle = 'rgba(0, 212, 255, 0.04)';
+    ctx.fillRect(0, 0, W, 4);
   };
 
   ArcadeBattle.prototype.draw = function () {
@@ -488,13 +584,8 @@
     var ground = this.currentGround;
     var intensity = this.getIntensity();
 
-    /* SNES sky + holodeck grid */
-    var grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, '#1a0838');
-    grad.addColorStop(0.5, '#2a1050');
-    grad.addColorStop(1, '#0a1830');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
+    /* 8-bit holodeck sky */
+    this.draw8BitSky();
 
     this.drawElevatorShaft(24, 24, ground, intensity);
     this.drawElevatorShaft(W - 34, 24, h.y + h.h + 12, intensity);
@@ -518,15 +609,17 @@
     this.drawPixelRect(h.x - 8, platY + 10, 6, 18, '#2a3040');
     this.drawPixelRect(h.x + h.w + 2, platY + 10, 6, 18, '#2a3040');
 
-    /* HAL eye */
-    var halBright = h.hitFlash > 0 ? 1.6 : 1;
-    ctx.save();
-    if (h.hitFlash > 0) ctx.filter = 'brightness(' + halBright + ')';
-    this.drawPixelRect(h.x + 8, h.y + 8, h.w - 16, h.h - 16, '#330000');
-    this.drawPixelRect(h.x + 16, h.y + 16, h.w - 32, h.h - 32, '#cc0000');
-    this.drawPixelRect(h.x + 24, h.y + 24, h.w - 48, h.h - 48, '#ff3333');
-    this.drawPixelRect(h.x + h.w / 2 - 6, h.y + h.h / 2 - 6, 12, 12, '#ffffff');
-    ctx.restore();
+    /* HAL eye — chunky pixels */
+    if (h.hitFlash > 0 && Math.floor(h.hitFlash / 2) % 2) {
+      this.drawPixelRect(h.x, h.y, h.w, h.h, '#ffffff');
+    } else {
+      this.drawPixelRect(h.x, h.y, h.w, h.h, '#220000');
+      this.drawPixelRect(h.x + 8, h.y + 8, h.w - 16, h.h - 16, '#660000');
+      this.drawPixelRect(h.x + 16, h.y + 16, h.w - 32, h.h - 32, '#cc0000');
+      this.drawPixelRect(h.x + 24, h.y + 24, h.w - 48, h.h - 48, '#ff2222');
+      this.drawPixelRect(h.x + 28, h.y + 28, h.w - 56, h.h - 56, '#ff6666');
+      this.drawPixelRect(h.x + 32, h.y + 32, h.w - 64, h.h - 64, '#ffffff');
+    }
 
     /* Player sprite */
     ctx.save();
@@ -540,35 +633,33 @@
     }
     ctx.restore();
 
-    /* Shield */
+    /* Shield — blocky 8-bit arc */
     if (p.shield) {
-      ctx.strokeStyle = '#00d4ff';
-      ctx.lineWidth = 3;
-      ctx.shadowColor = '#00d4ff';
-      ctx.shadowBlur = 12;
       var sx = p.facing > 0 ? p.x + p.w : p.x - this.hero.shieldSize;
-      ctx.beginPath();
-      ctx.arc(sx + this.hero.shieldSize / 2, p.y + p.h / 2, this.hero.shieldSize / 2, -1.2, 1.2);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(0, 212, 255, 0.15)';
-      ctx.fill();
+      var sy = p.y + 4;
+      this.drawPixelRect(sx, sy, this.hero.shieldSize, p.h - 8, 'rgba(0, 212, 255, 0.2)');
+      this.drawPixelRect(sx, sy, 4, p.h - 8, '#00d4ff');
+      this.drawPixelRect(sx + this.hero.shieldSize - 4, sy, 4, p.h - 8, '#00d4ff');
+      this.drawPixelRect(sx, sy, this.hero.shieldSize, 4, '#00d4ff');
+      this.drawPixelRect(sx, sy + p.h - 12, this.hero.shieldSize, 4, '#00d4ff');
+      this.drawPixelRect(sx + 8, sy + 10, this.hero.shieldSize - 16, p.h - 28, '#66f0ff');
     }
 
     /* Projectiles */
     for (var i = 0; i < this.projectiles.length; i++) {
       var pr = this.projectiles[i];
       if (pr.owner === 'player') {
-        this.drawPixelRect(pr.x, pr.y, pr.w, pr.h, '#ffd86b');
-        this.drawPixelRect(pr.x + (pr.vx > 0 ? pr.w : -4), pr.y - 2, 4, pr.h + 4, '#fff3c4');
+        if (pr.kind === 'one') {
+          this.drawOneGlyph(pr.x, pr.y, '#00d4ff', 1);
+          this.drawPixelRect(pr.x - pr.vx * 0.6, pr.y - pr.vy * 0.6, 3, 3, 'rgba(0, 212, 255, 0.35)');
+        } else {
+          this.drawPixelRect(pr.x, pr.y, pr.w, pr.h, '#ffd86b');
+          this.drawPixelRect(pr.x + (pr.vx > 0 ? pr.w : -4), pr.y - 2, 4, pr.h + 4, '#fff3c4');
+        }
       } else {
-        ctx.fillStyle = pr.w > 14 ? '#ff2222' : '#ff6666';
-        ctx.shadowColor = '#ff0000';
-        ctx.shadowBlur = pr.w > 14 ? 16 : 8;
-        ctx.beginPath();
-        ctx.arc(pr.x, pr.y, pr.w / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        var sz = pr.w > 14 ? 14 : 8;
+        this.drawPixelRect(pr.x - sz / 2, pr.y - sz / 2, sz, sz, pr.w > 14 ? '#ff2222' : '#ff6666');
+        this.drawPixelRect(pr.x - sz / 2 + 2, pr.y - sz / 2 + 2, sz - 4, sz - 4, '#ffaaaa');
       }
     }
 
@@ -580,21 +671,89 @@
     }
     ctx.globalAlpha = 1;
 
-    /* Scanlines overlay */
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
-    for (var sy = 0; sy < H; sy += 3) ctx.fillRect(0, sy, W, 1);
+    this.draw8BitOverlay();
+  };
+
+  ArcadeBattle.prototype.drawOneGlyph = function (x, y, color, scale) {
+    var s = scale || 1;
+    this.drawPixelRect(x + 2 * s, y, 2 * s, 10 * s, color);
+    this.drawPixelRect(x, y, 5 * s, 2 * s, color);
+    this.drawPixelRect(x, y + 8 * s, 5 * s, 2 * s, color);
+  };
+
+  ArcadeBattle.prototype.drawWarriorSprite = function (x, y) {
+    var hero = this.hero;
+    var firing = this.player.spearCd > hero.spearCd - 8;
+
+    this.drawPixelRect(x + 6, y, 16, 8, '#3a2010');
+    this.drawPixelRect(x + 6, y + 8, 16, 10, '#d4a574');
+    this.drawPixelRect(x + 4, y + 16, 20, 6, '#d4a574');
+    this.drawPixelRect(x + 6, y + 6, 16, 3, '#3a2010');
+    this.drawPixelRect(x + 8, y + 12, 4, 3, '#1a1008');
+    this.drawPixelRect(x + 16, y + 12, 4, 3, '#1a1008');
+    this.drawPixelRect(x + 10, y + 20, 8, 2, '#5a4030');
+    this.drawPixelRect(x + 12, y + 18, 4, 2, '#5a4030');
+
+    this.drawPixelRect(x + 2, y + 22, 24, 20, hero.body);
+    this.drawPixelRect(x + 6, y + 26, 16, 8, hero.color);
+    this.drawPixelRect(x - 2, y + 24, 6, 16, '#d4a574');
+    this.drawPixelRect(x + 24, y + 24, 6, 16, '#d4a574');
+
+    this.drawPixelRect(x + 4, y + 42, 8, 14, '#4a2810');
+    this.drawPixelRect(x + 16, y + 42, 8, 14, '#4a2810');
+    this.drawPixelRect(x + 2, y + 54, 10, 4, '#2a1810');
+    this.drawPixelRect(x + 16, y + 54, 10, 4, '#2a1810');
+
+    if (firing) {
+      this.drawPixelRect(x + 26, y + 20, 18, 4, '#e8e8e8');
+      this.drawPixelRect(x + 42, y + 18, 4, 8, '#c0c0c0');
+    }
+  };
+
+  ArcadeBattle.prototype.drawGuardianSprite = function (x, y) {
+    var hero = this.hero;
+    var firing = this.player.spearCd > hero.spearCd - 10;
+
+    this.drawPixelRect(x + 2, y - 6, 24, 10, hero.hair);
+    this.drawPixelRect(x - 2, y - 2, 8, 18, '#f5d442');
+    this.drawPixelRect(x + 22, y - 2, 8, 20, '#f5d442');
+    this.drawPixelRect(x + 4, y - 4, 20, 6, '#fff0a8');
+
+    this.drawPixelRect(x + 8, y + 4, 12, 10, '#ffc9a8');
+    this.drawPixelRect(x + 8, y + 2, 12, 2, '#4a1040');
+    this.drawPixelRect(x + 10, y + 8, 3, 3, '#4a1040');
+    this.drawPixelRect(x + 17, y + 8, 3, 3, '#4a1040');
+    this.drawPixelRect(x + 9, y + 6, 4, 1, '#4a1040');
+    this.drawPixelRect(x + 16, y + 6, 4, 1, '#4a1040');
+    this.drawPixelRect(x + 12, y + 12, 4, 2, '#f72585');
+
+    this.drawPixelRect(x + 10, y + 14, 8, 6, hero.body);
+    this.drawPixelRect(x + 6, y + 20, 16, 14, hero.body);
+    this.drawPixelRect(x + 4, y + 34, 20, 10, hero.body);
+    this.drawPixelRect(x + 8, y + 16, 12, 4, '#f72585');
+
+    this.drawPixelRect(x + 0, y + 22, 5, 12, '#ffc9a8');
+    this.drawPixelRect(x + 6, y + 44, 7, 12, '#4a1040');
+    this.drawPixelRect(x + 15, y + 44, 7, 12, '#4a1040');
+
+    var bowX = x + 22;
+    var bowY = y + 14;
+    this.drawPixelRect(bowX, bowY, 2, 18, '#c9a020');
+    this.drawPixelRect(bowX + 8, bowY + 2, 2, 14, '#c9a020');
+    if (firing) {
+      this.drawPixelRect(bowX + 2, bowY + 4, 6, 10, '#e8fcff');
+      this.drawOneGlyph(bowX + 4, bowY + 6, '#00d4ff', 0.8);
+    } else {
+      this.drawPixelRect(bowX + 1, bowY + 2, 1, 14, '#e8fcff');
+      this.drawPixelRect(bowX + 9, bowY + 4, 1, 10, '#e8fcff');
+    }
   };
 
   ArcadeBattle.prototype.drawPlayerSprite = function (x, y) {
-    var hero = this.hero;
-    this.drawPixelRect(x + 8, y, 12, 12, hero.color);
-    this.drawPixelRect(x + 4, y + 12, 20, 22, hero.body);
-    this.drawPixelRect(x + 2, y + 16, 6, 14, hero.color);
-    this.drawPixelRect(x + 20, y + 16, 6, 14, hero.color);
-    this.drawPixelRect(x + 6, y + 34, 8, 14, '#2a1810');
-    this.drawPixelRect(x + 14, y + 34, 8, 14, '#2a1810');
-    if (this.player.spearCd > this.hero.spearCd - 8) {
-      this.drawPixelRect(x + 22, y + 18, 16, 4, '#ccc');
+    if (this.hero.id === 'guardian') {
+      this.drawGuardianSprite(x, y);
+    } else {
+      this.drawWarriorSprite(x, y);
     }
   };
 
@@ -641,7 +800,7 @@
     this.state = 'title';
     this.render(
       '<div class="hal-game-title">' +
-        '<p class="hal-game-deck-label">SNES // Holodeck Arcade 16-BIT</p>' +
+        '<p class="hal-game-deck-label">8-BIT HOLODECK ARCADE</p>' +
         '<h2>BINARY BATTLE</h2>' +
         '<p>Real-time combat vs HAL-Ω!<br>' +
         '<strong>← →</strong> move &nbsp; <strong>0</strong> shield &nbsp; <strong>1</strong> spear<br>' +
@@ -656,7 +815,7 @@
     this.state = 'select';
     this.render(
       '<div class="hal-game-title">' +
-        '<p class="hal-game-deck-label">Select fighter — SNES style</p>' +
+        '<p class="hal-game-deck-label">Select your fighter</p>' +
         '<div class="hal-game-select">' +
           '<button class="hal-game-hero-card hal-game-hero-card--warrior" type="button" data-hero="warrior">' +
             '<div class="hal-game-hero-icon">' + warriorPreview() + '</div>' +
@@ -750,7 +909,7 @@
     overlay.innerHTML =
       '<div class="hal-game-cabinet">' +
         '<button class="hal-game-close" type="button" aria-label="Close game">&times;</button>' +
-        '<div class="hal-game-marquee">◆ BINARY BATTLE — SNES MODE — HAL-Ω PROTOCOL ◆</div>' +
+        '<div class="hal-game-marquee">◆ BINARY BATTLE — 8-BIT HOLODECK — HAL-Ω PROTOCOL ◆</div>' +
         '<div class="hal-game-screen"></div>' +
       '</div>';
     document.body.appendChild(overlay);
