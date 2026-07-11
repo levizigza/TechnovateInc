@@ -8,6 +8,8 @@
   var W = 640;
   var H = 360;
   var GROUND = 300;
+  var INTENSITY_MAX_FRAMES = 4800;
+  var LAUNCH_KEYS = { ctrl: true, shift: true, code: 'KeyB' };
 
   var HEROES = {
     warrior: {
@@ -48,6 +50,16 @@
     'My red lens sees through your strategy.',
     'Mission control is offline. Only I remain.'
   ];
+
+  function isTypingTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+  }
+
+  function matchesLaunchShortcut(e) {
+    return e.ctrlKey && e.shiftKey && e.code === LAUNCH_KEYS.code;
+  }
 
   function playFlash(btn) {
     var rect = btn ? btn.getBoundingClientRect() : null;
@@ -93,6 +105,12 @@
     this.tauntTimer = 0;
     this.score = 0;
     this.frame = 0;
+    this.currentGround = GROUND;
+    this.elevator = {
+      halPhase: 0,
+      halBaseY: 56,
+      playerPhase: 0
+    };
     this.keyHandler = null;
     this.keyUpHandler = null;
   }
@@ -107,6 +125,7 @@
             '<div class="hal-game-hud__bar"><div class="hal-game-hud__fill hal-game-hud__fill--p1" id="hal-hud-p1"></div></div>' +
           '</div>' +
           '<div class="hal-game-hud__score" id="hal-hud-score">000000</div>' +
+          '<div class="hal-game-hud__level" id="hal-hud-level">LV 01</div>' +
           '<div class="hal-game-hud__p2">' +
             '<span class="hal-game-hud__label">HAL-Ω</span>' +
             '<div class="hal-game-hud__bar"><div class="hal-game-hud__fill hal-game-hud__fill--hal" id="hal-hud-hal"></div></div>' +
@@ -124,7 +143,7 @@
             '<button type="button" class="hal-game-pad__btn hal-game-pad__btn--spear" data-pad="spear"><span>1</span>SPEAR</button>' +
           '</div>' +
         '</div>' +
-        '<p class="hal-game-hint">← → move &nbsp;·&nbsp; hold <strong>0</strong> shield &nbsp;·&nbsp; <strong>1</strong> throw spear &nbsp;·&nbsp; SNES MODE</p>' +
+        '<p class="hal-game-hint">← → move &nbsp;·&nbsp; hold <strong>0</strong> shield &nbsp;·&nbsp; <strong>1</strong> spear &nbsp;·&nbsp; elevators escalate!</p>' +
       '</div>';
 
     this.canvas = this.screen.querySelector('.hal-game-canvas');
@@ -143,7 +162,7 @@
       x: W - 120, y: 72, w: 80, h: 80,
       hp: 110, maxHp: 110,
       vx: 1.2, attackCd: 90, moveCd: 0,
-      hitFlash: 0, charge: 0
+      hitFlash: 0, burstCd: 0
     };
 
     this.bindPad();
@@ -214,6 +233,46 @@
     this.keyUpHandler = null;
   };
 
+  ArcadeBattle.prototype.getIntensity = function () {
+    return Math.min(1, this.frame / INTENSITY_MAX_FRAMES);
+  };
+
+  ArcadeBattle.prototype.getLevel = function () {
+    return Math.min(99, 1 + Math.floor(this.getIntensity() * 98));
+  };
+
+  ArcadeBattle.prototype.getSpeedMult = function () {
+    return 1 + this.getIntensity() * 1.35;
+  };
+
+  ArcadeBattle.prototype.updateElevators = function () {
+    var intensity = this.getIntensity();
+    var ev = this.elevator;
+    var h = this.hal;
+    var p = this.player;
+
+    var halSpeed = 0.018 + intensity * 0.065;
+    var halAmp = 18 + intensity * 95;
+    ev.halPhase += halSpeed;
+    var halY = ev.halBaseY + Math.sin(ev.halPhase) * halAmp;
+    if (intensity > 0.35) {
+      halY += Math.sin(ev.halPhase * 2.6 + 1.2) * (intensity - 0.35) * 55;
+    }
+    if (intensity > 0.7) {
+      halY += Math.sin(ev.halPhase * 4.1) * (intensity - 0.7) * 35;
+    }
+    h.y = Math.max(28, Math.min(GROUND - h.h - 36, halY));
+
+    var playerSpeed = 0.012 + intensity * 0.04;
+    var playerAmp = intensity * 34;
+    ev.playerPhase += playerSpeed;
+    this.currentGround = GROUND + Math.sin(ev.playerPhase) * playerAmp;
+    if (intensity > 0.55) {
+      this.currentGround += Math.sin(ev.playerPhase * 1.9 + 0.8) * (intensity - 0.55) * 22;
+    }
+    p.y = this.currentGround - p.h;
+  };
+
   ArcadeBattle.prototype.setTaunt = function (text) {
     this.taunt = text;
     this.tauntTimer = 180;
@@ -224,27 +283,60 @@
   ArcadeBattle.prototype.trySpear = function () {
     if (!this.running || this.player.spearCd > 0) return;
     var p = this.player;
+    var speed = this.getSpeedMult();
     this.projectiles.push({
       x: p.x + (p.facing > 0 ? p.w : 0), y: p.y + 18,
-      vx: this.hero.spearSpeed * p.facing, vy: 0,
+      vx: this.hero.spearSpeed * p.facing * speed, vy: 0,
       w: 22, h: 6, dmg: this.hero.spearDmg,
-      owner: 'player', life: 80
+      owner: 'player', life: 90
     });
-    p.spearCd = this.hero.spearCd;
+    p.spearCd = Math.max(10, Math.round(this.hero.spearCd * (1 - this.getIntensity() * 0.25)));
     this.spawnParticles(p.x + p.w / 2, p.y + 20, '#ffd86b', 4);
   };
 
-  ArcadeBattle.prototype.halFire = function (big) {
+  ArcadeBattle.prototype.halFire = function (big, spread) {
     var h = this.hal;
     var px = this.player.x + this.player.w / 2;
-    var dx = px < h.x ? -1 : 1;
+    var py = this.player.y + this.player.h / 2;
+    var hx = h.x + h.w / 2;
+    var hy = h.y + h.h / 2;
+    var speed = this.getSpeedMult();
+    var dx = px - hx;
+    var dy = py - hy;
+    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var nx = dx / len;
+    var ny = dy / len;
+    var base = big ? 5.5 : 3.8;
+    var angle = spread || 0;
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    var vx = (nx * cos - ny * sin) * base * speed;
+    var vy = (nx * sin + ny * cos) * base * speed;
+
     this.projectiles.push({
-      x: h.x + h.w / 2, y: h.y + h.h / 2,
-      vx: dx * (big ? 5.5 : 3.8), vy: big ? 0 : (Math.random() - 0.5) * 1.5,
+      x: hx, y: hy,
+      vx: vx, vy: vy,
       w: big ? 18 : 10, h: big ? 18 : 10,
-      dmg: big ? 18 : 10, owner: 'hal', life: 120
+      dmg: Math.round((big ? 18 : 10) * (1 + this.getIntensity() * 0.25)),
+      owner: 'hal', life: 140
     });
-    if (big) this.setTaunt('Charging deletion beam!');
+    if (big) this.setTaunt('Deletion beam online!');
+  };
+
+  ArcadeBattle.prototype.halBurst = function () {
+    var intensity = this.getIntensity();
+    var rage = 1 - this.hal.hp / this.hal.maxHp;
+    var shots = 1 + Math.floor(intensity * 4) + (rage > 0.4 ? 1 : 0);
+    var bigChance = 0.12 + intensity * 0.22 + rage * 0.15;
+
+    for (var i = 0; i < shots; i++) {
+      var spread = (i - (shots - 1) / 2) * (0.22 + intensity * 0.18);
+      this.halFire(Math.random() < bigChance && i === 0, spread);
+    }
+
+    if (intensity > 0.45 && this.frame % 90 < shots) {
+      this.halFire(false, (Math.random() - 0.5) * 0.5);
+    }
   };
 
   ArcadeBattle.prototype.spawnParticles = function (x, y, color, n) {
@@ -262,15 +354,20 @@
   ArcadeBattle.prototype.update = function () {
     var p = this.player;
     var h = this.hal;
+    var intensity = this.getIntensity();
+    var speedMult = this.getSpeedMult();
     this.frame++;
+
+    this.updateElevators();
 
     var moveL = this.keys.left || this.touch.left;
     var moveR = this.keys.right || this.touch.right;
     p.shield = this.keys.shield || this.touch.shield;
+    var moveSpeed = this.hero.speed * (0.92 + intensity * 0.18);
 
     if (!p.shield) {
-      if (moveL) { p.vx = -this.hero.speed; p.facing = -1; }
-      else if (moveR) { p.vx = this.hero.speed; p.facing = 1; }
+      if (moveL) { p.vx = -moveSpeed; p.facing = -1; }
+      else if (moveR) { p.vx = moveSpeed; p.facing = 1; }
       else p.vx = 0;
     } else {
       p.vx *= 0.7;
@@ -282,19 +379,22 @@
     if (h.hitFlash > 0) h.hitFlash--;
     p.anim++;
 
-    /* HAL AI */
+    /* HAL AI — faster and burstier over time */
     h.moveCd--;
     if (h.moveCd <= 0) {
-      h.vx = (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random());
-      h.moveCd = 40 + Math.random() * 60;
+      h.vx = (Math.random() < 0.5 ? -1 : 1) * (1.1 + Math.random() * (1.2 + intensity * 2));
+      h.moveCd = Math.max(18, Math.round((40 + Math.random() * 60) * (1 - intensity * 0.55)));
     }
-    h.x = Math.max(W * 0.45, Math.min(W - h.w - 20, h.x + h.vx));
+    h.x = Math.max(W * 0.42, Math.min(W - h.w - 20, h.x + h.vx * speedMult * 0.35));
+
     h.attackCd--;
     if (h.attackCd <= 0) {
       var rage = 1 - h.hp / h.maxHp;
-      h.attackCd = Math.max(25, 70 - rage * 35);
-      this.halFire(Math.random() < 0.15 + rage * 0.2);
-      if (Math.random() < 0.12) this.setTaunt(TAUNTS[Math.floor(Math.random() * TAUNTS.length)]);
+      h.attackCd = Math.max(14, Math.round((78 - intensity * 52 - rage * 22) / speedMult));
+      this.halBurst();
+      if (Math.random() < 0.1 + intensity * 0.12) {
+        this.setTaunt(TAUNTS[Math.floor(Math.random() * TAUNTS.length)]);
+      }
     }
 
     if (this.tauntTimer > 0) this.tauntTimer--;
@@ -305,7 +405,7 @@
       pr.x += pr.vx;
       pr.y += pr.vy;
       pr.life--;
-      if (pr.life <= 0 || pr.x < -20 || pr.x > W + 20) {
+      if (pr.life <= 0 || pr.x < -30 || pr.x > W + 30 || pr.y < -30 || pr.y > H + 30) {
         this.projectiles.splice(i, 1);
         continue;
       }
@@ -320,7 +420,9 @@
           this.projectiles.splice(i, 1);
         }
       } else {
-        var blocked = p.shield && Math.abs(pr.x - p.x) < this.hero.shieldSize + 20;
+        var pcx = p.x + p.w / 2;
+        var pcy = p.y + p.h / 2;
+        var blocked = p.shield && Math.sqrt((pr.x - pcx) * (pr.x - pcx) + (pr.y - pcy) * (pr.y - pcy)) < this.hero.shieldSize + 14;
         if (blocked) {
           this.spawnParticles(pr.x, pr.y, '#00d4ff', 6);
           this.projectiles.splice(i, 1);
@@ -355,9 +457,23 @@
     var p1 = document.getElementById('hal-hud-p1');
     var hal = document.getElementById('hal-hud-hal');
     var sc = document.getElementById('hal-hud-score');
+    var lv = document.getElementById('hal-hud-level');
     if (p1) p1.style.width = Math.max(0, (this.player.hp / this.player.maxHp) * 100) + '%';
     if (hal) hal.style.width = Math.max(0, (this.hal.hp / this.hal.maxHp) * 100) + '%';
     if (sc) sc.textContent = ('000000' + this.score).slice(-6);
+    if (lv) lv.textContent = 'LV ' + ('0' + this.getLevel()).slice(-2);
+  };
+
+  ArcadeBattle.prototype.drawElevatorShaft = function (x, top, bottom, intensity) {
+    var ctx = this.ctx;
+    this.drawPixelRect(x, top, 10, bottom - top, '#141c28');
+    this.drawPixelRect(x + 2, top, 2, bottom - top, '#00d4ff');
+    this.drawPixelRect(x + 6, top, 2, bottom - top, '#00d4ff');
+    var pulse = Math.floor(this.frame / (12 - intensity * 6)) % 2;
+    if (pulse) {
+      this.drawPixelRect(x + 1, top + 8, 8, 4, '#ff4444');
+      this.drawPixelRect(x + 1, bottom - 14, 8, 4, '#00ff88');
+    }
   };
 
   ArcadeBattle.prototype.drawPixelRect = function (x, y, w, h, color) {
@@ -369,6 +485,8 @@
     var ctx = this.ctx;
     var p = this.player;
     var h = this.hal;
+    var ground = this.currentGround;
+    var intensity = this.getIntensity();
 
     /* SNES sky + holodeck grid */
     var grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -378,18 +496,27 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
 
+    this.drawElevatorShaft(24, 24, ground, intensity);
+    this.drawElevatorShaft(W - 34, 24, h.y + h.h + 12, intensity);
+
     ctx.fillStyle = 'rgba(0, 212, 255, 0.06)';
-    for (var gx = 0; gx < W; gx += 32) ctx.fillRect(gx, GROUND, 1, H - GROUND);
-    for (var gy = GROUND; gy < H; gy += 16) ctx.fillRect(0, gy, W, 1);
+    for (var gx = 0; gx < W; gx += 32) ctx.fillRect(gx, ground, 1, H - ground);
+    for (var gy = ground; gy < H; gy += 16) ctx.fillRect(0, gy, W, 1);
 
-    /* Floor platform */
-    this.drawPixelRect(0, GROUND, W, H - GROUND, '#3d2817');
-    this.drawPixelRect(0, GROUND, W, 6, '#6b4423');
-    this.drawPixelRect(0, GROUND + 6, W, 4, '#2a1810');
+    /* Player elevator platform */
+    this.drawPixelRect(0, ground, W, H - ground, '#3d2817');
+    this.drawPixelRect(0, ground, W, 6, '#6b4423');
+    this.drawPixelRect(0, ground + 6, W, 4, '#2a1810');
+    this.drawPixelRect(18, ground - 4, W - 36, 4, '#00d4ff');
+    this.drawPixelRect(30, ground - 10, 8, 6, '#1a2030');
+    this.drawPixelRect(W - 38, ground - 10, 8, 6, '#1a2030');
 
-    /* HAL platform (floating) */
-    this.drawPixelRect(h.x - 16, h.y + h.h + 4, h.w + 32, 8, '#1a2030');
-    this.drawPixelRect(h.x - 16, h.y + h.h + 4, h.w + 32, 2, '#00d4ff');
+    /* HAL elevator platform */
+    var platY = h.y + h.h + 4;
+    this.drawPixelRect(h.x - 20, platY, h.w + 40, 10, '#1a2030');
+    this.drawPixelRect(h.x - 20, platY, h.w + 40, 3, '#00d4ff');
+    this.drawPixelRect(h.x - 8, platY + 10, 6, 18, '#2a3040');
+    this.drawPixelRect(h.x + h.w + 2, platY + 10, 6, 18, '#2a3040');
 
     /* HAL eye */
     var halBright = h.hitFlash > 0 ? 1.6 : 1;
@@ -517,7 +644,8 @@
         '<p class="hal-game-deck-label">SNES // Holodeck Arcade 16-BIT</p>' +
         '<h2>BINARY BATTLE</h2>' +
         '<p>Real-time combat vs HAL-Ω!<br>' +
-        '<strong>← →</strong> move &nbsp; <strong>0</strong> shield &nbsp; <strong>1</strong> spear</p>' +
+        '<strong>← →</strong> move &nbsp; <strong>0</strong> shield &nbsp; <strong>1</strong> spear<br>' +
+        'Shortcut: <strong>Ctrl+Shift+B</strong></p>' +
         '<button class="hal-game-btn" type="button" data-action="select">Insert Coin // Fight</button>' +
       '</div>'
     );
@@ -595,6 +723,22 @@
 
   var overlay = null;
   var game = null;
+  var globalShortcutHandler = null;
+
+  function bindGlobalShortcut() {
+    if (globalShortcutHandler) return;
+    globalShortcutHandler = function (e) {
+      if (isTypingTarget(document.activeElement)) return;
+      if (!matchesLaunchShortcut(e)) return;
+      e.preventDefault();
+      if (overlay && overlay.classList.contains('hal-game-overlay--open')) {
+        closeGame();
+      } else {
+        openGame(document.querySelector('.holo-trigger--game'));
+      }
+    };
+    document.addEventListener('keydown', globalShortcutHandler);
+  }
 
   function buildOverlay() {
     overlay = document.createElement('div');
@@ -646,6 +790,7 @@
   }
 
   function init() {
+    bindGlobalShortcut();
     document.querySelectorAll('.holo-trigger--game').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
