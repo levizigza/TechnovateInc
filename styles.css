@@ -5507,7 +5507,7 @@ body.intro-active {
   position: fixed;
   right: 24px;
   bottom: 24px;
-  z-index: 9000;
+  z-index: 100050;
   width: 172px;
   height: 220px;
   pointer-events: none;
@@ -5520,6 +5520,7 @@ body.intro-active {
 .tv-nova__mic,
 .tv-nova__mute,
 .tv-nova__hud,
+.tv-nova__hud-mute,
 .tv-nova__prompt {
   pointer-events: auto;
 }
@@ -5616,20 +5617,32 @@ body.intro-active {
   position: absolute;
   left: 0;
   bottom: 72px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  min-height: 44px;
+  padding: 6px 4px 4px;
   border: none;
-  border-radius: 50%;
+  border-radius: 12px;
   cursor: pointer;
-  background: rgba(8, 16, 32, 0.92);
+  background: rgba(8, 16, 32, 0.96);
   color: var(--holo-cyan);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
+  z-index: 2;
   box-shadow:
-    0 0 0 1px rgba(0, 212, 255, 0.22),
-    0 0 16px rgba(0, 212, 255, 0.18);
+    0 0 0 2px rgba(0, 212, 255, 0.35),
+    0 0 20px rgba(0, 212, 255, 0.28);
   transition: transform 0.25s var(--ease), box-shadow 0.25s, background 0.25s, color 0.25s;
+}
+
+.tv-nova__mute-label {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .tv-nova__mute:hover {
@@ -5660,6 +5673,43 @@ body.intro-active {
 
 .tv-nova--muted .tv-nova__mute-icon--off {
   display: block;
+}
+
+.tv-nova--muted .tv-nova__mute-label {
+  color: rgba(247, 37, 133, 0.95);
+}
+
+.tv-nova__hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tv-nova__hud-mute {
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: rgba(0, 30, 50, 0.65);
+  color: var(--holo-cyan);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tv-nova__hud-mute:hover {
+  border-color: rgba(0, 212, 255, 0.6);
+  background: rgba(0, 50, 80, 0.75);
+}
+
+.tv-nova--muted .tv-nova__hud-mute {
+  border-color: rgba(247, 37, 133, 0.5);
+  color: rgba(255, 160, 200, 0.95);
+  background: rgba(60, 10, 30, 0.55);
 }
 
 .tv-nova__mic-ring {
@@ -5737,7 +5787,7 @@ body.intro-active {
 }
 
 .tv-nova__name {
-  margin: 0 0 6px;
+  margin: 0;
   font-family: var(--font-display);
   font-size: 0.78rem;
   font-weight: 700;
