@@ -34,6 +34,7 @@
   var EYE_ALIVE_MS = 2200;
   var HOLO_PANEL_MS = 700;
   var introActivated = false;
+  var enterKeyHandler = null;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -571,9 +572,95 @@
     clearLoopTimer();
   }
 
+  function unbindEnterHandler() {
+    if (enterKeyHandler) {
+      document.removeEventListener('keydown', enterKeyHandler);
+      enterKeyHandler = null;
+    }
+  }
+
+  function canAcceptEnter() {
+    if (introClosed) return false;
+    var enterBtn = document.getElementById('intro-enter-main');
+    return !!(enterBtn && !enterBtn.classList.contains('intro-enter-btn--hidden'));
+  }
+
+  function scrollToSoftwareHub() {
+    function go() {
+      window.scrollTo(0, 0);
+      if (window.__tvLenis && window.__tvLenis.scrollTo) {
+        window.__tvLenis.scrollTo(0, { immediate: true });
+      }
+      var hero = document.querySelector('.hero-immersive');
+      if (hero) hero.scrollIntoView({ block: 'start', behavior: 'auto' });
+    }
+    go();
+    requestAnimationFrame(function () {
+      go();
+      requestAnimationFrame(go);
+    });
+  }
+
+  function handleEnterSite() {
+    if (openedFromLogo) {
+      enterSoftwareHub();
+      return;
+    }
+    closeIntro();
+    window.scrollTo(0, 0);
+    document.body.classList.add('is-loaded');
+  }
+
+  function bindEnterHandler() {
+    unbindEnterHandler();
+    enterKeyHandler = function (e) {
+      if (e.key !== 'Enter' && e.key !== 'Escape') return;
+      if (!canAcceptEnter()) return;
+      e.preventDefault();
+      handleEnterSite();
+    };
+    document.addEventListener('keydown', enterKeyHandler);
+  }
+
+  function resetAstroAnimationState() {
+    var sensor = document.getElementById('intro-astro-sensor');
+    var head = document.getElementById('intro-astro-head');
+    var projection = document.getElementById('intro-projection');
+    var intro = document.getElementById('cinematic-intro');
+    var stage = document.getElementById('intro-holo-stage');
+
+    if (intro) intro.classList.remove('intro--holo-burst');
+    if (sensor) {
+      sensor.classList.remove(
+        'intro-astro-sensor--activating', 'intro-astro-sensor--charging',
+        'intro-astro-sensor--flashing', 'intro-astro-sensor--projecting'
+      );
+    }
+    if (head) {
+      head.classList.remove(
+        'intro-astro-head--activating', 'intro-astro-head--charging',
+        'intro-astro-head--flashing', 'intro-astro-head--projecting',
+        'intro-astro-head--tilting', 'intro-astro-head--idle', 'intro-astro-head--excited'
+      );
+    }
+    if (projection) {
+      projection.classList.remove(
+        'intro-projection--charging', 'intro-projection--flash',
+        'intro-projection--active', 'intro-projection--audio'
+      );
+    }
+    if (stage) {
+      stage.classList.remove(
+        'intro-holo-stage--waiting', 'intro-holo-stage--portal-opening',
+        'intro-holo-stage--flash-burst', 'intro-holo-stage--eye-alive', 'intro-holo-stage--audio'
+      );
+    }
+  }
+
   function teardownIntro(immediate) {
     introClosed = true;
     introActivated = false;
+    unbindEnterHandler();
     clearIntroTimers();
     stopHoloEyeLife();
     stopNarration();
@@ -613,7 +700,24 @@
   function enterSoftwareHub() {
     introClosed = true;
     openedFromLogo = false;
-    teardownIntro(false);
+    unbindEnterHandler();
+    clearIntroTimers();
+    stopHoloEyeLife();
+    stopNarration();
+    introNarration = null;
+    if (introMusic) {
+      introMusic.stop();
+      introMusic = null;
+    }
+    if (matrixRenderer) {
+      matrixRenderer.stop();
+      matrixRenderer = null;
+    }
+
+    var intro = document.getElementById('cinematic-intro');
+    if (intro) intro.remove();
+    document.body.classList.remove('intro-active');
+    document.body.classList.add('is-loaded');
 
     if (!isHomepage()) {
       window.location.href = 'index.html';
@@ -624,14 +728,7 @@
       history.replaceState(null, '', 'index.html');
     }
 
-    document.body.classList.remove('intro-active');
-    document.body.classList.add('is-loaded');
-    window.scrollTo(0, 0);
-
-    var hero = document.querySelector('.hero-immersive');
-    if (hero) {
-      hero.scrollIntoView({ block: 'start' });
-    }
+    scrollToSoftwareHub();
   }
 
   function skipToHoloMenu() {
@@ -639,6 +736,7 @@
 
     introActivated = true;
     clearIntroTimers();
+    resetAstroAnimationState();
     stopNarration();
     if (introMusic) {
       introMusic.stop();
@@ -655,6 +753,7 @@
     var enterBtn = document.getElementById('intro-enter-main');
     var prompt = document.getElementById('intro-astro-prompt');
     var astroBtn = document.getElementById('intro-astro-button');
+    var audio = document.getElementById('intro-holo-audio');
 
     if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
     if (astroBtn) {
@@ -662,14 +761,11 @@
       astroBtn.classList.add('intro-astro-button--used');
     }
     if (dock) dock.classList.add('intro-astro-dock--retreat');
-    if (intro) intro.classList.add('intro--immersive', 'intro--holo-focus');
+    if (intro) {
+      intro.classList.remove('intro--holo-burst');
+      intro.classList.add('intro--immersive', 'intro--holo-focus');
+    }
     if (stage) {
-      stage.classList.remove(
-        'intro-holo-stage--waiting',
-        'intro-holo-stage--portal-opening',
-        'intro-holo-stage--eye-alive',
-        'intro-holo-stage--audio'
-      );
       stage.classList.add('intro-holo-stage--holo-revealed', 'intro-holo-stage--fullscreen');
     }
     if (holoPanel) holoPanel.classList.remove('intro-holo-panel--dormant');
@@ -677,8 +773,14 @@
     if (sacred) sacred.classList.add('intro-sacred-geo--active');
     if (projection) projection.classList.add('intro-projection--dissolve');
     if (enterBtn) enterBtn.classList.remove('intro-enter-btn--hidden');
+    if (audio) {
+      if (openedFromLogo) audio.setAttribute('hidden', '');
+      else audio.removeAttribute('hidden');
+    }
 
     startHoloEyeLife();
+    bindEnterHandler();
+    window.scrollTo(0, 0);
   }
 
   function openHoloMenu(options) {
@@ -693,7 +795,6 @@
 
     if (document.getElementById('cinematic-intro')) {
       skipToHoloMenu();
-      window.scrollTo(0, 0);
       return;
     }
 
@@ -778,13 +879,7 @@
     initIntroRenderers();
 
     function enterSite() {
-      if (openedFromLogo) {
-        enterSoftwareHub();
-        return;
-      }
-      closeIntro();
-      window.scrollTo(0, 0);
-      document.body.classList.add('is-loaded');
+      handleEnterSite();
     }
 
     document.getElementById('intro-enter-main').addEventListener('click', function (e) {
@@ -804,12 +899,7 @@
       toggleMusic();
     });
 
-    document.addEventListener('keydown', function onKey(e) {
-      if (e.key === 'Escape' || e.key === 'Enter') {
-        document.removeEventListener('keydown', onKey);
-        enterSite();
-      }
-    });
+    bindEnterHandler();
   }
 
   function shouldOpenHoloMenu() {

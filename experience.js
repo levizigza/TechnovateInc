@@ -375,6 +375,7 @@
         smoothWheel: true,
         touchMultiplier: 1.4
       });
+      window.__tvLenis = lenis;
 
       function raf(time) {
         lenis.raf(time);
