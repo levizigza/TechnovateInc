@@ -8,6 +8,17 @@
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function isMobileExperience() {
+    if (window.TechnovateMobile && window.TechnovateMobile.isMobileExperience) {
+      return window.TechnovateMobile.isMobileExperience();
+    }
+    try {
+      return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+    } catch (e) {
+      return window.innerWidth <= 900;
+    }
+  }
+
   /* ---- Page loader (non-blocking) ---- */
   function initLoader() {
     if (reduced) {
@@ -240,6 +251,15 @@
         return;
       }
 
+      if (reduced || isMobileExperience()) {
+        document.body.classList.add('is-loaded');
+        main.classList.add('page-holo-stage', 'page-holo-stage--revealed');
+        setTimeout(function () {
+          main.classList.remove('page-holo-stage', 'page-holo-stage--revealed');
+        }, 450);
+        return;
+      }
+
       main.classList.add('page-holo-stage', 'page-holo-stage--hidden');
       document.body.classList.add('page-holo-entering');
 
@@ -322,14 +342,19 @@
 
   /* ---- Scroll reveals (progressive enhancement) ---- */
   function initReveals() {
-    if (reduced || !('IntersectionObserver' in window)) return;
+    if (reduced || !('IntersectionObserver' in window)) {
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        el.classList.add('is-visible');
+      });
+      return;
+    }
 
     document.documentElement.classList.add('reveal-ready');
 
     var targets = document.querySelectorAll(
       '.section-title, .section-lead, .section-head, .card, .sector-card, ' +
-      '.project-card, .value-item, .solution-block, .cta-banner, .stat-item, ' +
-      '.content-block, .contact-form-col, .contact-info-col, .marquee-wrap'
+      '.project-card, .mvp-card, .value-item, .solution-block, .cta-banner, .stat-item, ' +
+      '.content-block, .contact-form-col, .contact-info-col, .marquee-wrap, .founder-profile'
     );
 
     targets.forEach(function (el, i) {
@@ -344,9 +369,18 @@
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    }, { threshold: 0.06, rootMargin: '0px 0px -12px 0px' });
 
     targets.forEach(function (el) { io.observe(el); });
+
+    /* Failsafe: never leave above-the-fold content invisible on slow phones */
+    setTimeout(function () {
+      targets.forEach(function (el) {
+        if (el.classList.contains('is-visible')) return;
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 1.15) el.classList.add('is-visible');
+      });
+    }, 900);
   }
 
   /* ---- Hero entrance ---- */
@@ -367,6 +401,7 @@
   /* ---- Smooth scroll (Lenis) ---- */
   function initSmoothScroll() {
     if (reduced || typeof Lenis === 'undefined') return;
+    if (isMobileExperience()) return;
 
     try {
       var lenis = new Lenis({
@@ -462,6 +497,7 @@
   /* ---- Ambient parallax (subtle, site-wide) ---- */
   function initAmbientParallax() {
     if (reduced) return;
+    if (isMobileExperience()) return;
 
     var sacred = document.querySelector('.holo-ambient__sacred');
     var orbs = document.querySelectorAll('.holo-ambient__orb');

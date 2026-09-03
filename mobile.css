@@ -1,0 +1,410 @@
+/* ============================================
+   Technovate — S-tier mobile / tablet layer
+   Loaded after styles.css on every page
+   ============================================ */
+
+/* Safe areas + viewport polish */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.header {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.header-inner {
+  padding-left: max(var(--sp-2, 16px), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--sp-2, 16px), env(safe-area-inset-right, 0px));
+}
+
+/* Nova never blocks intro gate */
+body.intro-active .tv-nova {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+body.intro-active .header {
+  pointer-events: none;
+}
+
+body.intro-active .header .logo {
+  pointer-events: auto;
+}
+
+/* Condensed mobile intro */
+.intro-mobile-actions {
+  position: fixed;
+  left: 50%;
+  bottom: max(28px, calc(env(safe-area-inset-bottom, 0px) + 20px));
+  transform: translateX(-50%);
+  z-index: 100020;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: auto;
+}
+
+.intro-mobile-actions .intro-enter-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  cursor: pointer;
+  color: #061018;
+  background: linear-gradient(135deg, #5eead4 0%, #38bdf8 55%, #fbbf24 100%);
+  box-shadow: 0 10px 32px rgba(56, 189, 248, 0.35);
+}
+
+.intro-mobile-actions .intro-enter-btn--hidden {
+  display: none !important;
+}
+
+.intro-mobile-skip {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(6, 12, 24, 0.55);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+  font-weight: 650;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.intro-mobile-skip:active,
+.intro-mobile-actions .intro-enter-btn:active {
+  transform: scale(0.98);
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-astro-dock {
+  display: none !important;
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-holo-stage--waiting {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-holo-stage--waiting * {
+  pointer-events: auto !important;
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-holo-panel--dormant {
+  opacity: 1;
+  max-height: none;
+  overflow: visible;
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-content--holo {
+  padding-bottom: 140px;
+}
+
+#cinematic-intro.intro--mobile-condensed .intro-mute-fab {
+  top: max(16px, env(safe-area-inset-top, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Chrome game launcher (outside burger menu) */
+.holo-trigger--chrome {
+  display: none;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Raise burger breakpoint to tablets */
+@media (max-width: 1024px) {
+  .nav {
+    display: none;
+    flex: 0;
+  }
+
+  .burger {
+    display: flex;
+    margin-left: auto;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .holo-trigger--chrome {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+  }
+
+  .holo-trigger--chrome .holo-trigger__core {
+    width: 28px;
+    height: 28px;
+  }
+
+  .nav.open .holo-trigger--game:not(.holo-trigger--chrome) {
+    display: none;
+  }
+
+  .nav.open {
+    top: calc(var(--header-h, 80px) + env(safe-area-inset-top, 0px));
+    z-index: 10020;
+    background: #060b18;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding:
+      var(--sp-3)
+      max(var(--sp-3), env(safe-area-inset-right, 0px))
+      max(var(--sp-4), env(safe-area-inset-bottom, 0px))
+      max(var(--sp-3), env(safe-area-inset-left, 0px));
+  }
+
+  .nav.open a {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 12px 4px;
+    font-size: 1.05rem;
+  }
+
+  .nav.open a.nav-cta {
+    justify-content: center;
+    min-height: 52px;
+  }
+
+  /* Fluid type */
+  .hero-title,
+  .page-title {
+    font-size: clamp(1.85rem, 6.2vw, 2.75rem);
+    line-height: 1.12;
+  }
+
+  .hero-desc,
+  .page-lead,
+  .section-lead {
+    font-size: clamp(0.98rem, 2.8vw, 1.125rem);
+    max-width: 38rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.45rem, 4.5vw, 2.1rem);
+  }
+
+  .hero-immersive {
+    min-height: min(92dvh, 920px);
+  }
+
+  .page-header-immersive {
+    min-height: min(42dvh, 420px);
+  }
+
+  /* Nova clearance */
+  .tv-nova {
+    right: max(12px, env(safe-area-inset-right, 0px));
+    bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+
+  main,
+  .footer {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .footer {
+    padding-left: max(var(--sp-3), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--sp-3), env(safe-area-inset-right, 0px));
+  }
+
+  /* Touch press states */
+  .mvp-card:active,
+  .project-card:active,
+  .sector-card:active,
+  .card:active,
+  .btn:active {
+    transform: translateY(1px) scale(0.985);
+  }
+
+  .mvp-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .mvp-grid,
+  .projects-grid,
+  .cards-row,
+  .sectors-grid,
+  .founder-roster,
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-overlay .container,
+  .page-header-overlay .container {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .hero-ctas {
+    width: 100%;
+  }
+
+  .hero-ctas .btn {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tv-nova__mute,
+  .tv-nova__mic {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .founder-profile__frame--circle {
+    width: min(220px, 68vw);
+    height: min(220px, 68vw);
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .tv-nova {
+    transform: scale(0.92);
+    transform-origin: bottom right;
+  }
+
+  .section {
+    padding-top: clamp(2.5rem, 8vw, 3.5rem);
+    padding-bottom: clamp(2.5rem, 8vw, 3.5rem);
+  }
+
+  .mvp-card__body,
+  .project-card {
+    padding: 1rem;
+  }
+}
+
+/* Small phones: tighten typography + reserve more space */
+@media (max-width: 420px) {
+  html {
+    --header-h: 64px;
+    --header-h-scrolled: 56px;
+  }
+
+  /* styles.css targets more specific selectors, so override those too */
+  .hero-overlay .hero-title,
+  .page-header-overlay .page-title {
+    font-size: clamp(2.05rem, 8.2vw, 2.45rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-desc,
+  .page-lead,
+  .section-lead {
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .section-title {
+    font-size: clamp(1.55rem, 5.1vw, 2.05rem);
+  }
+
+  /* Keep Nova + HUD from covering paragraphs/buttons */
+  main,
+  .footer {
+    padding-bottom: calc(240px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .tv-nova {
+    transform: scale(0.7);
+    transform-origin: bottom right;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  /* The floating HUD bubble is too tall on the smallest phones */
+  .tv-nova__hud,
+  .tv-nova__prompt {
+    display: none !important;
+  }
+
+  .nav.open a {
+    padding: 10px 4px;
+    min-height: 44px;
+    font-size: 1.02rem;
+  }
+
+  /* About / leadership paragraphs */
+  .founder-profile {
+    padding: var(--sp-3);
+    gap: var(--sp-3) var(--sp-2);
+  }
+
+  .founder-profile__name {
+    font-size: 1.45rem;
+  }
+
+  .founder-profile__bio p {
+    font-size: 0.98rem;
+    line-height: 1.62;
+    margin-bottom: var(--sp-1);
+  }
+
+  .content-cols p,
+  .value-item p {
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .value-item {
+    padding: var(--sp-3);
+  }
+}
+
+/* Prefer reduced motion: never leave content invisible */
+@media (prefers-reduced-motion: reduce) {
+  main.page-holo-stage--hidden {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .reveal-ready .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Coarse pointer: softer ambient motion cues handled in JS; CSS hover parity */
+@media (pointer: coarse) {
+  .mvp-card:hover {
+    transform: none;
+  }
+
+  .mvp-card:active {
+    transform: translateY(-2px) scale(0.99);
+  }
+}

@@ -106,13 +106,28 @@
   }
 
   function init() {
+    var mobile = false;
+    try {
+      mobile = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+    } catch (e) {
+      mobile = window.innerWidth <= 900;
+    }
+
     var hero = document.querySelector('.hero-immersive');
     if (hero) {
-      createRain(hero, { opacity: 0.04, density: 0.35, color: '59, 130, 246' });
+      createRain(hero, {
+        opacity: mobile ? 0.025 : 0.04,
+        density: mobile ? 0.2 : 0.35,
+        color: '59, 130, 246'
+      });
     }
 
     document.querySelectorAll('.page-header-immersive').forEach(function (ph) {
-      createRain(ph, { opacity: 0.035, density: 0.3, color: '59, 130, 246' });
+      createRain(ph, {
+        opacity: mobile ? 0.02 : 0.035,
+        density: mobile ? 0.16 : 0.3,
+        color: '59, 130, 246'
+      });
     });
   }
 

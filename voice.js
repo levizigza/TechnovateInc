@@ -35,6 +35,8 @@
   var HOLO_PANEL_MS = 700;
   var introActivated = false;
   var enterKeyHandler = null;
+  var mobileAutoEnterTimer = null;
+  var condensedMobile = false;
 
   var INTRO_SCRIPT = [
     { text: 'Here...', pause: 900 },
@@ -553,6 +555,35 @@
     narrationPlaying = false;
   }
 
+  function isMobileExperience() {
+    if (window.TechnovateMobile && window.TechnovateMobile.isMobileExperience) {
+      return window.TechnovateMobile.isMobileExperience();
+    }
+    try {
+      return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+    } catch (e) {
+      return window.innerWidth <= 900;
+    }
+  }
+
+  function hasCompletedIntro() {
+    try {
+      return localStorage.getItem(INTRO_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markIntroDone() {
+    try {
+      localStorage.setItem(INTRO_KEY, '1');
+    } catch (e) {}
+  }
+
+  function shouldForceIntro() {
+    return /[?&]intro=1/.test(window.location.search);
+  }
+
   function clearIntroTimers() {
     clearTimeout(hatchRevealTimer);
     clearTimeout(eyeSettleTimer);
@@ -561,6 +592,7 @@
     clearTimeout(flashTimer);
     clearTimeout(chargeTimer);
     clearTimeout(dockRetreatTimer);
+    clearTimeout(mobileAutoEnterTimer);
     hatchRevealTimer = null;
     eyeSettleTimer = null;
     holoPanelTimer = null;
@@ -568,6 +600,7 @@
     flashTimer = null;
     chargeTimer = null;
     dockRetreatTimer = null;
+    mobileAutoEnterTimer = null;
     clearNarrationTimer();
     clearLoopTimer();
   }
@@ -581,7 +614,10 @@
 
   function canAcceptEnter() {
     if (introClosed) return false;
+    if (condensedMobile) return true;
     var enterBtn = document.getElementById('intro-enter-main');
+    var enterMobile = document.getElementById('intro-enter-mobile');
+    if (enterMobile) return true;
     return !!(enterBtn && !enterBtn.classList.contains('intro-enter-btn--hidden'));
   }
 
@@ -602,6 +638,7 @@
   }
 
   function handleEnterSite() {
+    markIntroDone();
     if (openedFromLogo) {
       enterSoftwareHub();
       return;
@@ -700,6 +737,7 @@
   function enterSoftwareHub() {
     introClosed = true;
     openedFromLogo = false;
+    markIntroDone();
     unbindEnterHandler();
     clearIntroTimers();
     stopHoloEyeLife();
@@ -871,7 +909,90 @@
     window.addEventListener('resize', refreshRenderers);
   }
 
+  function mountMobileIntroActions(intro) {
+    var actions = document.createElement('div');
+    actions.className = 'intro-mobile-actions';
+    actions.innerHTML =
+      '<button class="intro-enter-btn" id="intro-enter-mobile" type="button" aria-label="Enter website">' +
+        '<span class="intro-enter-btn__label">Enter Technovate</span>' +
+      '</button>' +
+      '<button class="intro-mobile-skip" id="intro-skip-mobile" type="button">Skip intro</button>';
+    intro.appendChild(actions);
+
+    var enterMobile = document.getElementById('intro-enter-mobile');
+    var skipMobile = document.getElementById('intro-skip-mobile');
+    if (enterMobile) {
+      enterMobile.addEventListener('click', function (e) {
+        e.stopPropagation();
+        handleEnterSite();
+      });
+    }
+    if (skipMobile) {
+      skipMobile.addEventListener('click', function (e) {
+        e.stopPropagation();
+        handleEnterSite();
+      });
+    }
+  }
+
+  function revealCondensedHolo() {
+    var intro = document.getElementById('cinematic-intro');
+    var stage = document.getElementById('intro-holo-stage');
+    var holoPortal = document.getElementById('intro-holo-portal');
+    var holoPanel = document.getElementById('intro-holo-panel');
+    var sacred = document.getElementById('intro-sacred-geo');
+    var enterBtn = document.getElementById('intro-enter-main');
+    var audio = document.getElementById('intro-holo-audio');
+    var dock = document.getElementById('intro-astro-dock');
+    var prompt = document.getElementById('intro-astro-prompt');
+
+    if (dock) dock.classList.add('intro-astro-dock--retreat');
+    if (prompt) prompt.classList.add('intro-astro-prompt--hidden');
+    if (intro) {
+      intro.classList.add('intro--immersive', 'intro--holo-focus', 'intro--mobile-condensed');
+    }
+    if (stage) {
+      stage.classList.remove('intro-holo-stage--waiting');
+      stage.classList.add('intro-holo-stage--holo-revealed', 'intro-holo-stage--fullscreen');
+    }
+    if (holoPanel) holoPanel.classList.remove('intro-holo-panel--dormant');
+    if (holoPortal) holoPortal.classList.add('intro-holo-portal--active', 'intro-holo-portal--settled');
+    if (sacred) sacred.classList.add('intro-sacred-geo--active');
+    if (enterBtn) enterBtn.classList.add('intro-enter-btn--hidden');
+    if (audio) {
+      updateSubtitle('Technology & AI for health, wealth, and growth.');
+      audio.removeAttribute('hidden');
+    }
+    startHoloEyeLife();
+  }
+
+  function runCondensedIntro() {
+    condensedMobile = true;
+    introClosed = false;
+    introActivated = true;
+    var intro = createIntroScreen();
+    intro.classList.add('intro--active', 'intro--mobile-condensed');
+    initIntroRenderers();
+    revealCondensedHolo();
+    mountMobileIntroActions(intro);
+
+    var mute = document.getElementById('intro-mute');
+    if (mute) {
+      mute.addEventListener('click', function () {
+        if (!introMusic) tryStartMusic();
+        toggleMusic();
+      });
+    }
+
+    bindEnterHandler();
+
+    mobileAutoEnterTimer = setTimeout(function () {
+      if (!introClosed) handleEnterSite();
+    }, 7000);
+  }
+
   function runIntro() {
+    condensedMobile = false;
     introClosed = false;
     introActivated = false;
     var intro = createIntroScreen();
@@ -930,16 +1051,28 @@
       return;
     }
 
-    runIntro();
-
     if (shouldOpenHoloMenu()) {
+      runIntro();
       openedFromLogo = true;
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           skipToHoloMenu();
         });
       });
+      return;
     }
+
+    if (hasCompletedIntro() && !shouldForceIntro()) {
+      document.body.classList.add('is-loaded');
+      return;
+    }
+
+    if (isMobileExperience() && !shouldForceIntro()) {
+      runCondensedIntro();
+      return;
+    }
+
+    runIntro();
   }
 
   if (document.readyState === 'loading') {

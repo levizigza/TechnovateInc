@@ -33,16 +33,42 @@
 
   var scenes = [];
   var visible = new Set();
+  var tabHidden = false;
   function lerp(a,b,t){return a+(b-a)*t;}
 
+  function isMobileExperience() {
+    if (window.TechnovateMobile && window.TechnovateMobile.isMobileExperience) {
+      return window.TechnovateMobile.isMobileExperience();
+    }
+    try {
+      return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+    } catch (e) {
+      return window.innerWidth <= 900;
+    }
+  }
+
   function makeRenderer(el){
-    var r=new THREE.WebGLRenderer({antialias:true,alpha:false});
-    r.setPixelRatio(Math.min(window.devicePixelRatio,2));
-    r.setClearColor(C.bg,1);
-    var rc=el.getBoundingClientRect();
-    r.setSize(rc.width,rc.height);
-    el.appendChild(r.domElement);
-    return r;
+    try {
+      var mobile = isMobileExperience();
+      var r = new THREE.WebGLRenderer({
+        antialias: !mobile,
+        alpha: false,
+        powerPreference: mobile ? 'low-power' : 'default'
+      });
+      r.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1 : 2));
+      r.setClearColor(C.bg, 1);
+      var rc = el.getBoundingClientRect();
+      r.setSize(rc.width, rc.height);
+      el.appendChild(r.domElement);
+      return r;
+    } catch (err) {
+      el.classList.add('viewport--fallback');
+      el.style.background =
+        'radial-gradient(ellipse at 50% 30%, rgba(56,189,248,0.22), transparent 55%),' +
+        'linear-gradient(160deg, #0b1524 0%, #060b18 55%, #102038 100%)';
+      console.warn('WebGL unavailable, using CSS fallback', err);
+      return null;
+    }
   }
   function makeCam(el){
     var rc=el.getBoundingClientRect();
@@ -185,7 +211,9 @@
   function register(id, initFn){
     var el=document.getElementById(id);
     if(!el)return;
-    var r=makeRenderer(el), cam=makeCam(el), scene=new THREE.Scene();
+    var r=makeRenderer(el);
+    if(!r)return;
+    var cam=makeCam(el), scene=new THREE.Scene();
     var clock=new THREE.Clock();
     var st={renderer:r,camera:cam,scene:scene,clock:clock,container:el};
     var update=initFn(st);
@@ -203,8 +231,13 @@
     scenes.forEach(function(s){observer.observe(s.container);});
   }
 
+  document.addEventListener('visibilitychange', function () {
+    tabHidden = document.hidden;
+  });
+
   function animate(){
     requestAnimationFrame(animate);
+    if (tabHidden) return;
     visible.forEach(function(s){
       s.update(s.state);
       s.state.renderer.render(s.state.scene,s.state.camera);
