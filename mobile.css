@@ -304,6 +304,60 @@ body.intro-active .header .logo {
   }
 }
 
+/* Smallest phones: tighten typography + reserve more space */
+@media (max-width: 380px) {
+  html {
+    --header-h: 64px;
+    --header-h-scrolled: 56px;
+  }
+
+  /* styles.css targets more specific selectors, so override those too */
+  .hero-overlay .hero-title,
+  .page-header-overlay .page-title {
+    font-size: clamp(2.05rem, 8.2vw, 2.45rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-desc,
+  .page-lead,
+  .section-lead {
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .section-title {
+    font-size: clamp(1.55rem, 5.1vw, 2.05rem);
+  }
+
+  /* Keep Nova + HUD from covering paragraphs/buttons */
+  main,
+  .footer {
+    padding-bottom: calc(240px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .tv-nova {
+    transform: scale(0.7);
+    transform-origin: bottom right;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  /* The floating HUD bubble is too tall on the smallest phones */
+  .tv-nova__hud,
+  .tv-nova__prompt {
+    display: none !important;
+  }
+
+  .nav.open a {
+    padding: 10px 4px;
+    min-height: 44px;
+    font-size: 1.02rem;
+  }
+}
+
 /* Prefer reduced motion: never leave content invisible */
 @media (prefers-reduced-motion: reduce) {
   main.page-holo-stage--hidden {
