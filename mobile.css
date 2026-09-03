@@ -345,10 +345,28 @@ body.intro-active .header .logo {
     bottom: 10px;
   }
 
-  /* The floating HUD bubble is too tall on the smallest phones */
-  .tv-nova__hud,
+  /* Nova HUD is toggled via a `hidden` attribute in chatbot.js.
+     On small phones we want it to remain visible (so the prompt buttons are not a brief flash),
+     but compact enough to not cover content. */
+  #tv-nova-hud,
+  #tv-nova-hud[hidden] {
+    display: block !important;
+    max-height: 180px;
+    overflow: hidden;
+  }
+
+  .tv-nova__hud {
+    width: min(260px, calc(100vw - 44px));
+    padding: 10px 12px;
+  }
+
+  .tv-nova__speech {
+    font-size: 0.78rem;
+  }
+
   .tv-nova__prompt {
-    display: none !important;
+    font-size: 0.62rem;
+    padding: 6px 10px;
   }
 
   .nav.open a {
@@ -381,6 +399,14 @@ body.intro-active .header .logo {
 
   .value-item {
     padding: var(--sp-3);
+  }
+}
+
+/* Tiny screens: hide Nova HUD/prompt bubble to prevent overlap */
+@media (max-width: 380px) {
+  .tv-nova__hud,
+  .tv-nova__prompt {
+    display: none !important;
   }
 }
 
