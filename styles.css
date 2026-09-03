@@ -1698,6 +1698,125 @@ body.intro-active .header {
 }
 
 /* ============================================
+   MVP DEMO CARDS (clickable thumbnails)
+   ============================================ */
+
+.mvp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.mvp-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  border: 1px solid rgba(14, 36, 64, 0.1);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 247, 255, 0.88) 100%);
+  box-shadow: 0 10px 28px rgba(8, 24, 48, 0.08);
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.mvp-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(8, 24, 48, 0.14);
+  border-color: rgba(37, 99, 235, 0.28);
+}
+
+.mvp-card:focus-visible {
+  outline: 2px solid var(--blue-600);
+  outline-offset: 3px;
+}
+
+.mvp-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0b1524;
+}
+
+.mvp-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.35s ease;
+}
+
+.mvp-card:hover .mvp-card__media img {
+  transform: scale(1.04);
+}
+
+.mvp-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: #0b1524;
+  background: var(--accent-light, #fbbf24);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.mvp-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--sp-3);
+}
+
+.mvp-card__body .card-label {
+  margin-bottom: 6px;
+}
+
+.mvp-card__body h3 {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-holo, #0f2744);
+  margin: 0 0 var(--sp-2);
+}
+
+.mvp-card__desc {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin: 0 0 var(--sp-3);
+  flex: 1;
+}
+
+.mvp-card__cta {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--blue-600);
+  letter-spacing: 0.02em;
+}
+
+.mvp-card__cta::after {
+  content: " →";
+}
+
+.mvp-card:hover .mvp-card__cta {
+  color: var(--blue-700, #1d4ed8);
+}
+
+@media (max-width: 1024px) {
+  .mvp-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 720px) {
+  .mvp-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================
    VIEWPORT (standalone, for non-immersive use)
    ============================================ */
 
