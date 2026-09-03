@@ -121,6 +121,12 @@ body.nav-open .header {
   -webkit-backdrop-filter: none;
 }
 
+body.nav-open .tv-nova {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; height: auto; display: block; }
 
