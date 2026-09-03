@@ -304,8 +304,8 @@ body.intro-active .header .logo {
   }
 }
 
-/* Smallest phones: tighten typography + reserve more space */
-@media (max-width: 380px) {
+/* Small phones: tighten typography + reserve more space */
+@media (max-width: 420px) {
   html {
     --header-h: 64px;
     --header-h-scrolled: 56px;
