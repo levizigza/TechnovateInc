@@ -67,6 +67,8 @@
   function init() {
     initBodyFlags();
     initRevealFailsafe();
+
+    initNovaSummon();
   }
 
   if (document.readyState === 'loading') {
@@ -79,4 +81,35 @@
     isMobileExperience: isMobileExperience,
     forceRevealContent: forceRevealContent
   };
+
+  function initNovaSummon() {
+    try {
+      if (!window.matchMedia) return;
+      var isSmall = window.matchMedia('(max-width: 520px)').matches;
+      if (!isSmall) return;
+
+      // Button is injected so Nova doesn't block content by default.
+      if (document.getElementById('tv-nova-toggle')) return;
+
+      var btn = document.createElement('button');
+      btn.id = 'tv-nova-toggle';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Summon Nova');
+      btn.textContent = 'Nova';
+
+      document.body.appendChild(btn);
+
+      btn.addEventListener('click', function () {
+        var summoned = document.body.classList.toggle('tv-nova-summoned');
+
+        if (summoned) {
+          // chatbot.js creates the head button; click it to activate Nova.
+          window.setTimeout(function () {
+            var headBtn = document.getElementById('tv-nova-head-btn');
+            if (headBtn) headBtn.click();
+          }, 50);
+        }
+      });
+    } catch (e) {}
+  }
 })();

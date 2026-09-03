@@ -345,28 +345,45 @@ body.intro-active .header .logo {
     bottom: 10px;
   }
 
-  /* Nova HUD is toggled via a `hidden` attribute in chatbot.js.
-     On small phones we want it to remain visible (so the prompt buttons are not a brief flash),
-     but compact enough to not cover content. */
-  #tv-nova-hud,
-  #tv-nova-hud[hidden] {
-    display: block !important;
-    max-height: 180px;
-    overflow: hidden;
+  /* Hide Nova by default on mobile; summon via a top button when needed. */
+  body:not(.tv-nova-summoned) .tv-nova {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
-  .tv-nova__hud {
-    width: min(260px, calc(100vw - 44px));
-    padding: 10px 12px;
+  body.tv-nova-summoned .tv-nova {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
-  .tv-nova__speech {
+  #tv-nova-toggle {
+    position: fixed;
+    top: calc(var(--header-h, 80px) + max(8px, env(safe-area-inset-top, 0px)));
+    right: max(12px, env(safe-area-inset-right, 0px));
+    z-index: 100070;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 212, 255, 0.35);
+    background: rgba(6, 14, 28, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: rgba(210, 248, 255, 0.92);
+    font-family: var(--font-display, var(--font));
+    font-weight: 800;
+    letter-spacing: 0.06em;
     font-size: 0.78rem;
+    cursor: pointer;
   }
 
-  .tv-nova__prompt {
-    font-size: 0.62rem;
-    padding: 6px 10px;
+  #tv-nova-toggle:active {
+    transform: scale(0.98);
   }
 
   .nav.open a {
