@@ -356,6 +356,32 @@ body.intro-active .header .logo {
     min-height: 44px;
     font-size: 1.02rem;
   }
+
+  /* About / leadership paragraphs */
+  .founder-profile {
+    padding: var(--sp-3);
+    gap: var(--sp-3) var(--sp-2);
+  }
+
+  .founder-profile__name {
+    font-size: 1.45rem;
+  }
+
+  .founder-profile__bio p {
+    font-size: 0.98rem;
+    line-height: 1.62;
+    margin-bottom: var(--sp-1);
+  }
+
+  .content-cols p,
+  .value-item p {
+    font-size: 0.98rem;
+    line-height: 1.62;
+  }
+
+  .value-item {
+    padding: var(--sp-3);
+  }
 }
 
 /* Prefer reduced motion: never leave content invisible */
