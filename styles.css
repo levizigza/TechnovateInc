@@ -2885,7 +2885,7 @@ body.intro-active .header {
   .orb { opacity: 0.3; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .stats-row { grid-template-columns: 1fr; }
   .sector-overlay__panel { padding: var(--sp-3); }
 }
