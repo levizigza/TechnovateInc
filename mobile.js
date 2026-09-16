@@ -112,13 +112,18 @@
   function initNovaSummon() {
     ensureNovaToggle();
     var resizeTimer;
-    window.addEventListener('resize', function () {
+    function onViewportChange() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
         initBodyFlags();
         ensureNovaToggle();
       }, 150);
-    }, { passive: true });
+    }
+    window.addEventListener('resize', onViewportChange, { passive: true });
+    window.addEventListener('orientationchange', onViewportChange, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onViewportChange, { passive: true });
+    }
   }
 
   function init() {

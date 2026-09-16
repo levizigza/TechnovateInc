@@ -1,0 +1,21 @@
+/*
+  Cloudflare Pages / compatible static hosts.
+  Keep HTML fresh so responsive CSS/JS updates land quickly.
+*/
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/mobile.css
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/mobile.js
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/styles.css
+  Cache-Control: public, max-age=3600, must-revalidate

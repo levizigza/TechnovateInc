@@ -1821,11 +1821,11 @@ body.intro-active .header {
   color: var(--blue-700, #1d4ed8);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .mvp-grid { grid-template-columns: 1fr 1fr; }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .mvp-grid { grid-template-columns: 1fr; }
 }
 
@@ -1859,8 +1859,10 @@ body.intro-active .header {
    RESPONSIVE
    ============================================ */
 
-@media (max-width: 1024px) {
-  .nav a { font-size: var(--text-xs); padding: 6px 10px; }
+/* Aligned with mobile.css ladder: burger/tablet ≤1023, phones ≤767 */
+@media (max-width: 1023px) {
+  .nav { display: none; flex: 0; }
+  .burger { display: flex; margin-left: auto; }
   .cards-row { grid-template-columns: 1fr 1fr; }
   .sectors-grid { grid-template-columns: 1fr 1fr; }
   .projects-grid { grid-template-columns: 1fr 1fr; }
@@ -1878,9 +1880,7 @@ body.intro-active .header {
   .page-header-immersive { min-height: 380px; }
 }
 
-@media (max-width: 768px) {
-  .nav { display: none; flex: 0; }
-  .burger { display: flex; margin-left: auto; }
+@media (max-width: 767px) {
   .holo-trigger {
     width: 40px;
     height: 40px;
@@ -1894,10 +1894,10 @@ body.intro-active .header {
   .sectors-grid { grid-template-columns: 1fr; }
   .cards-row { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: 1fr; }
-  .hero-immersive { min-height: 90vh; }
+  .hero-immersive { min-height: 90vh; min-height: 90dvh; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .hero-ctas { flex-direction: column; }
   .hero-ctas .btn { width: 100%; }
   .section { padding: var(--sp-5) 0; }
@@ -5623,8 +5623,8 @@ body.intro-active {
   fill: var(--blue-500);
 }
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
+/* Mobile adjustments — match universal ladder */
+@media (max-width: 767px) {
   .intro-logo-icon {
     width: 64px;
     height: 64px;
@@ -5636,7 +5636,7 @@ body.intro-active {
   }
 
   .intro-btn {
-    min-width: 240px;
+    min-width: min(240px, calc(100vw - 48px));
     padding: 14px 24px;
     font-size: var(--text-sm);
   }
@@ -6173,7 +6173,7 @@ body.intro-active {
   50% { opacity: 1; filter: brightness(1.12); }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 479px) {
   .tv-nova {
     right: 12px;
     bottom: 12px;

@@ -4,32 +4,48 @@
    desktops, and ultrawide displays.
    Loaded after styles.css on every page.
 
-   Breakpoint ladder (CSS px, 2026 device map):
-     xs   ≤359   tiny / older phones
-     sm   ≤479   mainstream phones
-     md   ≤767   large phones / small tablets
-     lg   ≤1023  tablets (portrait)
-     xl   ≤1279  tablets landscape / small laptops
-     2xl  ≥1280  desktops
-     3xl  ≥1536  large / ultrawide (cap content)
+   Device map (CSS px, 2026):
+     fold  ≤319   Galaxy Fold closed / tiny
+     xs    ≤359   older / compact phones
+     sm    ≤479   mainstream phones (SE→Pro Max)
+     md    ≤767   large phones / phablets / mini tablets
+     lg    ≤1023  tablets portrait (iPad mini→Air)
+     xl    ≤1279  tablet landscape / small laptops
+     2xl   ≥1280  desktops / MacBook
+     3xl   ≥1536  large desktop
+     4xl   ≥1920  FHD+ / ultrawide (cap measure)
+     5xl   ≥2560  QHD / ultrawide / 4K (tight measure)
+
+   Also covers: notch/Dynamic Island safe-areas,
+   landscape phones, coarse pointer, reduced motion.
    ============================================ */
 
 /* ---------- Global foundation ---------- */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
   overflow-x: clip;
+  max-width: 100%;
 }
 
 img,
 video,
 canvas,
-svg {
+svg,
+iframe {
   max-width: 100%;
   height: auto;
+}
+
+table {
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .container,
@@ -48,6 +64,7 @@ svg {
   --tv-lead: clamp(0.95rem, 0.35vw + 0.88rem, 1.2rem);
   --tv-body: clamp(0.94rem, 0.2vw + 0.9rem, 1.05rem);
   --tv-container: min(1200px, 100%);
+  --tv-measure: 40rem;
 }
 
 .container {
@@ -65,6 +82,7 @@ svg {
 .header-inner {
   padding-left: max(12px, env(safe-area-inset-left, 0px));
   padding-right: max(12px, env(safe-area-inset-right, 0px));
+  gap: 8px;
 }
 
 /* Specificity to beat styles.css hero/page titles */
@@ -74,8 +92,8 @@ svg {
   line-height: 1.08;
   letter-spacing: -0.02em;
   word-break: break-word;
-  overflow-wrap: anywhere;
-  hyphens: auto;
+  overflow-wrap: break-word;
+  hyphens: manual;
 }
 
 .hero-desc,
@@ -83,7 +101,7 @@ svg {
 .section-lead {
   font-size: var(--tv-lead);
   line-height: 1.6;
-  max-width: 40rem;
+  max-width: var(--tv-measure);
 }
 
 .section-title,
@@ -91,6 +109,8 @@ svg {
   font-size: var(--tv-title);
   line-height: 1.15;
   word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: manual;
 }
 
 .card p,
@@ -99,7 +119,11 @@ svg {
 .value-item p,
 .founder-profile__bio p,
 .content-cols p,
-.sector-card p {
+.sector-card p,
+.form label,
+.form input,
+.form textarea,
+.form select {
   font-size: var(--tv-body);
   line-height: 1.65;
 }
@@ -107,6 +131,11 @@ svg {
 .section {
   padding-top: var(--tv-section-y);
   padding-bottom: var(--tv-section-y);
+}
+
+/* Prevent sticky/fixed chrome from colliding with notches */
+.scroll-hint {
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
 }
 
 /* ---------- Intro (mobile condensed) ---------- */
@@ -293,6 +322,7 @@ body.intro-active .header .logo {
     align-items: center;
     padding: 12px 4px;
     font-size: 1.05rem;
+    white-space: normal;
   }
 
   .nav.open a.nav-cta {
@@ -312,6 +342,17 @@ body.intro-active .header .logo {
   .cards-row,
   .values-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .contact-grid,
+  .solution-block,
+  .content-cols {
+    grid-template-columns: 1fr;
+    gap: var(--sp-3, 1.25rem);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   /* Nova: hide by default on tablet/phone; summon via top button */
@@ -443,6 +484,38 @@ body.intro-active .header .logo {
   .logo-text {
     font-size: 0.95rem;
   }
+
+  .footer-grid,
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .tv-footer-mark {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-inline: 8px;
+  }
+
+  .tv-footer-mark__eye {
+    overflow: hidden;
+  }
+
+  .tv-footer-mark__eye .tv-eye-character--logo {
+    width: 96px;
+    height: 96px;
+    transform: translate(-50%, -50%) scale(0.52);
+  }
+
+  .tv-footer-mark__text {
+    letter-spacing: 0.14em;
+    font-size: clamp(0.95rem, 4.5vw, 1.35rem);
+  }
+
+  .footer-wordmark {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* ---------- sm and below: ≤479 mainstream phones ---------- */
@@ -480,6 +553,11 @@ body.intro-active .header .logo {
   .footer-wordmark {
     font-size: clamp(1.6rem, 10vw, 2.4rem);
   }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+  }
 }
 
 /* ---------- xs: ≤359 tiny phones ---------- */
@@ -509,7 +587,58 @@ body.intro-active .header .logo {
   }
 }
 
-/* ---------- Landscape phones ---------- */
+/* ---------- fold: ≤319 ultra-narrow / Fold closed ---------- */
+@media (max-width: 319px) {
+  :root {
+    --tv-hero: 1.45rem;
+    --tv-title: 1.15rem;
+    --tv-pad-x: 10px;
+    --header-h: 56px;
+  }
+
+  .logo-text {
+    font-size: 0.78rem;
+  }
+
+  .header-inner {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .burger {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 10px;
+  }
+
+  .intro-mobile-actions {
+    width: calc(100vw - 20px);
+  }
+
+  .intro-mobile-actions .intro-enter-btn {
+    font-size: 0.92rem;
+    min-height: 48px;
+  }
+
+  .tv-footer-mark__text {
+    letter-spacing: 0.08em;
+    font-size: 0.88rem;
+  }
+
+  .tv-footer-mark__eye {
+    width: 48px;
+    height: 48px;
+  }
+
+  .footer-logo,
+  .footer-inner,
+  .tv-footer-mark {
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* ---------- Landscape phones / short viewports ---------- */
 @media (max-height: 480px) and (orientation: landscape) {
   .hero-immersive,
   .page-header-immersive {
@@ -526,6 +655,21 @@ body.intro-active .header .logo {
 
   .intro-mobile-actions .intro-enter-btn {
     min-height: 44px;
+  }
+
+  .scroll-hint {
+    display: none;
+  }
+}
+
+/* Short portrait (Safari chrome / small phones) */
+@media (max-height: 700px) and (orientation: portrait) and (max-width: 767px) {
+  .hero-immersive {
+    min-height: min(78dvh, 640px);
+  }
+
+  .page-header-immersive {
+    min-height: min(32dvh, 280px);
   }
 }
 
@@ -549,7 +693,7 @@ body.intro-active .header .logo {
   }
 }
 
-/* ---------- 3xl ultrawide: ≥1536 — prevent stretch ---------- */
+/* ---------- 3xl large desktop: ≥1536 — prevent stretch ---------- */
 @media (min-width: 1536px) {
   :root {
     --tv-container: 1280px;
@@ -562,13 +706,39 @@ body.intro-active .header .logo {
   }
 }
 
+/* ---------- 4xl FHD / ultrawide start: ≥1920 ---------- */
 @media (min-width: 1920px) {
   :root {
     --tv-container: 1360px;
+    --tv-pad-x: 40px;
+  }
+
+  .hero-overlay .container,
+  .page-header-overlay .container {
+    max-width: 1180px;
   }
 }
 
-/* ---------- Reduced motion / touch ---------- */
+/* ---------- 5xl QHD / ultrawide / 4K: ≥2560 ---------- */
+@media (min-width: 2560px) {
+  :root {
+    --tv-container: 1440px;
+    --tv-hero: clamp(3.25rem, 2.2vw, 5rem);
+    --tv-title: clamp(2rem, 1.2vw + 1rem, 2.85rem);
+  }
+
+  .hero-overlay .container,
+  .page-header-overlay .container {
+    max-width: 1240px;
+  }
+
+  .section {
+    padding-top: clamp(3rem, 5vw, 6.5rem);
+    padding-bottom: clamp(3rem, 5vw, 6.5rem);
+  }
+}
+
+/* ---------- Reduced motion / touch / hover ---------- */
 @media (prefers-reduced-motion: reduce) {
   main.page-holo-stage--hidden {
     opacity: 1 !important;
@@ -596,7 +766,44 @@ body.intro-active .header .logo {
 
   a,
   button,
-  .btn {
+  .btn,
+  input,
+  select,
+  textarea {
     touch-action: manipulation;
+  }
+}
+
+/* Hover-capable fine pointers keep desktop affordances */
+@media (hover: hover) and (pointer: fine) {
+  .btn:focus-visible,
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid rgba(0, 212, 255, 0.65);
+    outline-offset: 3px;
+  }
+}
+
+/* Print: readable, no chrome */
+@media print {
+  .header,
+  .tv-nova,
+  #tv-nova-toggle,
+  .holo-trigger,
+  .scroll-hint,
+  .burger,
+  #cinematic-intro {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .hero-immersive,
+  .page-header-immersive {
+    min-height: auto;
+    padding: 24px 0;
   }
 }
