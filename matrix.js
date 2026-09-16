@@ -108,9 +108,9 @@
   function init() {
     var mobile = false;
     try {
-      mobile = window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+      mobile = window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
     } catch (e) {
-      mobile = window.innerWidth <= 900;
+      mobile = window.innerWidth <= 1023;
     }
 
     var hero = document.querySelector('.hero-immersive');

@@ -13,9 +13,9 @@
       return window.TechnovateMobile.isMobileExperience();
     }
     try {
-      return window.matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+      return window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
     } catch (e) {
-      return window.innerWidth <= 900;
+      return window.innerWidth <= 1023;
     }
   }
 
