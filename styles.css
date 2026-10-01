@@ -1153,6 +1153,16 @@ body.intro-active .header {
   margin-bottom: 0;
 }
 
+.founder-profile__links {
+  margin: var(--sp-3) 0 0;
+}
+
+.founder-profile__links .btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 @media (max-width: 820px) {
   .founder-profile {
     grid-template-columns: 1fr;
